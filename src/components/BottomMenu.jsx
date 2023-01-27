@@ -11,18 +11,18 @@ const BottomMenu = () => {
   return (
     <div className="block bottom-0 fixed w-full h-14 bg-white justify-center">
       <div className="flex w-full h-full justify-center items-center">
-        <div className="flex w-20 h-full justify-center items-center flex-col gap-y-1">
-          <Link to="/Home">
+        <Link to="/home">
+          <div className="flex w-20 h-full justify-center items-center flex-col gap-y-1">
             <RxHome className="text-gray-700 text-xl" />
             <span className="text-xs">홈</span>
-          </Link>
-        </div>
-        <div className="flex w-20 h-full justify-center items-center flex-col gap-y-1">
-          <RxSketchLogo className="text-gray-700 text-xl" />
-          <Link to="/career">
+          </div>
+        </Link>
+        <Link to="/career">
+          <div className="flex w-20 h-full justify-center items-center flex-col gap-y-1">
+            <RxSketchLogo className="text-gray-700 text-xl" />
             <span className="text-xs">커리어</span>
-          </Link>
-        </div>
+          </div>
+        </Link>
         <div className="flex w-20 h-full justify-center items-center flex-col gap-y-1">
           <RxCamera className="text-gray-700 text-xl" />
           <span className="text-xs">포토</span>

@@ -9,7 +9,7 @@ const Career = () => {
         className="flex justify-center mt-3 flex-col gap-y-8 w-full"
         style={{ maxWidth: "420px" }}
       >
-        <div className="block fixed w-full justify-between top-0 z-10 bg-slate-100">
+        <div className="flex w-full justify-between bg-slate-100">
           <div className="flex w-full h-full justify-start flex-col gap-y-3 mt-6">
             <p className="text-lg font-bold px-2">김진배님의 커리어</p>
             <div
@@ -31,7 +31,7 @@ const Career = () => {
           </div>
         </div>
 
-        <div className="flex w-full justify-between top-44 relative">
+        <div className="flex w-full justify-between">
           <div className="flex w-full h-full justify-start flex-col gap-y-3 mt-6 px-2">
             <div className="flex flex-col w-full gap-y-3">
               <p className="text-lg font-light px-2">2022</p>
@@ -81,7 +81,7 @@ const Career = () => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col w-full gap-y-3 bg-slate-100 mb-60">
+            <div className="flex flex-col w-full gap-y-3 bg-slate-100">
               <p className="text-lg font-light px-2">2021</p>
               <div className="flex bg-white rounded-lg p-5 shadow-sm">
                 <div className="flex w-2/3 justify-center items-start flex-col">
