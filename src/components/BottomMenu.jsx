@@ -9,7 +9,7 @@ import {
 import { Link } from "react-router-dom";
 const BottomMenu = () => {
   return (
-    <div className="block bottom-0 fixed w-full h-14 bg-white justify-center">
+    <div className="block bottom-0 fixed w-full h-14 bg-white justify-center z-30">
       <div className="flex w-full h-full justify-center items-center">
         <Link to="/home">
           <div className="flex w-20 h-full justify-center items-center flex-col gap-y-1">

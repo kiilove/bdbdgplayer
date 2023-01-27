@@ -86,7 +86,7 @@ const Home = () => {
             <p className="text-3xl font-base">김진배</p>
           </div>
           <div className="flex w-1/2 justify-end">
-            <div className="relative">
+            <div className="flex">
               <img src={DEFAULT_AVATAR} className="rounded-full w-32" />
             </div>
           </div>

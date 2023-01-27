@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Career from "./pages/Career";
+import CareerView from "./pages/CareerView";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -16,6 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/registeremail" element={<RegisterWithEmail />} />
         <Route path="/career" element={<Career />} />
+        <Route path="/careerview" element={<CareerView />} />
       </Routes>
     </BrowserRouter>
   );
