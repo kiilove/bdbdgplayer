@@ -3,7 +3,10 @@ import { Link } from "react-router-dom";
 
 const Login = () => {
   return (
-    <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">
+    <div
+      className="flex w-full h-screen justify-center items-start align-top bg-slate-100"
+      style={{ maxWidth: "420px" }}
+    >
       <div className="flex flex-col">
         <div className="flex justify-center mt-12 flex-col gap-y-1">
           <p className="text-3xl font-bold flex justify-center items-center h-full">

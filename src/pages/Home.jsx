@@ -72,11 +72,11 @@ const Home = () => {
     />
   );
   return (
-    <div className="flex w-full h-full justify-center items-start align-top bg-slate-100">
+    <div className="flex justify-center items-start align-top bg-slate-100">
       <BottomMenu />
       <div
         className="flex justify-center mt-3 flex-col gap-y-8 px-2 w-full"
-        style={{ maxWidth: "400px" }}
+        style={{ maxWidth: "420px" }}
       >
         <div className="flex w-full justify-start">
           <span className="flex text-lg font-extrabold">BDBDg</span>

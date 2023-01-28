@@ -7,7 +7,9 @@ const Header = ({ title, banner }) => {
       <div className="flex w-full h-full justify-center items-center flex-col">
         <div className="flex w-full h-14 justify-center items-center bg-white">
           <div className="flex h-10 w-1/6 justify-start items-center ml-2">
-            <RxArrowLeft className=" text-2xl font-semibold" />
+            <button onClick={() => window.history.back()}>
+              <RxArrowLeft className=" text-2xl font-semibold" />
+            </button>
           </div>
           <div className="flex h-full w-5/6 justify-start items-center">
             <p
