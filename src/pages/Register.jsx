@@ -30,13 +30,28 @@ const Register = () => {
           className="flex justify-center mt-10 flex-col gap-y-3 px-4 w-full"
           style={{ maxWidth: "400px" }}
         >
-          <button className="w-full h-12 bg-yellow-400 rounded-md border-gray-300 border">
+          <button
+            className="w-full h-12 bg-yellow-400 rounded-md border-gray-300 border "
+            onClick={() => {
+              window.location.href = "/registeremail";
+            }}
+          >
             <span className=" text-base font-semibold">카카오로 시작하기</span>
           </button>
-          <button className="w-full h-12 bg-white rounded-md border-gray-300 border">
+          <button
+            className="w-full h-12 bg-white rounded-md border-gray-300 border "
+            onClick={() => {
+              window.location.href = "/registeremail";
+            }}
+          >
             <span className=" text-base font-semibold">네이버로 시작하기</span>
           </button>
-          <button className="w-full h-12 bg-white rounded-md border-gray-300 border">
+          <button
+            className="w-full h-12 bg-white rounded-md border-gray-300 border "
+            onClick={() => {
+              window.location.href = "/registeremail";
+            }}
+          >
             <span className=" text-base font-semibold">구글 시작하기</span>
           </button>
           <button

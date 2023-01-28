@@ -17,16 +17,28 @@ const Login = () => {
           </p>
         </div>
         <div className="flex justify-center mt-10 flex-col gap-y-3 px-4">
-          <button className="w-full h-12 bg-yellow-400 rounded-md border-gray-300 border">
+          <button
+            className="w-full h-12 bg-yellow-400 rounded-md border-gray-300 border"
+            onClick={() => (window.location.href = "/home")}
+          >
             <span className=" text-base font-semibold">카카오로 로그인</span>
           </button>
-          <button className="w-full h-12 bg-white rounded-md border-gray-300 border">
+          <button
+            className="w-full h-12 bg-white rounded-md border-gray-300 border"
+            onClick={() => (window.location.href = "/home")}
+          >
             <span className=" text-base font-semibold">네이버로 로그인</span>
           </button>
-          <button className="w-full h-12 bg-white rounded-md border-gray-300 border">
+          <button
+            className="w-full h-12 bg-white rounded-md border-gray-300 border"
+            onClick={() => (window.location.href = "/home")}
+          >
             <span className=" text-base font-semibold">구글 로그인</span>
           </button>
-          <button className="w-full h-12 bg-blue-500 rounded-md border-gray-300 border">
+          <button
+            className="w-full h-12 bg-blue-500 rounded-md border-gray-300 border"
+            onClick={() => (window.location.href = "/home")}
+          >
             <span className=" text-base font-medium text-white">
               페이스북으로 로그인
             </span>
