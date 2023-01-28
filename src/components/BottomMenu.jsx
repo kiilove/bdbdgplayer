@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   RxHome,
   RxCalendar,
@@ -7,7 +7,9 @@ import {
   RxTextAlignJustify,
 } from "react-icons/rx";
 import { Link } from "react-router-dom";
+import Drawer from "./Drawer";
 const BottomMenu = () => {
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   return (
     <div className="block bottom-0 fixed w-full h-14 bg-white justify-center z-30">
       <div className="flex w-full h-full justify-center items-center">
@@ -31,10 +33,14 @@ const BottomMenu = () => {
           <RxCalendar className="text-gray-700 text-xl" />
           <span className="text-xs">대회일정</span>
         </div>
-        <div className="flex w-20 h-full justify-center items-center flex-col gap-y-1">
+        <div
+          className="flex w-20 h-full justify-center items-center flex-col gap-y-1"
+          onClick={() => setIsOpenDrawer(true)}
+        >
           <RxTextAlignJustify className="text-gray-700 text-xl" />
           <span className="text-xs">메뉴</span>
         </div>
+        <Drawer isOpen={isOpenDrawer} setIsOpen={setIsOpenDrawer} />
       </div>
     </div>
   );

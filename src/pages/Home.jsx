@@ -3,6 +3,7 @@ import { DEFAULT_AVATAR } from "../consts";
 
 import { ResponsiveRadar } from "@nivo/radar";
 import BottomMenu from "../components/BottomMenu";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const data = [
@@ -110,9 +111,11 @@ const Home = () => {
             <span className="flex h-10 text-lg text-gray-600 items-end">
               나의 모습 분석
             </span>
-            <span className="flex h-10 text-sm text-gray-600 items-end">
-              상세보기
-            </span>
+            <Link to="/analyzedetail">
+              <span className="flex h-10 text-sm text-gray-600 items-end">
+                상세보기
+              </span>
+            </Link>
           </div>
           <div className="flex h-80 bg-white w-full rounded-lg shadow-sm flex-col">
             <MyResponsiveRadar data={data} />

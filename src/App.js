@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
+import AnalyzeDetail from "./pages/AnalyzeDetail";
 import Career from "./pages/Career";
 import CareerView from "./pages/CareerView";
 import Home from "./pages/Home";
@@ -18,6 +19,7 @@ function App() {
         <Route path="/registeremail" element={<RegisterWithEmail />} />
         <Route path="/career" element={<Career />} />
         <Route path="/careerview" element={<CareerView />} />
+        <Route path="/analyzedetail" element={<AnalyzeDetail />} />
       </Routes>
     </BrowserRouter>
   );
