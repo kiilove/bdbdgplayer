@@ -3,6 +3,7 @@ import "./App.css";
 import AnalyzeDetail from "./pages/AnalyzeDetail";
 import Career from "./pages/Career";
 import CareerView from "./pages/CareerView";
+import Feed from "./pages/Feed";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -20,6 +21,7 @@ function App() {
         <Route path="/career" element={<Career />} />
         <Route path="/careerview" element={<CareerView />} />
         <Route path="/analyzedetail" element={<AnalyzeDetail />} />
+        <Route path="/feed" element={<Feed />} />
       </Routes>
     </BrowserRouter>
   );
