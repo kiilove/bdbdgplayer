@@ -6,14 +6,14 @@ const Header = ({ title, banner }) => {
     <div className="block top-0 sticky w-full h-full z-10">
       <div className="flex w-full h-full justify-center items-center flex-col">
         <div className="flex w-full h-14 justify-center items-center bg-white">
-          <div className="flex h-10 w-1/6 justify-start items-center ml-2">
+          <div className="flex h-10 w-10 justify-start items-center ml-2">
             <button onClick={() => window.history.back()}>
               <RxArrowLeft className=" text-2xl font-semibold" />
             </button>
           </div>
-          <div className="flex h-full w-5/6 justify-start items-center">
+          <div className="flex h-full w-full justify-start items-center">
             <p
-              className="text-lg font-bold px-2 absolute left-1/2"
+              className="text-lg px-2 absolute left-1/2"
               style={{ transform: "translate(-50%,0%)" }}
             >
               {title}

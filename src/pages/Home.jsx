@@ -84,7 +84,7 @@ const Home = () => {
         <div className="flex w-full justify-between">
           <div className="flex w-1/2 h-full justify-start flex-col gap-y-3 mt-6">
             <p className="text-3xl font-light">Hi~</p>
-            <p className="text-3xl font-base">김진배 선수님</p>
+            <p className="text-2xl font-base">김진배 선수님</p>
           </div>
           <div className="flex w-1/2 justify-end">
             <div className="flex">
