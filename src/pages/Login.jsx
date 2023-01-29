@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 const Login = () => {
   return (
     <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">
-      <div className="flex flex-col">
-        <div className="flex justify-center mt-12 flex-col gap-y-1">
+      <div className="flex w-full flex-col items-center">
+        <div className="flex w-full justify-center mt-12 flex-col gap-y-1">
           <p className="text-xl flex justify-center items-center h-full">
             대한민국 No.1 피트니스 플랫폼
           </p>
@@ -16,7 +16,10 @@ const Login = () => {
             에 오신것을 환영합니다.
           </p>
         </div>
-        <div className="flex justify-center mt-10 flex-col gap-y-3 px-4">
+        <div
+          className="flex justify-center mt-10 flex-col gap-y-3 px-4 w-full"
+          style={{ maxWidth: "400px" }}
+        >
           <button
             className="w-full h-12 bg-yellow-400 rounded-md border-gray-300 border"
             onClick={() => (window.location.href = "/home")}
@@ -44,7 +47,10 @@ const Login = () => {
             </span>
           </button>
         </div>
-        <div className="flex justify-center mt-10 flex-col gap-y-3 px-4">
+        <div
+          className="flex justify-center mt-10 flex-col gap-y-3 px-4 w-full"
+          style={{ maxWidth: "400px" }}
+        >
           <div className="flex justify-center">
             <p className="text-gray-800">이메일 아이디로 로그인</p>
           </div>
