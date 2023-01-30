@@ -6,6 +6,7 @@ import CareerView from "./pages/CareerView";
 import Feed from "./pages/Feed";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import QrFull from "./pages/QrFull";
 import Register from "./pages/Register";
 import RegisterWithEmail from "./pages/RegisterWithEmail";
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/careerview" element={<CareerView />} />
         <Route path="/analyzedetail" element={<AnalyzeDetail />} />
         <Route path="/feed" element={<Feed />} />
+        <Route path="/qrfull" element={<QrFull />} />
       </Routes>
     </BrowserRouter>
   );

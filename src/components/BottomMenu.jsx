@@ -5,11 +5,17 @@ import {
   RxSketchLogo,
   RxCamera,
   RxTextAlignJustify,
+  RxDotsHorizontal,
 } from "react-icons/rx";
 import { Link } from "react-router-dom";
-import Drawer from "./Drawer";
+import Drawer from "react-modern-drawer";
+import DrawMenu from "./DrawMenu";
+import "react-modern-drawer/dist/index.css";
 const BottomMenu = () => {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+  const handleDrawer = () => {
+    setIsOpenDrawer((prev) => !prev);
+  };
   return (
     <div className="block bottom-0 fixed w-full h-14 bg-white justify-center z-30">
       <div
@@ -38,15 +44,24 @@ const BottomMenu = () => {
           <RxCalendar className="text-gray-700 text-xl" />
           <span className="text-xs">대회일정</span>
         </div>
-        <div
+        <button
           className="flex w-16 h-16 justify-center items-center flex-col gap-y-1"
-          onClick={() => setIsOpenDrawer(true)}
+          onClick={() => handleDrawer()}
         >
-          <RxTextAlignJustify className="text-gray-700 text-xl" />
+          <RxDotsHorizontal className="text-gray-700 text-xl" />
           <span className="text-xs">메뉴</span>
-        </div>
-        <Drawer isOpen={isOpenDrawer} setIsOpen={setIsOpenDrawer} />
+        </button>
+        {/* <D isOpen={isOpenDrawer} setIsOpen={setIsOpenDrawer} /> */}
       </div>
+      <Drawer
+        open={isOpenDrawer}
+        onClose={handleDrawer}
+        direction="right"
+        size={300}
+        className="flex w-full h-full"
+      >
+        <DrawMenu setOpen={handleDrawer} />
+      </Drawer>
     </div>
   );
 };
