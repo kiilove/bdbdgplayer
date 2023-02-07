@@ -57,7 +57,7 @@ const BottomMenu = () => {
         open={isOpenDrawer}
         onClose={handleDrawer}
         direction="right"
-        size={300}
+        size={350}
         className="flex w-full h-full"
       >
         <DrawMenu setOpen={handleDrawer} />
