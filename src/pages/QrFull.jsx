@@ -9,7 +9,7 @@ const QrFull = ({ qrValue }) => {
           닫기
         </button>
       </div>
-      <div className="flex w-full h-full justify-center items-center px-3 ">
+      <div className="flex w-full h-full justify-center items-center px-10 py-32">
         <QrGenerator />
       </div>
     </div>
