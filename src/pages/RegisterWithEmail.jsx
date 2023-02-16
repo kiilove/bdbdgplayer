@@ -1,74 +1,162 @@
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { addDoc, collection } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
+import { useMemo } from "react";
+import { useCallback } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import { handleToast } from "../components/HandleToast";
+import { db } from "../firebase";
 
 const RegisterWithEmail = () => {
   const [playerInfo, setPlayerInfo] = useState({});
-  const [playerInfoValidate, setPlayerInfoValidate] = useState({});
-  const [validateChk, setValidateChk] = useState(false);
-  const [pwdRetype, setPwdRetype] = useState();
-  const [licenseAll, setLicenseAll] = useState(false);
-  const [license, setLicense] = useState({
-    m1Apply: false,
-    m2Apply: false,
-    s1Apply: false,
-    allApply: false,
+  const [inputs, setInputs] = useState({
+    pName: undefined,
+    pEmail: undefined,
   });
-  const [pwdValidate, setPwdValidate] = useState(true);
-  const pwd = useRef();
-  const pwd2 = useRef();
+  const [gender, setGender] = useState(undefined);
+  const [license, setLicense] = useState({
+    m1Apply: { value: false, at: new Date() },
+    m2Apply: { value: false, at: new Date() },
+    s1Apply: { value: false, at: new Date() },
+  });
+  const [licenseAll, setLicenseAll] = useState(false);
 
-  const handleInputs = (e) => {
-    if (e.target.name !== "pwdVal") {
-      setPlayerInfo((prev) => ({
-        ...prev,
-        [e.target.name]: e.target.value.trim(),
-      }));
+  const [validates, setValidates] = useState({
+    inputs: false,
+    pwd: false,
+    gender: false,
+    license: false,
+  });
+  const [isValidates, setIsValidates] = useState(false);
+  const [inputsValidate, setInputsValidate] = useState(false);
+  const [pwdValidate, setPwdValidate] = useState(false);
+  const [genderValidate, setGenderValidate] = useState(false);
+  const [licenseValidate, setLicenseValidate] = useState(false);
+
+  const pNameRef = useRef();
+  const pEmailRef = useRef();
+  const pwdRef = useRef();
+  const rePwdRef = useRef();
+
+  const navigate = useNavigate();
+
+  const handleInputs = () => {
+    setInputs((prev) => ({
+      ...prev,
+      pName: pNameRef.current.value,
+      pEmail: pEmailRef.current.value,
+    }));
+  };
+
+  const handleLicenseAll = () => {
+    licenseAll
+      ? setLicense((prev) => ({
+          ...prev,
+          m1Apply: { value: false, at: new Date() },
+          m2Apply: { value: false, at: new Date() },
+          s1Apply: { value: false, at: new Date() },
+        }))
+      : setLicense((prev) => ({
+          ...prev,
+          m1Apply: { value: true, at: new Date() },
+          m2Apply: { value: true, at: new Date() },
+          s1Apply: { value: true, at: new Date() },
+        }));
+  };
+
+  useMemo(() => {
+    const chkLicense = Object.values(license).some(
+      (item) => item.value === false
+    );
+    setLicenseAll(!chkLicense);
+  }, [license]);
+
+  const validateLicense = () => {
+    const licenseChk =
+      license.m1Apply.value === true && license.m2Apply.value === true
+        ? true
+        : false;
+
+    setLicenseValidate(licenseChk);
+    return licenseChk;
+  };
+
+  const addAuth = async () => {
+    const auth = getAuth();
+    console.log(pEmailRef.current.value, pwdRef.current.value);
+    await createUserWithEmailAndPassword(
+      auth,
+      pEmailRef.current.value,
+      pwdRef.current.value
+    )
+      .then((user) => {
+        const userInfo = user;
+
+        return userInfo.user.uid;
+      })
+      .then((uid) => addPlayer(uid))
+      .then(() => navigate("/regsuccess"));
+  };
+  const addPlayer = async (uid) => {
+    try {
+      await addDoc(collection(db, "player"), { ...playerInfo, playerUid: uid });
+    } catch (error) {
+      console.log(error.message);
+    } finally {
     }
-    validateInputs();
   };
   // 회원가입 빨간줄 처리해야함
   const validateInputs = () => {
-    setPlayerInfoValidate((prev) => ({
-      pName: playerInfo.pName !== undefined,
-      pEmail: playerInfo.pEmail !== undefined,
-      pPwd: playerInfo.pPwd !== undefined,
-      pwd2: validatePwd(),
-      pGender: playerInfo.pGender !== undefined,
-      m1Apply: license.m1Apply,
-      m2Apply: license.m2Apply,
-    }));
+    const inputsChk = Object.values(inputs).some(
+      (item) => item === undefined || item === ""
+    );
+    setInputsValidate(inputsChk);
+    return !inputsChk;
   };
+
   const validatePwd = () => {
-    const valResult =
-      pwd.current.value.trim() === pwd2.current.value.trim() ? true : false;
+    const pwdChk =
+      rePwdRef.current !== undefined
+        ? pwdRef.current.value === rePwdRef.current.value
+          ? true
+          : false
+        : false;
 
-    return valResult;
+    setPwdValidate(pwdChk);
+    return pwdChk;
   };
 
-  useEffect(() => {
-    !licenseAll
-      ? setLicense({
-          allApply: false,
-          m1Apply: false,
-          m2Apply: false,
-          s1Apply: false,
-        })
-      : setLicense({
-          allApply: true,
-          m1Apply: true,
-          m2Apply: true,
-          s1Apply: true,
-        });
+  const validateGender = () => {
+    const genderChk = gender ? true : false;
+    setGenderValidate(genderChk);
+    return genderChk;
+  };
 
-    return () => {
-      setLicense(() => ({ ...license }));
-    };
-  }, [licenseAll]);
+  useMemo(() => {
+    setValidates((prev) => ({
+      ...prev,
+      inputs: validateInputs(),
+      pwd: validatePwd(),
+      gender: validateGender(),
+      license: validateLicense(),
+    }));
+    //console.log(validates);
+  }, [inputs, gender, license, pwdValidate]);
 
-  useEffect(() => {
-    console.log(playerInfoValidate);
-  }, [playerInfoValidate]);
+  useMemo(() => {
+    const validatesChk = Object.values(validates).some(
+      (item) => item === false
+    );
+    !validatesChk && setPlayerInfo(() => ({ ...inputs, gender, license }));
+    setIsValidates(!validatesChk);
+    console.log(playerInfo);
+  }, [validates]);
 
   return (
     <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">
@@ -90,11 +178,8 @@ const RegisterWithEmail = () => {
               type="text"
               className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
               name="pName"
-              value={playerInfo.pName}
-              onChange={(e) => {
-                e.preventDefault();
-                handleInputs(e);
-              }}
+              ref={pNameRef}
+              onChange={() => handleInputs()}
               placeholder="실명(별명은 마이페이지에서)"
             />
           </div>
@@ -103,11 +188,8 @@ const RegisterWithEmail = () => {
               type="text"
               className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
               name="pEmail"
-              value={playerInfo.pEmail}
-              onChange={(e) => {
-                e.preventDefault();
-                handleInputs(e);
-              }}
+              ref={pEmailRef}
+              onChange={() => handleInputs()}
               placeholder="이메일"
             />
           </div>
@@ -116,17 +198,8 @@ const RegisterWithEmail = () => {
               type="password"
               className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
               name="pPWD"
-              value={playerInfo.pPWD}
-              onClick={(e) => {
-                e.preventDefault();
-                setPwdValidate(validatePwd());
-              }}
-              onChange={(e) => {
-                e.preventDefault();
-                handleInputs(e);
-                setPwdValidate(validatePwd());
-              }}
-              ref={pwd}
+              ref={pwdRef}
+              onChange={() => validatePwd()}
               placeholder="비밀번호"
             />
           </div>
@@ -139,17 +212,8 @@ const RegisterWithEmail = () => {
                   : "w-full h-12 rounded-md focus:ring-0 focus:outline-red-600 border-red-600 border-2 px-5 font-light"
               }
               name="pwdVal"
-              value={pwdRetype}
-              onClick={(e) => {
-                e.preventDefault();
-                setPwdValidate(validatePwd());
-              }}
-              onChange={(e) => {
-                e.preventDefault();
-                setPwdRetype(() => e.target.value);
-                setPwdValidate(validatePwd());
-              }}
-              ref={pwd2}
+              ref={rePwdRef}
+              onChange={() => validatePwd()}
               placeholder="비밀번호확인"
             />
           </div>
@@ -165,10 +229,7 @@ const RegisterWithEmail = () => {
             <select
               className="w-24 h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light bg-white"
               name="pGender"
-              onChange={(e) => {
-                e.preventDefault();
-                handleInputs(e);
-              }}
+              onChange={(e) => setGender((prev) => (prev = e.target.value))}
             >
               <option disabled selected>
                 성별
@@ -192,13 +253,12 @@ const RegisterWithEmail = () => {
               <label className="flex justify-start items-center align-middle text-base">
                 <input
                   type="checkbox"
+                  name="allApply"
                   value="allApply"
                   className="mr-2"
                   onClick={() => setLicenseAll(!licenseAll)}
-                  checked={
-                    license.allApply ||
-                    (license.m1Apply && license.m2Apply && license.s1Apply)
-                  }
+                  onChange={() => handleLicenseAll()}
+                  checked={licenseAll}
                 />
                 전체동의
               </label>
@@ -211,11 +271,15 @@ const RegisterWithEmail = () => {
               <label className="flex justify-start items-center align-middle">
                 <input
                   type="checkbox"
+                  name="m1Apply"
                   value="m1Apply"
                   className="mr-2"
-                  checked={license.m1Apply || license.allApply}
-                  onClick={() =>
-                    setLicense({ ...license, m1Apply: !license.m1Apply })
+                  checked={license.m1Apply.value}
+                  onClick={(e) =>
+                    setLicense({
+                      ...license,
+                      m1Apply: { value: e.target.checked, at: new Date() },
+                    })
                   }
                 />
                 <span className="text-gray-500 mr-1">[필수]</span>이용약관
@@ -230,11 +294,15 @@ const RegisterWithEmail = () => {
               <label className="flex justify-start items-center align-middle">
                 <input
                   type="checkbox"
+                  name="m2Apply"
                   value="m2Apply"
                   className="mr-2"
-                  checked={license.m2Apply || license.allApply}
-                  onClick={() =>
-                    setLicense({ ...license, m2Apply: !license.m2Apply })
+                  checked={license.m2Apply.value}
+                  onClick={(e) =>
+                    setLicense({
+                      ...license,
+                      m2Apply: { value: e.target.checked, at: new Date() },
+                    })
                   }
                 />
                 <span className="text-gray-500 mr-1">[필수]</span>
@@ -250,11 +318,18 @@ const RegisterWithEmail = () => {
               <label className="flex justify-start items-center align-middle">
                 <input
                   type="checkbox"
+                  name="s1Apply"
                   value="s1Apply"
                   className="mr-2"
-                  checked={license.s1Apply || license.allApply}
-                  onClick={() =>
-                    setLicense({ ...license, s1Apply: !license.s1Apply })
+                  checked={license.s1Apply.value}
+                  onClick={(e) =>
+                    setLicense({
+                      ...license,
+                      s1Apply: {
+                        value: !license.s1Apply.value,
+                        at: new Date(),
+                      },
+                    })
                   }
                 />
                 <span className="text-gray-500 mr-1">[선택]</span>신규
@@ -267,9 +342,22 @@ const RegisterWithEmail = () => {
               </button>
             </div>
           </div>
-          <button className="w-full h-12 bg-gray-400 rounded-md border-gray-300 border mt-5">
-            <span className=" text-base font-medium text-white">회원가입</span>
-          </button>
+          {isValidates ? (
+            <button
+              className="w-full h-12 bg-orange-400 rounded-md border-gray-300 border mt-5"
+              onClick={() => addAuth()}
+            >
+              <span className=" text-base font-medium text-white">
+                회원가입
+              </span>
+            </button>
+          ) : (
+            <button className="w-full h-12 bg-gray-400 rounded-md border-gray-300 border mt-5 disabled">
+              <span className=" text-base font-medium text-white">
+                회원가입
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </div>
