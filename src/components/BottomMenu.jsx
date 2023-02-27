@@ -40,10 +40,12 @@ const BottomMenu = () => {
             <span className="text-xs">포토</span>
           </div>
         </Link>
-        <div className="flex w-16 h-16 justify-center items-center flex-col gap-y-1">
-          <RxCalendar className="text-gray-700 text-xl" />
-          <span className="text-xs">대회일정</span>
-        </div>
+        <Link to="/cuplist">
+          <div className="flex w-16 h-16 justify-center items-center flex-col gap-y-1">
+            <RxCalendar className="text-gray-700 text-xl" />
+            <span className="text-xs">대회일정</span>
+          </div>
+        </Link>
         <button
           className="flex w-16 h-16 justify-center items-center flex-col gap-y-1"
           onClick={() => handleDrawer()}

@@ -4,6 +4,8 @@ import "./App.css";
 import AnalyzeDetail from "./pages/AnalyzeDetail";
 import Career from "./pages/Career";
 import CareerView from "./pages/CareerView";
+import CupJoin from "./pages/CupJoin";
+import CupList from "./pages/CupList";
 import Feed from "./pages/Feed";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -24,10 +26,12 @@ function App() {
         <Route path="/registeremail" element={<RegisterWithEmail />} />
         <Route path="/regsuccess" element={<RegisterSuccess />} />
         <Route path="/career" element={<Career />} />
+        <Route path="/cuplist" element={<CupList />} />
         <Route path="/careerview" element={<CareerView />} />
         <Route path="/analyzedetail" element={<AnalyzeDetail />} />
         <Route path="/feed" element={<Feed />} />
         <Route path="/qrfull" element={<QrFull />} />
+        <Route path="/cupjoin/:cupId" element={<CupJoin />} />
       </Routes>
     </BrowserRouter>
   );
