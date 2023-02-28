@@ -1,4 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import React from "react";
 import { useMemo } from "react";
 import { useState } from "react";
@@ -9,6 +9,10 @@ import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { db } from "../firebase";
 import { DEFAULT_AVATAR } from "../consts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Modal } from "@mui/material";
+import JoinCupConfirm from "../modals/JoinCupConfirm";
 
 const CupJoin = () => {
   const params = useParams();
@@ -50,35 +54,39 @@ const CupJoin = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [chkValue, setChkValue] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [modalComponent, setModalComponent] = useState("");
+
   const [playerJoinGames, setPlayerJoinGames] = useState([]);
 
   const initCheckBox = (datas) => {
     let initValue = "";
     let initClass = [];
     let dummy = [];
-    console.log(datas);
+    //console.log(datas);
 
     datas.length > 0 &&
       datas.map((item, idx) => {
         item.class.map((classes) => {
           //console.log(classes.title);
-          const classValue = { gameClass: classes.title, chk: false };
+          const classValue = { title: classes.title, chk: false };
           initClass.push({ ...classValue });
-          console.log(initClass);
+          //console.log(initClass);
         });
-        initValue = { gameName: item.title, gameClass: initClass };
+        initValue = { title: item.title, class: initClass };
         dummy.push(initValue);
         initClass = [];
       });
 
-    console.log(dummy);
+    setChkValue((prev) => (prev = dummy));
+    //console.log(dummy);
   };
 
   const getCup = async () => {
     setIsLoading(true);
     await getDoc(doc(db, "cups", cupId))
       .then((data) => {
-        return data.data();
+        return { id: data.id, ...data.data() };
       })
       .then((data) => {
         setCupData((prev) => (prev = { ...data }));
@@ -120,8 +128,14 @@ const CupJoin = () => {
     console.log(playerUpdate);
   };
 
+  const refreshCheck = () => {
+    setChkValue(false);
+    setPlayerJoinGames([]);
+  };
+
   const handlePlayerJoinGames = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
+    setChkValue(undefined);
     const chkValue = e.target.value.split("_");
 
     const newGame = { gameName: chkValue[0], gameClass: chkValue[1] };
@@ -135,11 +149,34 @@ const CupJoin = () => {
     setPlayerJoinGames((prev) => (prev = dummy));
   };
 
+  const handleEnd = () => {
+    // const cupDatas = JSON.parse(localStorage.getItem("newCup"));
+    // cupDatas !== undefined && setCupData((prev) => (prev = cupDatas));
+    //addCupData(cupDatas);
+  };
+
+  const saveJoinCup = async (datas) => {
+    await addDoc(collection(db, "cupsjoin"), { ...datas }).then((addDoc) =>
+      console.log(addDoc.id)
+    );
+  };
+
+  const handleOpenModal = ({ component }) => {
+    setModal(() => true);
+    setModalComponent((prev) => (prev = component));
+  };
+
+  const handleCloseModal = () => {
+    setModal(() => false);
+  };
   useMemo(() => getCup(), []);
   useMemo(() => console.log(cupData), [cupData]);
   useMemo(() => {
     console.log(playerJoinGames);
   }, [playerJoinGames]);
+  useMemo(() => {
+    console.log(chkValue);
+  }, [chkValue]);
   useMemo(
     () =>
       console.log(
@@ -160,6 +197,10 @@ const CupJoin = () => {
         style={{ maxWidth: "420px" }}
       >
         <Header title="참가신청" />
+        <Modal open={modal} onClose={handleCloseModal}>
+          <div className="flex w-full">{modalComponent}</div>
+        </Modal>
+
         <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-slate-100 px-2">
           <div className="flex flex-col w-full gap-y-5 mt-5 mb-5">
             <div className="flex w-full h-full flex-col bg-white rounded-lg shadow-sm p-4 gap-y-1">
@@ -339,6 +380,12 @@ const CupJoin = () => {
                 <span className="text-sm font-light">
                   신중한 선택 부탁드립니다.
                 </span>
+                <button
+                  className="text-sm font-light"
+                  onClick={() => refreshCheck()}
+                >
+                  선택초기화
+                </button>
               </div>
               <div className="flex w-full items-start justify-center p-4 flex-col gap-y-2">
                 {cupData.gamesCategory.length > 0 &&
@@ -358,19 +405,16 @@ const CupJoin = () => {
                           <div className="flex w-full mt-1 flex-wrap">
                             {game.class.length > 0 &&
                               game.class.map((item, iIdx) => {
-                                const chkValue = playerJoinGames.some(
-                                  (chkItem) =>
-                                    chkItem.gameName === game.title &&
-                                    chkItem.gameClass === item.title
-                                );
-                                //setChkValue((prev) => (prev = chkValue));
+                                let chk;
+                                playerJoinGames.length === 0 && (chk = false);
                                 return game.title !== "학생부" ? (
                                   game.title !== "장년부" ? (
                                     game.title !== "마스터즈" ? (
                                       <div className="flex mr-4">
                                         <input
-                                          type="checkbox"
+                                          type="radio"
                                           name={game.title + "_"}
+                                          checked={chk}
                                           value={game.title + "_" + item.title}
                                           id={game.title + "_" + item.title}
                                           onChange={(e) => {
@@ -392,7 +436,7 @@ const CupJoin = () => {
                                   ) : playerAge >= 40 && playerAge < 49 ? (
                                     <div className="flex mr-4">
                                       <input
-                                        type="checkbox"
+                                        type="radio"
                                         name={game.title + "_"}
                                         value={game.title + "_" + item.title}
                                         id={game.title + "_" + item.title}
@@ -413,7 +457,7 @@ const CupJoin = () => {
                                 ) : playerAge > 0 && playerAge < 20 ? (
                                   <div className="flex mr-4">
                                     <input
-                                      type="checkbox"
+                                      type="radio"
                                       name={game.title + "_"}
                                       value={game.title + "_" + item.title}
                                       id={game.title + "_" + item.title}
@@ -436,6 +480,46 @@ const CupJoin = () => {
                         </div>
                       );
                     })}
+              </div>
+            </div>
+            <div className="flex w-full h-full flex-col bg-white rounded-lg shadow-sm p-4 gap-y-1">
+              <span className="text-md">개인정보수집동의</span>
+              <div className="flex w-full justify-between">
+                <label className="flex justify-start items-center align-middle">
+                  <input
+                    type="checkbox"
+                    name="m2Apply"
+                    value="m2Apply"
+                    className="mr-2"
+                  />
+                  <span className="text-gray-500 mr-1">[필수]</span>
+                  개인정보 수집 및 이용 동의
+                </label>
+                <button>
+                  <span className="font-bold">
+                    <FontAwesomeIcon icon={faArrowRight} />
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div className="flex w-full h-full ">
+              <div className="flex w-full justify-center items'">
+                <button
+                  className="flex w-3/4 bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
+                  onClick={() =>
+                    handleOpenModal({
+                      component: (
+                        <JoinCupConfirm
+                          cupData={cupData}
+                          jonGames={playerJoinGames}
+                          prevSetModal={setModal}
+                        />
+                      ),
+                    })
+                  }
+                >
+                  <span className="font-bold text-white text-lg">참가신청</span>
+                </button>
               </div>
             </div>
           </div>
