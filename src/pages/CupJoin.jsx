@@ -511,7 +511,7 @@ const CupJoin = () => {
                       component: (
                         <JoinCupConfirm
                           cupData={cupData}
-                          jonGames={playerJoinGames}
+                          joinGames={playerJoinGames}
                           prevSetModal={setModal}
                         />
                       ),

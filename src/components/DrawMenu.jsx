@@ -2,8 +2,17 @@ import React from "react";
 import { DEFAULT_AVATAR } from "../consts";
 import QrGenerator from "./QrGenerator";
 import { IoLogOutOutline, IoCloseOutline } from "react-icons/io5";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const DrawMenu = ({ setOpen }) => {
+  const navigate = useNavigate();
+  const { dispatch } = useContext(AuthContext);
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    navigate("/");
+  };
   return (
     <div className="flex w-full h-full flex-col">
       <div className="flex w-full justify-end px-2 h-10">
@@ -29,7 +38,12 @@ const DrawMenu = ({ setOpen }) => {
                 </span>
               </div>
               <div className="flex w-1/2 justify-end mr-3">
-                <span className="text-gray-500">로그아웃</span>
+                <button
+                  className="text-gray-500"
+                  onClick={() => handleLogout()}
+                >
+                  로그아웃
+                </button>
               </div>
             </div>
           </div>
