@@ -1,76 +1,80 @@
-import React from "react";
+import React, { useContext } from "react";
 import { DEFAULT_AVATAR } from "../consts";
 
 import { ResponsiveRadar } from "@nivo/radar";
 import BottomMenu from "../components/BottomMenu";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+
+const data = [
+  {
+    point: "신체",
+    내점수: 70,
+    평균: 104,
+  },
+  {
+    point: "예술",
+    내점수: 45,
+    평균: 67,
+  },
+  {
+    point: "독창",
+    내점수: 88,
+    평균: 44,
+  },
+  {
+    point: "규정",
+    내점수: 86,
+    평균: 112,
+  },
+  {
+    point: "의상",
+    내점수: 110,
+    평균: 81,
+  },
+];
+const MyResponsiveRadar = ({ data /* see data tab */ }) => (
+  <ResponsiveRadar
+    data={data}
+    keys={["평균", "내점수"]}
+    indexBy="point"
+    valueFormat=">-.2f"
+    margin={{ top: 70, right: 80, bottom: 40, left: 80 }}
+    borderColor={["#f1f1f1"]}
+    borderWidth={1}
+    gridLabelOffset={36}
+    dotSize={10}
+    dotColor={["#fff"]}
+    dotBorderWidth={1}
+    colors={["#cfcfcf", "#e9ad08"]}
+    motionConfig="wobbly"
+    legends={[
+      {
+        anchor: "top-left",
+        direction: "column",
+        translateX: -50,
+        translateY: -40,
+        itemWidth: 80,
+        itemHeight: 20,
+        itemTextColor: "#999",
+        symbolSize: 12,
+        symbolShape: "circle",
+        effects: [
+          {
+            on: "hover",
+            style: {
+              itemTextColor: "#000",
+            },
+          },
+        ],
+      },
+    ]}
+  />
+);
 
 const Home = () => {
-  const data = [
-    {
-      point: "신체",
-      내점수: 70,
-      평균: 104,
-    },
-    {
-      point: "예술",
-      내점수: 45,
-      평균: 67,
-    },
-    {
-      point: "독창",
-      내점수: 88,
-      평균: 44,
-    },
-    {
-      point: "규정",
-      내점수: 86,
-      평균: 112,
-    },
-    {
-      point: "의상",
-      내점수: 110,
-      평균: 81,
-    },
-  ];
-  const MyResponsiveRadar = ({ data /* see data tab */ }) => (
-    <ResponsiveRadar
-      data={data}
-      keys={["평균", "내점수"]}
-      indexBy="point"
-      valueFormat=">-.2f"
-      margin={{ top: 70, right: 80, bottom: 40, left: 80 }}
-      borderColor={["#f1f1f1"]}
-      borderWidth={1}
-      gridLabelOffset={36}
-      dotSize={10}
-      dotColor={["#fff"]}
-      dotBorderWidth={1}
-      colors={["#cfcfcf", "#e9ad08"]}
-      motionConfig="wobbly"
-      legends={[
-        {
-          anchor: "top-left",
-          direction: "column",
-          translateX: -50,
-          translateY: -40,
-          itemWidth: 80,
-          itemHeight: 20,
-          itemTextColor: "#999",
-          symbolSize: 12,
-          symbolShape: "circle",
-          effects: [
-            {
-              on: "hover",
-              style: {
-                itemTextColor: "#000",
-              },
-            },
-          ],
-        },
-      ]}
-    />
-  );
+  const { currentUser } = useContext(AuthContext);
+  console.log(currentUser);
   return (
     <div className="flex justify-center items-start align-top bg-slate-100">
       <BottomMenu />
@@ -84,11 +88,11 @@ const Home = () => {
         <div className="flex w-full justify-between">
           <div className="flex w-1/2 h-full justify-start flex-col gap-y-3 mt-6">
             <p className="text-3xl font-light">Hi~</p>
-            <p className="text-2xl font-base">김진배 선수님</p>
+            <p className="text-2xl font-base">{currentUser.pName} 선수님</p>
           </div>
           <div className="flex w-1/2 justify-end">
             <div className="flex">
-              <img src={DEFAULT_AVATAR} className="rounded-full w-32" />
+              <img src={DEFAULT_AVATAR} className="rounded-full w-32 h-32" />
             </div>
           </div>
         </div>

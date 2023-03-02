@@ -8,10 +8,12 @@ import Career from "./pages/Career";
 import CareerView from "./pages/CareerView";
 import CupJoin from "./pages/CupJoin";
 import CupList from "./pages/CupList";
+import EditProfile from "./pages/EditProfile";
 import Feed from "./pages/Feed";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import LoginError from "./pages/LoginError";
+import MyProfile from "./pages/MyProfile";
 import QrFull from "./pages/QrFull";
 import Register from "./pages/Register";
 import RegisterSuccess from "./pages/RegisterSuccess";
@@ -100,6 +102,22 @@ function App() {
           element={
             <RequireAuth>
               <CupJoin />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/myprofile"
+          element={
+            <RequireAuth>
+              <MyProfile />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/editprofile"
+          element={
+            <RequireAuth>
+              <EditProfile />
             </RequireAuth>
           }
         />

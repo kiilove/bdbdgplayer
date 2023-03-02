@@ -25,7 +25,10 @@ const DrawMenu = ({ setOpen }) => {
       <div className="flex w-full px-1">
         <div className="flex w-1/3 justify-start items-center align-middle flex-col">
           <img src={DEFAULT_AVATAR} className="rounded-full w-16 h-16" />
-          <button className="bg-orange-400 rounded-md px-2 py-1 flex justify-center items-center mt-2">
+          <button
+            className="bg-orange-400 rounded-md px-2 py-1 flex justify-center items-center mt-2"
+            onClick={() => navigate("/myprofile")}
+          >
             <span className="text-xs text-white">프로필설정</span>
           </button>
         </div>
