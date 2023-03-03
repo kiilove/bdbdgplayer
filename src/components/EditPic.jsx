@@ -4,12 +4,12 @@ import { AuthContext } from "../context/AuthContext";
 
 import { BsPenFill, BsFillCameraFill } from "react-icons/bs";
 import { DEFAULT_AVATAR } from "../consts";
-import { storage } from "../firebase";
+import { db, storage } from "../firebase";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useState } from "react";
 import { useMemo } from "react";
-import { async } from "@firebase/util";
-import { useCallback } from "react";
+import { doc, setDoc } from "firebase/firestore";
+import { PlayerEditContext } from "../context/PlayerContext";
 
 const makeFileName = (filename, salt) => {
   const currentDate = new Date();
@@ -19,21 +19,18 @@ const makeFileName = (filename, salt) => {
 };
 
 const EditPic = ({}) => {
-  const { currentUser, dispatch } = useContext(AuthContext);
-  const [playerInfo, setPlayerInfo] = useState({ ...currentUser });
+  const { userInfo } = useContext(AuthContext);
+  const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const [playerInfo, setPlayerInfo] = useState({ ...pInfo });
   const [files, setFiles] = useState([]);
   const [downloadURLs, setDownloadURLs] = useState([
     { link: "", filename: "" },
   ]);
-  const [profileTitle, setProfileTitle] = useState({
-    link: "",
-    filename: "",
-  });
 
-  const uploadFiles = (files, path) => {
+  const uploadFiles = async (files, path) => {
     let dummy = [];
 
-    const promises = files.map((file) => {
+    const promises = await files.map((file) => {
       const filename = makeFileName(file.name, "P");
       const storageRef = ref(storage, `${path}/${filename}`);
 
@@ -67,39 +64,37 @@ const EditPic = ({}) => {
     Promise.all(promises);
   };
 
-  const handleFileSelect = (e) => {
-    //e.preventDefault();
-    const path = `images/player/${currentUser.playerUid}`;
+  const handleFileSelect = async (e) => {
+    e.preventDefault();
+    const path = `images/player/${userInfo.playerUid}`;
     setFiles((prev) => (prev = Array.prototype.slice.call(e.target.files)));
 
-    uploadFiles(Array.prototype.slice.call(e.target.files), path);
+    await uploadFiles(Array.prototype.slice.call(e.target.files), path);
   };
 
-  const updateStatePromise = () => {
-    const promises = [
-      setProfileTitle((prev) => ({
-        ...prev,
-        link: downloadURLs[0].link,
-        filename: downloadURLs[0].filename,
-      })),
-      setPlayerInfo((prev) => ({ ...prev, pPic: downloadURLs[0].link })),
-    ];
-
-    Promise.all(promises);
+  const updatePlayerPic = async (data) => {
+    console.log(data);
+    await setDoc(
+      doc(db, "player", userInfo.id),
+      { ...data },
+      { merge: true }
+    ).then(() => {
+      console.log("업데이트 완료");
+    });
   };
 
-  const handleContextUpdate = () => {
-    const promises = [dispatch({ type: "profileEdit", payload: playerInfo })];
-    Promise.all(promises);
-  };
-  // const handleUpdate = async () => {
-  //   // await dispatch({ type: "profileEdit", payload: playerInfo }).then(() => {
-  //   //   setPlayerInfo((prev) => ({ ...prev, pPic: downloadURLs[0].link }));
-  //   // });
-  //   const profileUpdate =
-  // };
-  useMemo(() => updateStatePromise(), [downloadURLs]);
-  useMemo(() => handleContextUpdate(), [playerInfo]);
+  useMemo(() => {
+    if (downloadURLs[0].link !== (undefined || null || "")) {
+      setPlayerInfo((prev) => ({ ...prev, pPic: downloadURLs[0].link }));
+    }
+  }, [downloadURLs]);
+  useMemo(() => {
+    console.log(playerInfo);
+    if (playerInfo.pPic !== ("" || undefined || null)) {
+      updatePlayerPic(playerInfo);
+      editDispatch({ type: "EDIT", payload: playerInfo });
+    }
+  }, [playerInfo.pPic]);
 
   return (
     <div
@@ -112,11 +107,14 @@ const EditPic = ({}) => {
             <label htmlFor="playerPic">
               <div className="flex h-full w-full justify-center items-center">
                 <img
-                  src={(currentUser.pPic && currentUser.pPic) || DEFAULT_AVATAR}
-                  className="rounded-3xl w-24 h-24"
+                  src={
+                    (pInfo.pPic !== null || undefined || "") &&
+                    (pInfo.pPic || DEFAULT_AVATAR)
+                  }
+                  className="rounded-3xl w-32 h-32"
                 />
               </div>
-              <div className="flex w-7 h-7 rounded-xl relative -top-7 left-52 bg-white shadow justify-center items-center">
+              <div className="flex w-7 h-7 rounded-xl relative -top-6 left-56 bg-white shadow-md border justify-center items-center">
                 <BsFillCameraFill className="text-gray-600" />
               </div>
               <input

@@ -1,11 +1,15 @@
 import React from "react";
 import { RxArrowLeft } from "react-icons/rx";
 
-const Header = ({ title, banner }) => {
+const Header = ({ title, banner, bgColor }) => {
   return (
     <div className="block top-0 sticky w-full h-full z-10 ">
       <div className="flex w-full h-full justify-center items-center flex-col">
-        <div className="flex w-full h-14 justify-center items-center bg-white">
+        <div
+          className={`flex w-full h-14 justify-center items-center ${
+            bgColor ? bgColor : "bg-white"
+          }`}
+        >
           <div className="flex h-10 w-10 justify-start items-center ml-2">
             <button onClick={() => window.history.back()}>
               <RxArrowLeft className=" text-2xl font-semibold" />

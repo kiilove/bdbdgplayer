@@ -4,7 +4,7 @@ import { createContext } from "react";
 import { AuthReducer } from "./AuthReducer";
 
 const INITIAL_STATE = {
-  currentUser: JSON.parse(sessionStorage.getItem("playerUser")),
+  userInfo: JSON.parse(localStorage.getItem("userInfo")),
 };
 
 export const AuthContext = createContext(INITIAL_STATE);
@@ -13,11 +13,11 @@ export const AuthContextProvider = ({ children }) => {
   //console.log(state);
   useMemo(() => {
     //console.log("memo", state);
-    sessionStorage.setItem("playerUser", JSON.stringify(state.currentUser));
-  }, [state.currentUser]);
+    localStorage.setItem("userInfo", JSON.stringify(state.userInfo));
+  }, [state.userInfo]);
 
   return (
-    <AuthContext.Provider value={{ currentUser: state.currentUser, dispatch }}>
+    <AuthContext.Provider value={{ userInfo: state.userInfo, dispatch }}>
       {children}
     </AuthContext.Provider>
   );

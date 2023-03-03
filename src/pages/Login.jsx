@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { PlayerEditContext } from "../context/PlayerContext";
 import { db } from "../firebase";
 
 const Login = () => {
@@ -17,6 +18,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const { dispatch } = useContext(AuthContext);
+  const { pInfo, editDispatch } = useContext(PlayerEditContext);
 
   const getPlayerProfile = async (pUid) => {
     console.log(pUid);
@@ -30,7 +32,7 @@ const Login = () => {
       querySnapshot.forEach(
         (doc) => (playerProfile = { id: doc.id, ...doc.data() })
       );
-      //console.log(playerProfile);
+      console.log(playerProfile);
     } catch (error) {
       console.log(error);
     }
@@ -83,7 +85,26 @@ const Login = () => {
       .then((profile) => {
         //console.log(profile);
         console.log(window.navigator.userAgent);
-        dispatch({ type: "LOGIN", payload: profile });
+        dispatch({
+          type: "LOGIN",
+          payload: { id: profile.id, pUid: profile.playerUid },
+        });
+        return profile;
+      })
+      .then((profile) => {
+        console.log(profile);
+        editDispatch({
+          type: "EDIT",
+          payload: {
+            pName: profile.pName,
+            pEmail: profile.pEmail,
+            pTel: profile.pTel || "",
+            pPic: profile.pPic || "",
+            pNick: profile.pNick || "",
+            pGender: profile.gender || "",
+            pBirth: profile.pBirth || "",
+          },
+        });
       })
       .then(() => navigate("/"))
       .catch((error) => {

@@ -5,6 +5,7 @@ import { ResponsiveRadar } from "@nivo/radar";
 import BottomMenu from "../components/BottomMenu";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { PlayerEditContext } from "../context/PlayerContext";
 
 const data = [
   {
@@ -73,8 +74,10 @@ const MyResponsiveRadar = ({ data /* see data tab */ }) => (
 );
 
 const Home = () => {
-  const { currentUser } = useContext(AuthContext);
-  console.log(currentUser);
+  const { userInfo } = useContext(AuthContext);
+  const { pInfo } = useContext(PlayerEditContext);
+
+  //console.log(userInfo);
   return (
     <div className="flex justify-center items-start align-top bg-slate-100">
       <BottomMenu />
@@ -88,11 +91,19 @@ const Home = () => {
         <div className="flex w-full justify-between">
           <div className="flex w-1/2 h-full justify-start flex-col gap-y-3 mt-6">
             <p className="text-3xl font-light">Hi~</p>
-            <p className="text-2xl font-base">{currentUser.pName} 선수님</p>
+            <p className="text-2xl font-base">
+              {pInfo.pNick ? pInfo.pNick : pInfo.pName} 님
+            </p>
           </div>
           <div className="flex w-1/2 justify-end">
             <div className="flex">
-              <img src={DEFAULT_AVATAR} className="rounded-full w-32 h-32" />
+              <img
+                src={
+                  (pInfo.pPic !== null || undefined || "") &&
+                  (pInfo.pPic || DEFAULT_AVATAR)
+                }
+                className="rounded-full w-32 h-32"
+              />
             </div>
           </div>
         </div>

@@ -20,9 +20,9 @@ import RegisterSuccess from "./pages/RegisterSuccess";
 import RegisterWithEmail from "./pages/RegisterWithEmail";
 
 function App() {
-  const { currentUser } = useContext(AuthContext);
+  const { userInfo } = useContext(AuthContext);
   const RequireAuth = ({ children }) => {
-    return currentUser ? children : <Navigate to="/login" />;
+    return userInfo ? children : <Navigate to="/login" />;
   };
   return (
     <BrowserRouter>

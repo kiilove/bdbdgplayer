@@ -1,14 +1,118 @@
-import React, { useContext } from "react";
+import React from "react";
 import BottomMenu from "../components/BottomMenu";
-import Header from "../components/Header";
-import { DEFAULT_AVATAR } from "../consts";
+import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { RxPencil1 } from "react-icons/rx";
+
 import { BsPenFill, BsFillCameraFill } from "react-icons/bs";
+import { DEFAULT_AVATAR } from "../consts";
+import { db, storage } from "../firebase";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { useState } from "react";
+import { useMemo } from "react";
+import { doc, setDoc } from "firebase/firestore";
+import { PlayerEditContext } from "../context/PlayerContext";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import { useCallback } from "react";
+
+const makeFileName = (filename, salt) => {
+  const currentDate = new Date();
+  const currentTime = currentDate.getTime();
+  const prevFilename = filename.split(".");
+  return String(salt).toUpperCase() + currentTime + "." + prevFilename[1];
+};
+
 const MyProfile = () => {
-  const { currentUser } = useContext(AuthContext);
+  const { userInfo } = useContext(AuthContext);
+  const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const [playerInfo, setPlayerInfo] = useState({ ...pInfo });
+  const [files, setFiles] = useState([]);
+  const [downloadURLs, setDownloadURLs] = useState([
+    { link: "", filename: "" },
+  ]);
   const navigate = useNavigate();
+
+  const uploadFiles = async (files, path) => {
+    let dummy = [];
+
+    const promises = await files.map((file) => {
+      const filename = makeFileName(file.name, "P");
+      const storageRef = ref(storage, `${path}/${filename}`);
+
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+        },
+        (error) => {
+          console.error(error);
+        },
+        async () => {
+          await getDownloadURL(uploadTask.snapshot.ref)
+            .then((downloadURL) => {
+              dummy.push({ link: downloadURL, filename });
+              return dummy;
+            })
+            .then((dummy) => {
+              setDownloadURLs(() => [...dummy]);
+            });
+        }
+      );
+
+      return uploadTask;
+    });
+
+    Promise.all(promises);
+  };
+
+  const handleFileSelect = async (e) => {
+    e.preventDefault();
+    const path = `images/player/${userInfo.pUid}`;
+    setFiles((prev) => (prev = Array.prototype.slice.call(e.target.files)));
+
+    await uploadFiles(Array.prototype.slice.call(e.target.files), path);
+  };
+
+  const updatePlayerPic = async (data) => {
+    await setDoc(
+      doc(db, "player", userInfo.id),
+      { ...data },
+      { merge: true }
+    ).then(() => {
+      console.log("업데이트 완료");
+    });
+  };
+
+  const updatePlayer = useCallback(
+    async (data) => {
+      await setDoc(
+        doc(db, "player", userInfo.id),
+        { ...data },
+        { merge: true }
+      ).then(() => {
+        console.log("업데이트 완료");
+      });
+    },
+    [playerInfo.pPic]
+  );
+
+  useMemo(() => {
+    if (downloadURLs[0].link !== (undefined || null || "")) {
+      setPlayerInfo((prev) => ({ ...prev, pPic: downloadURLs[0].link }));
+    }
+  }, [downloadURLs]);
+  useMemo(() => {
+    console.log(playerInfo);
+    if (playerInfo.pPic !== ("" || undefined || null)) {
+      updatePlayer(playerInfo);
+      editDispatch({ type: "EDIT", payload: playerInfo });
+    }
+  }, [playerInfo.pPic]);
+
   return (
     <div className="flex justify-center items-start align-top bg-white">
       <BottomMenu />
@@ -20,42 +124,94 @@ const MyProfile = () => {
         <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white px-2">
           <div className="flex flex-col w-full mt-5 mb-5">
             <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">
-              <button
-                className="flex h-full w-full justify-center items-center"
-                onClick={() =>
-                  navigate("/editprofile", { state: { editType: "pPic" } })
-                }
-              >
-                <img src={DEFAULT_AVATAR} className="rounded-3xl w-24 h-24" />
-              </button>
-              <button className="flex w-7 h-7 rounded-xl relative -top-7 left-52 bg-white shadow justify-center items-center">
-                <BsFillCameraFill className="text-gray-600" />
-              </button>
+              <label htmlFor="playerPic">
+                <div className="flex h-full w-full justify-center items-center cursor-pointer">
+                  <img
+                    src={
+                      (pInfo.pPic !== null || undefined || "") &&
+                      (pInfo.pPic || DEFAULT_AVATAR)
+                    }
+                    className="rounded-3xl w-32 h-32"
+                  />
+                </div>
+                <div className="flex w-7 h-7 rounded-xl relative -top-6 left-56 bg-white shadow-md border justify-center items-center">
+                  <BsFillCameraFill className="text-gray-600" />
+                </div>
+                <input
+                  name="playerPic"
+                  id="playerPic"
+                  type="file"
+                  files={files}
+                  className="hidden"
+                  onChange={(e) => handleFileSelect(e)}
+                />
+              </label>
             </div>
-            <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">
+            <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b">
               <span className="text-sm">실명</span>
               <span className="text-sm font-light text-gray-400">
-                {currentUser.pName || "실명 확인이 필요합니다."}
+                {pInfo.pName || "실명 확인이 필요합니다."}
               </span>
             </div>
-            <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">
+            <button
+              className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
+              onClick={() =>
+                navigate("/editprofile", { state: { editType: "pTel" } })
+              }
+            >
               <span className="text-sm">전화번호</span>
               <span className="text-sm font-light text-gray-400">
-                {currentUser.pTel || "전화번호 입력이 필요합니다."}
+                {pInfo.pTel || "전화번호 입력이 필요합니다."}
               </span>
-            </div>
-            <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">
+            </button>
+            <button
+              className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
+              onClick={() =>
+                navigate("/editprofile", { state: { editType: "pEmail" } })
+              }
+            >
               <span className="text-sm">이메일</span>
               <span className="text-sm font-light text-gray-400">
-                {currentUser.pEmail || "이메일 확인이 필요합니다."}
+                {pInfo.pEmail || "이메일 확인이 필요합니다."}
               </span>
-            </div>
-            <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">
+            </button>
+            <button
+              className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
+              onClick={() =>
+                navigate("/editprofile", { state: { editType: "pNick" } })
+              }
+            >
               <span className="text-sm">닉네임</span>
               <span className="text-sm font-light text-gray-400">
-                {currentUser.pNick || "닉네임을 설정할 수 있습니다."}
+                {pInfo.pNick || "닉네임을 설정할 수 있습니다."}
               </span>
-            </div>
+            </button>
+            <button
+              className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
+              onClick={() =>
+                navigate("/editprofile", { state: { editType: "pBirth" } })
+              }
+            >
+              <span className="text-sm">생년월일</span>
+              <span className="text-sm font-light text-gray-400">
+                {pInfo.pBirth || "연령에 따라 참가가능 종목을 추천해드립니다."}
+              </span>
+            </button>
+            <button
+              className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
+              onClick={() =>
+                navigate("/editprofile", { state: { editType: "pGender" } })
+              }
+            >
+              <span className="text-sm">성별</span>
+              <span className="text-sm font-light text-gray-400">
+                {pInfo.pGender
+                  ? pInfo.pGender === "m"
+                    ? "남자"
+                    : "여자"
+                  : "성별에 따라 참가가능 종목을 추천해드립니다."}
+              </span>
+            </button>
           </div>
         </div>
       </div>

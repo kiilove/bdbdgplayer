@@ -7,9 +7,15 @@ import { RxPencil1 } from "react-icons/rx";
 import { BsPenFill, BsFillCameraFill } from "react-icons/bs";
 import { useLocation } from "react-router-dom";
 import EditPic from "../components/EditPic";
+import { PlayerEditContext } from "../context/PlayerContext";
+import EditTel from "../components/EditTel";
+import EditEmail from "../components/EditEmail";
+import EditNick from "../components/EditNick";
+import EditBirth from "../components/EditBirth";
 
 const EditProfile = () => {
-  const { currentUser } = useContext(AuthContext);
+  const { userInfo } = useContext(AuthContext);
+  const { pInfo } = useContext(PlayerEditContext);
   const location = useLocation();
   let initInfo = { headerTitle: "" };
   switch (location.state.editType) {
@@ -21,10 +27,32 @@ const EditProfile = () => {
       };
       break;
     case "pTel":
-      initInfo = { ...initInfo, headerTitle: "전화번호" };
+      initInfo = {
+        ...initInfo,
+        headerTitle: "전화번호 변경",
+        component: <EditTel />,
+      };
+      break;
+    case "pEmail":
+      initInfo = {
+        ...initInfo,
+        headerTitle: "이메일 변경",
+        component: <EditEmail />,
+      };
       break;
     case "pNick":
-      initInfo = { ...initInfo, headerTitle: "닉네임" };
+      initInfo = {
+        ...initInfo,
+        headerTitle: "닉네임",
+        component: <EditNick />,
+      };
+      break;
+    case "pBirth":
+      initInfo = {
+        ...initInfo,
+        headerTitle: "생년월일",
+        component: <EditBirth />,
+      };
       break;
     default:
   }
@@ -32,7 +60,7 @@ const EditProfile = () => {
     <div className="flex justify-center items-start align-top bg-white">
       <BottomMenu />
       <div
-        className="flex w-full h-full justify-center items-start align-top bg-slate-100 flex-col mb-32"
+        className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-32"
         style={{ maxWidth: "420px" }}
       >
         <Header title={initInfo.headerTitle} />
