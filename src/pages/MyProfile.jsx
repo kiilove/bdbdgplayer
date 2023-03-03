@@ -14,6 +14,7 @@ import { PlayerEditContext } from "../context/PlayerContext";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useCallback } from "react";
+import { ColorRing, RotatingLines } from "react-loader-spinner";
 
 const makeFileName = (filename, salt) => {
   const currentDate = new Date();
@@ -27,6 +28,7 @@ const MyProfile = () => {
   const { pInfo, editDispatch } = useContext(PlayerEditContext);
   const [playerInfo, setPlayerInfo] = useState({ ...pInfo });
   const [files, setFiles] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [downloadURLs, setDownloadURLs] = useState([
     { link: "", filename: "" },
   ]);
@@ -34,6 +36,7 @@ const MyProfile = () => {
 
   const uploadFiles = async (files, path) => {
     let dummy = [];
+    setIsLoading(true);
 
     const promises = await files.map((file) => {
       const filename = makeFileName(file.name, "P");
@@ -89,13 +92,11 @@ const MyProfile = () => {
 
   const updatePlayer = useCallback(
     async (data) => {
-      await setDoc(
-        doc(db, "player", userInfo.id),
-        { ...data },
-        { merge: true }
-      ).then(() => {
-        console.log("업데이트 완료");
-      });
+      await setDoc(doc(db, "player", userInfo.id), { ...data }, { merge: true })
+        .then(() => setIsLoading(false))
+        .then(() => {
+          console.log("업데이트 완료");
+        });
     },
     [playerInfo.pPic]
   );
@@ -120,6 +121,24 @@ const MyProfile = () => {
         className="flex w-full h-full justify-center items-start align-top bg-slate-100 flex-col mb-32"
         style={{ maxWidth: "420px" }}
       >
+        <div
+          className={`absolute top-0 left-1/2 w-full h-screen border-0 px-10 py-3 outline-none flex flex-col z-50 justify-center items-center ${
+            !isLoading && "hidden"
+          }`}
+          style={{
+            backgroundColor: "rgba(123, 124, 129, 0.4)",
+            maxWidth: "420px",
+            transform: "translate(-50%, 0%)",
+          }}
+        >
+          <RotatingLines
+            strokeColor="white"
+            strokeWidth="5"
+            animationDuration="0.75"
+            width="96"
+            visible={true}
+          />
+        </div>
         <Header title="내 프로필" />
         <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white px-2">
           <div className="flex flex-col w-full mt-5 mb-5">
@@ -148,11 +167,23 @@ const MyProfile = () => {
               </label>
             </div>
             <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b">
-              <span className="text-sm">실명</span>
+              <span className="text-sm">실명(변경불가)</span>
               <span className="text-sm font-light text-gray-400">
                 {pInfo.pName || "실명 확인이 필요합니다."}
               </span>
             </div>
+            <button
+              disabled
+              className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
+              // onClick={() =>
+              //   navigate("/editprofile", { state: { editType: "pEmail" } })
+              // }
+            >
+              <span className="text-sm">이메일(변경불가)</span>
+              <span className="text-sm font-light text-gray-400">
+                {pInfo.pEmail || "이메일 확인이 필요합니다."}
+              </span>
+            </button>
             <button
               className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
               onClick={() =>
@@ -164,17 +195,7 @@ const MyProfile = () => {
                 {pInfo.pTel || "전화번호 입력이 필요합니다."}
               </span>
             </button>
-            <button
-              className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
-              onClick={() =>
-                navigate("/editprofile", { state: { editType: "pEmail" } })
-              }
-            >
-              <span className="text-sm">이메일</span>
-              <span className="text-sm font-light text-gray-400">
-                {pInfo.pEmail || "이메일 확인이 필요합니다."}
-              </span>
-            </button>
+
             <button
               className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
               onClick={() =>

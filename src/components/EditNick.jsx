@@ -3,6 +3,7 @@ import React from "react";
 import { useState } from "react";
 import { useRef } from "react";
 import { useContext } from "react";
+import { RotatingLines } from "react-loader-spinner";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
 import { db } from "../firebase";
@@ -10,18 +11,21 @@ import { db } from "../firebase";
 const EditNick = () => {
   const { userInfo } = useContext(AuthContext);
   const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [pNick, setPNick] = useState("");
   const [nickValidate, setNickValidate] = useState(false);
   const pNickRef = useRef();
 
   const updatePlayer = async (data) => {
+    setIsLoading(true);
     await setDoc(doc(db, "player", userInfo.id), { ...data }, { merge: true })
       .then(() => {
         if (pNick !== ("" || undefined || null)) {
           editDispatch({ type: "EDIT", payload: data });
         }
       })
+      .then(() => setIsLoading(false))
       .then(() => setNickValidate(false))
       .then(() => {
         console.log("업데이트 완료");
@@ -43,6 +47,24 @@ const EditNick = () => {
       className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-32"
       style={{ maxWidth: "420px" }}
     >
+      <div
+        className={`absolute top-0 left-1/2 w-full h-screen border-0 px-10 py-3 outline-none flex flex-col z-50 justify-center items-center ${
+          !isLoading && "hidden"
+        }`}
+        style={{
+          backgroundColor: "rgba(123, 124, 129, 0.4)",
+          maxWidth: "420px",
+          transform: "translate(-50%, 0%)",
+        }}
+      >
+        <RotatingLines
+          strokeColor="white"
+          strokeWidth="5"
+          animationDuration="0.75"
+          width="96"
+          visible={true}
+        />
+      </div>
       <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white px-2">
         <div className="flex flex-col w-full h-full mt-5 mb-5">
           <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">

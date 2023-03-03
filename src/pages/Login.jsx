@@ -4,13 +4,14 @@ import React from "react";
 import { useRef } from "react";
 import { useContext } from "react";
 import { useState } from "react";
+import { RotatingLines } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
 import { db } from "../firebase";
 
 const Login = () => {
-  const [loginInfo, setLoginInfo] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const [loginUSer, setLoginUser] = useState({});
 
   const loginEmailRef = useRef();
@@ -62,6 +63,7 @@ const Login = () => {
     });
   };
   const handleLogin = async () => {
+    setIsLoading(true);
     await getPlayerEmail().then((result) =>
       result
         ? playerLogin()
@@ -84,7 +86,7 @@ const Login = () => {
       })
       .then((profile) => {
         //console.log(profile);
-        console.log(window.navigator.userAgent);
+        //console.log(window.navigator.userAgent);
         dispatch({
           type: "LOGIN",
           payload: { id: profile.id, pUid: profile.playerUid },
@@ -92,7 +94,7 @@ const Login = () => {
         return profile;
       })
       .then((profile) => {
-        console.log(profile);
+        //console.log(profile);
         editDispatch({
           type: "EDIT",
           payload: {
@@ -106,6 +108,7 @@ const Login = () => {
           },
         });
       })
+      .then(() => setIsLoading(false))
       .then(() => navigate("/"))
       .catch((error) => {
         const errorCode = error.code;
@@ -121,6 +124,23 @@ const Login = () => {
   return (
     <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">
       <div className="flex w-full flex-col items-center">
+        <div
+          className={`absolute top-0 left-1/2 w-full h-screen bg-orange-600 border-0 px-10 py-3 outline-none flex flex-col z-50 justify-center items-center ${
+            !isLoading && "hidden"
+          }`}
+          style={{
+            maxWidth: "420px",
+            transform: "translate(-50%, 0%)",
+          }}
+        >
+          <RotatingLines
+            strokeColor="white"
+            strokeWidth="5"
+            animationDuration="0.75"
+            width="96"
+            visible={true}
+          />
+        </div>
         <div className="flex w-full justify-center mt-12 flex-col gap-y-1">
           <p className="text-xl flex justify-center items-center h-full">
             대한민국 No.1 피트니스 플랫폼
@@ -134,7 +154,7 @@ const Login = () => {
         </div>
         <div
           className="flex justify-center mt-10 flex-col gap-y-3 px-4 w-full"
-          style={{ maxWidth: "400px" }}
+          style={{ maxWidth: "420px" }}
         >
           {/* <button
             className="w-full h-12 bg-yellow-400 rounded-md border-gray-300 border"
