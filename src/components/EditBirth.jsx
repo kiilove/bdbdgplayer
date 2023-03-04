@@ -1,5 +1,5 @@
+import dayjs from "dayjs";
 import { doc, setDoc } from "firebase/firestore";
-import moment from "moment/moment";
 import React, { useMemo } from "react";
 import { useState } from "react";
 import { useRef } from "react";
@@ -15,7 +15,7 @@ const EditBirth = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [pAge, setPAge] = useState(0);
-  const [pBirth, setPBirth] = useState("");
+  const [pBirth, setPBirth] = useState(pInfo.pBirth || "");
   const [birthValidate, setBirthValidate] = useState(false);
   const pBirthYearRef = useRef();
   const pBirthMonthRef = useRef();
@@ -37,18 +37,18 @@ const EditBirth = () => {
   };
 
   const handleAge = (birth, today) => {
-    const birthDate = moment(birth).format("YYYY-MM-DD");
-    const todayDate = moment(today).format("YYYY-MM-DD");
+    const birthDate = dayjs(birth).format("YYYY-MM-DD");
+    const todayDate = dayjs(today).format("YYYY-MM-DD");
     console.log(todayDate);
 
-    console.log(moment(birthDate).year());
-    console.log(moment(todayDate).year());
-    let age = moment(todayDate).year() - moment(birthDate).year();
-    const month = moment(todayDate).month() - moment(birthDate).month();
+    console.log(dayjs(birthDate).year());
+    console.log(dayjs(todayDate).year());
+    let age = dayjs(todayDate).year() - dayjs(birthDate).year();
+    const month = dayjs(todayDate).month() - dayjs(birthDate).month();
 
     if (
       month < 0 ||
-      (month === 0 && moment(todayDate).day() < moment(birthDate).day())
+      (month === 0 && dayjs(todayDate).day() < dayjs(birthDate).day())
     ) {
       age--;
     }
@@ -59,25 +59,29 @@ const EditBirth = () => {
   const pBirthReg = () => {
     setBirthValidate(true);
     const bYear = pBirthYearRef.current.value;
+
     const bMonth =
       pBirthMonthRef.current.value < 10
-        ? "0" + pBirthMonthRef.current.value
+        ? "0" + Number(pBirthMonthRef.current.value)
         : pBirthMonthRef.current.value;
     const bDay =
       pBirthDayRef.current.value < 10
-        ? "0" + pBirthDayRef.current.value
+        ? "0" + Number(pBirthDayRef.current.value)
         : pBirthDayRef.current.value;
     const birth = bYear + bMonth + bDay;
     const regBirth = birth.replace(/[^0-9]/g, ""); // 숫자를 제외한 모든 문자 제거
 
-    setPBirth((prev) => (prev = regBirth));
+    setPBirth((prev) => (prev = dayjs(regBirth).format("YYYY-MM-DD")));
   };
 
   useMemo(() => {
     const ageResult = handleAge(pBirth, new Date());
     //console.log(ageResult);
     setPAge(ageResult);
+    console.log(pBirth);
   }, [pBirth]);
+
+  useMemo(() => console.log(dayjs(pBirth).get("date")), []);
   return (
     <div
       className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-32"
@@ -119,7 +123,7 @@ const EditBirth = () => {
                   maxLength="4"
                   ref={pBirthYearRef}
                   inputMode="numeric"
-                  placeholder={moment(pInfo.pBirth).year || "생년(4자리)"}
+                  placeholder={dayjs(pInfo.pBirth).year() || "생년(4자리)"}
                   className=" bg-transparent focus:ring-0 outline-none w-full p-3"
                 />
               </div>
@@ -137,7 +141,7 @@ const EditBirth = () => {
                   maxLength="2"
                   ref={pBirthMonthRef}
                   inputMode="numeric"
-                  placeholder={moment(pInfo.pBirth).month || "월"}
+                  placeholder={dayjs(pInfo.pBirth).month() + 1 || "월"}
                   className=" bg-transparent focus:ring-0 outline-none w-full p-3"
                 />
               </div>
@@ -155,7 +159,7 @@ const EditBirth = () => {
                   maxLength="2"
                   ref={pBirthDayRef}
                   inputMode="numeric"
-                  placeholder={moment(pInfo.pBirth).day || "일"}
+                  placeholder={dayjs(pInfo.pBirth).date() || "일"}
                   className=" bg-transparent focus:ring-0 outline-none w-full p-3"
                 />
               </div>

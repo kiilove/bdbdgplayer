@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { RxCopy } from "react-icons/rx";
-import moment from "moment";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { db } from "../firebase";
@@ -13,9 +12,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Modal } from "@mui/material";
 import JoinCupConfirm from "../modals/JoinCupConfirm";
+import dayjs from "dayjs";
+import { useContext } from "react";
+import { PlayerEditContext } from "../context/PlayerContext";
 
 const CupJoin = () => {
   const params = useParams();
+  const { pInfo } = useContext(PlayerEditContext);
   const [cupId, setCupId] = useState(params.cupId);
   const [cupData, setCupData] = useState({
     cupInfo: {
@@ -43,14 +46,13 @@ const CupJoin = () => {
   const [playerAge, setPlayerAge] = useState(0);
   const [playerBirth, setPlayerBirth] = useState("");
   const [playerProfile, setPlayerProfile] = useState({
-    playerName: "",
-    playerAge: 0,
-    playerBirth: "",
-    playerGender: "",
-    playerHeight: 0.0,
-    playerWeight: 0.0,
-    playerEmail: "",
-    playerTel: "",
+    pName: pInfo.pName || "",
+    pBirth: pInfo.pBirth || "",
+    pGender: pInfo.pGender || "",
+    pHeight: pInfo.pHeight || "",
+    pWeight: pInfo.pWeight || "",
+    pEmail: pInfo.pEmail || "",
+    pTel: pInfo.pTel || "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [chkValue, setChkValue] = useState(false);
@@ -102,17 +104,17 @@ const CupJoin = () => {
   };
 
   const handleAge = (birth, cup) => {
-    const birthDate = moment(birth).format("YYYY-MM-DD");
-    const cupDate = moment(cup).format("YYYY-MM-DD");
+    const birthDate = dayjs(birth).format("YYYY-MM-DD");
+    const cupDate = dayjs(cup).format("YYYY-MM-DD");
 
-    console.log(moment(birthDate).year());
-    console.log(moment(cupDate).year());
-    let age = moment(cupDate).year() - moment(birthDate).year();
-    const month = moment(cupDate).month() - moment(birthDate).month();
+    console.log(dayjs(birthDate).year());
+    console.log(dayjs(cupDate).year());
+    let age = dayjs(cupDate).year() - dayjs(birthDate).year();
+    const month = dayjs(cupDate).month() - dayjs(birthDate).month();
 
     if (
       month < 0 ||
-      (month === 0 && moment(cupDate).day() < moment(birthDate).day())
+      (month === 0 && dayjs(cupDate).day() < dayjs(birthDate).day())
     ) {
       age--;
     }
@@ -183,11 +185,15 @@ const CupJoin = () => {
         cupData.gamesCategory.filter(
           (filter) =>
             filter.launched === true &&
-            (filter.gender === playerProfile.playerGender ||
-              filter.gender === "all")
+            (filter.gender === playerProfile.pGender || filter.gender === "all")
         )
       ),
     [playerProfile]
+  );
+
+  useMemo(
+    () => handleAge(playerProfile.pBirth, cupData.cupInfo.cupDate.startDate),
+    [playerProfile.pBirth, cupData.cupInfo.cupDate.startDate]
   );
   return (
     <div className="flex justify-center items-start align-top bg-white">
@@ -210,7 +216,7 @@ const CupJoin = () => {
               </span>
               <span className="text-sm font-light ">
                 대회일자 :{" "}
-                {moment(cupData.cupInfo.cupDate.startDate).format("YYYY-MM-DD")}
+                {dayjs(cupData.cupInfo.cupDate.startDate).format("YYYY-MM-DD")}
               </span>
               <span className="text-sm font-light ">
                 대회장소 : {cupData.cupInfo.cupLocation}
@@ -270,7 +276,7 @@ const CupJoin = () => {
                       name="playerName"
                       className="w-full text-sm p-1 mr-1"
                       placeholder="이름"
-                      value={playerProfile.playerName}
+                      value={playerProfile.pName}
                       onChange={(e) => handlePlayerProfile(e)}
                     />
                   </div>
@@ -282,7 +288,7 @@ const CupJoin = () => {
                       name="playerBirth"
                       className="w-full text-sm p-1 mr-1"
                       placeholder="생년월일(8자리)"
-                      value={playerProfile.playerBirth}
+                      value={playerProfile.pBirth}
                       onChange={(e) => handlePlayerProfile(e)}
                       onBlur={(e) =>
                         handleAge(
@@ -302,14 +308,23 @@ const CupJoin = () => {
                       id="playerGender"
                       name="playerGender"
                       className="ml-2 text-sm p-1 mr-2"
-                      selected={playerProfile.playerGender}
                       onChange={(e) => handlePlayerProfile(e)}
                     >
                       <option selected disabled>
                         성별
                       </option>
-                      <option value="m">남자</option>
-                      <option value="f">여자</option>
+                      <option
+                        value="m"
+                        selected={playerProfile.pGender === "m"}
+                      >
+                        남자
+                      </option>
+                      <option
+                        value="f"
+                        selected={playerProfile.pGender === "f"}
+                      >
+                        여자
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -349,7 +364,7 @@ const CupJoin = () => {
                       name="playerEmail"
                       className="w-full text-sm p-1 mr-1"
                       placeholder="이메일"
-                      value={playerProfile.playerEmail}
+                      value={playerProfile.pEmail}
                       onChange={(e) => handlePlayerProfile(e)}
                     />
                   </div>
@@ -361,7 +376,7 @@ const CupJoin = () => {
                       name="playerTel"
                       className="w-full text-sm p-1 mr-1"
                       placeholder="연락처"
-                      value={playerProfile.playerTel}
+                      value={playerProfile.pTel}
                       onChange={(e) => handlePlayerProfile(e)}
                     />
                   </div>
@@ -393,7 +408,7 @@ const CupJoin = () => {
                     .filter(
                       (filter) =>
                         filter.launched === true &&
-                        (filter.gender === playerProfile.playerGender ||
+                        (filter.gender === playerProfile.pGender ||
                           filter.gender === "all")
                     )
                     .map((game, idx) => {
@@ -438,6 +453,7 @@ const CupJoin = () => {
                                       <input
                                         type="radio"
                                         name={game.title + "_"}
+                                        checked={chk}
                                         value={game.title + "_" + item.title}
                                         id={game.title + "_" + item.title}
                                         onChange={(e) => {
@@ -459,6 +475,7 @@ const CupJoin = () => {
                                     <input
                                       type="radio"
                                       name={game.title + "_"}
+                                      checked={chk}
                                       value={game.title + "_" + item.title}
                                       id={game.title + "_" + item.title}
                                       onChange={(e) => {

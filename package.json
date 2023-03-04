@@ -19,6 +19,7 @@
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "crypto-js": "^4.1.1",
+    "dayjs": "^1.11.7",
     "firebase": "^9.16.0",
     "formik": "^2.2.9",
     "moment": "^2.29.4",
