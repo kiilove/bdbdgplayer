@@ -25,6 +25,7 @@ import { GoDeviceMobile } from "react-icons/go";
 import { RotatingLines } from "react-loader-spinner";
 import { BsGenderAmbiguous } from "react-icons/bs";
 import { AuthContext } from "../context/AuthContext";
+import useFirestore from "../customHooks/useFirestore";
 
 const CupJoin = () => {
   const params = useParams();
@@ -72,7 +73,7 @@ const CupJoin = () => {
     value: false,
     applyDate: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [chkValue, setChkValue] = useState("");
   const [chkAllItem, setChkAllItem] = useState(false);
   const [modal, setModal] = useState(false);
@@ -81,7 +82,27 @@ const CupJoin = () => {
   const [playerJoinGames, setPlayerJoinGames] = useState([]);
   const [joinGameInvoice, setJoinGameInvoice] = useState({});
   const navigate = useNavigate();
+  const {
+    loading,
+    error,
+    data,
+    searchData,
+    selectedDoc,
+    addDocument,
+    updateDocument,
+    deleteDocument,
+    searchDocuments,
+    getDocument,
+  } = useFirestore("cups");
 
+  const handleOpenModal = ({ component }) => {
+    setModal(() => true);
+    setModalComponent((prev) => (prev = component));
+  };
+
+  const handleCloseModal = () => {
+    setModal(() => false);
+  };
   const initCheckBox = (datas) => {
     let initValue = "";
     let initClass = [];
@@ -170,21 +191,6 @@ const CupJoin = () => {
     setPlayerJoinGames((prev) => (prev = dummy));
   };
 
-  const saveJoinCup = async (datas) => {
-    await addDoc(collection(db, "cupsjoin"), { ...datas }).then((addDoc) =>
-      console.log(addDoc.id)
-    );
-  };
-
-  const handleOpenModal = ({ component }) => {
-    setModal(() => true);
-    setModalComponent((prev) => (prev = component));
-  };
-
-  const handleCloseModal = () => {
-    setModal(() => false);
-  };
-
   const handlePosterTitle = () => {
     let dummy = [...cupData.cupInfo.cupPoster];
     let posterTitleLink = DEFAULT_POSTER;
@@ -259,25 +265,23 @@ const CupJoin = () => {
   useMemo(() => console.log(playerProfile), [playerProfile]);
 
   useEffect(() => {
-    getCup();
+    //getCup();
 
-    return () => {
-      setCupData({
-        cupInfo: {
-          cupName: "",
-          cupOrg: "",
-          cupDate: { startDate: "", endDate: "" },
-          cupLocation: "",
-          cupPoster: [],
-          cupState: "",
-          cupNotice: "많은 참여 부탁드립니다.",
-        },
-        gamesCategory: [],
-        refereeAssing: [],
-        refereePool: [],
-      });
+    const getCupDocument = async () => {
+      await getDocument(cupId);
     };
+
+    getCupDocument();
+
+   
   }, []);
+
+  useEffect(() => {
+    if (selectedDoc !== null) {
+      setCupData(selectedDoc);
+      setIsLoading(loading);
+    }
+  }, [selectedDoc]);
 
   return (
     <div className="flex justify-center items-start align-top bg-white">
