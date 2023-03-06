@@ -63,12 +63,19 @@ const Login = () => {
     });
   };
   const handleLogin = async () => {
-    setIsLoading(true);
-    await getPlayerEmail().then((result) =>
-      result
-        ? playerLogin()
-        : navigate("/loginerror", { state: "auth/user-not-found" })
-    );
+    const lEmail = loginEmailRef.current.value;
+    const lPwd = loginPasswordRef.current.value;
+
+    if (!lEmail && !lPwd) {
+      window.alert("아이디와 비밀번호를 입력해주세요");
+    } else {
+      setIsLoading(true);
+      await getPlayerEmail().then((result) =>
+        result
+          ? playerLogin()
+          : navigate("/loginerror", { state: "auth/user-not-found" })
+      );
+    }
   };
 
   const playerLogin = async () => {
@@ -170,6 +177,7 @@ const Login = () => {
           </button> */}
           <button
             className="w-full h-12 bg-white rounded-md border-gray-300 border"
+            disabled
             onClick={() => (window.location.href = "/home")}
           >
             <span className=" text-base font-semibold">구글 로그인</span>

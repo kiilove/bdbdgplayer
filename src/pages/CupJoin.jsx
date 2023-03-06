@@ -262,7 +262,6 @@ const CupJoin = () => {
     () => setJoinGameInvoice((prev) => (prev = handleJoinGameInvoice())),
     [playerJoinGames, isApply]
   );
-  useMemo(() => console.log(playerProfile), [playerProfile]);
 
   useEffect(() => {
     //getCup();
@@ -272,8 +271,6 @@ const CupJoin = () => {
     };
 
     getCupDocument();
-
-   
   }, []);
 
   useEffect(() => {
