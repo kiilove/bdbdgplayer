@@ -1,7 +1,38 @@
+import dayjs from "dayjs";
+import { addDoc, collection } from "firebase/firestore";
 import moment from "moment/moment";
 import React from "react";
+import { db } from "../firebase";
 
-const JoinCupConfirm = ({ cupData, joinGames, playerData, prevSetModal }) => {
+const JoinCupConfirm = ({ joinGameInvoice, prevSetModal }) => {
+  const handleInvoice = () => {
+    const invoice = {
+      cupId: joinGameInvoice.id,
+      cupName: joinGameInvoice.cupInfo.cupName,
+      cupOrg: joinGameInvoice.cupInfo.cupOrg,
+      cupDate: dayjs(joinGameInvoice.cupInfo.cupDate.startDate).format(
+        "YYYY-MM-DD"
+      ),
+      pId: joinGameInvoice.pId,
+      pUid: joinGameInvoice.pUid,
+      pName: joinGameInvoice.pName,
+      pBirth: joinGameInvoice.pBirth,
+      pGender: joinGameInvoice.pGender,
+      pTel: joinGameInvoice.pTel,
+      pEmail: joinGameInvoice.pEmail,
+      invoiceDate: dayjs().format("YYYY-MM-DD HH:MM:ss"),
+      joinGames: joinGameInvoice.joinGames,
+      apply: joinGameInvoice.apply,
+    };
+
+    saveJoinCup(invoice);
+  };
+
+  const saveJoinCup = async (datas) => {
+    await addDoc(collection(db, "cupsjoin"), { ...datas }).then((addDoc) =>
+      console.log(addDoc.id)
+    );
+  };
   return (
     <div className="flex w-full h-screen flex-col bg-white">
       <div className="flex w-full flex-col gap-y-1">
@@ -9,29 +40,33 @@ const JoinCupConfirm = ({ cupData, joinGames, playerData, prevSetModal }) => {
           <span className="text-lg font-semibold">참가신청내용확인</span>
         </div>
         <div className="flex w-full justify-start items-center px-2">
-          <span className="text-sm ">대회명 : {cupData.cupInfo.cupName}</span>
-        </div>
-        <div className="flex w-full justify-start items-center px-2">
           <span className="text-sm ">
-            대회일자 :{" "}
-            {moment(cupData.cupInfo.cupDate.startDate).format("YYYY-MM-DD")}
+            대회명 : {joinGameInvoice.cupInfo.cupName}
           </span>
         </div>
         <div className="flex w-full justify-start items-center px-2">
           <span className="text-sm ">
-            대회장소 : {cupData.cupInfo.cupLocation}
+            대회일자 :{" "}
+            {moment(joinGameInvoice.cupInfo.cupDate.startDate).format(
+              "YYYY-MM-DD"
+            )}
+          </span>
+        </div>
+        <div className="flex w-full justify-start items-center px-2">
+          <span className="text-sm ">
+            대회장소 : {joinGameInvoice.cupInfo.cupLocation}
           </span>
         </div>
         <div className="flex w-full justify-start items-center  flex-col">
           <div className="flex w-full justify-start items-center px-2">
             <span className="text-sm ">참가신청</span>
           </div>
-          {joinGames.length > 0 ? (
+          {joinGameInvoice.joinGames.length > 0 ? (
             <div className="flex w-full justify-start flex-col">
-              {joinGames.map((item, idx) => (
+              {joinGameInvoice.joinGames.map((item, idx) => (
                 <div className="flex w-full ml-2">
                   <span className="text-sm mr-1">{idx + 1}.</span>
-                  <span className="text-sm mr-1">{item.gameName}</span>
+                  <span className="text-sm mr-1">{item.gameTitle}</span>
                   <span className="text-sm">({item.gameClass})</span>
                 </div>
               ))}
@@ -53,7 +88,10 @@ const JoinCupConfirm = ({ cupData, joinGames, playerData, prevSetModal }) => {
         >
           돌아가기
         </button>
-        <button className="w-32 h-12 bg-orange-500 rounded-lg shasdow text-white font-semibold">
+        <button
+          className="w-32 h-12 bg-orange-500 rounded-lg shasdow text-white font-semibold"
+          onClick={() => handleInvoice()}
+        >
           신청서접수
         </button>
       </div>

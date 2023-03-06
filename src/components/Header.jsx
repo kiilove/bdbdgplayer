@@ -3,7 +3,7 @@ import { RxArrowLeft } from "react-icons/rx";
 
 const Header = ({ title, banner, bgColor }) => {
   return (
-    <div className="block top-0 sticky w-full h-full z-10 ">
+    <div className="block top-0 sticky w-full h-full z-20 ">
       <div className="flex w-full h-full justify-center items-center flex-col">
         <div
           className={`flex w-full h-14 justify-center items-center ${

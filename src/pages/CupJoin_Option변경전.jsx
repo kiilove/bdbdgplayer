@@ -1,5 +1,5 @@
 import { addDoc, collection, doc, getDoc } from "firebase/firestore";
-import React, { useEffect } from "react";
+import React from "react";
 import { useMemo } from "react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -24,12 +24,10 @@ import {
 import { GoDeviceMobile } from "react-icons/go";
 import { RotatingLines } from "react-loader-spinner";
 import { BsGenderAmbiguous } from "react-icons/bs";
-import { AuthContext } from "../context/AuthContext";
 
 const CupJoin = () => {
   const params = useParams();
   const { pInfo } = useContext(PlayerEditContext);
-  const { userInfo } = useContext(AuthContext);
   const [cupId, setCupId] = useState(params.cupId);
   const [cupData, setCupData] = useState({
     cupInfo: {
@@ -57,8 +55,6 @@ const CupJoin = () => {
   const [playerAge, setPlayerAge] = useState(0);
   const [playerBirth, setPlayerBirth] = useState("");
   const [playerProfile, setPlayerProfile] = useState({
-    pId: userInfo.id || "",
-    pUid: userInfo.pUid || "",
     pName: pInfo.pName || "",
     pBirth: pInfo.pBirth || "",
     pGender: pInfo.pGender || "",
@@ -67,36 +63,35 @@ const CupJoin = () => {
     pEmail: pInfo.pEmail || "",
     pTel: pInfo.pTel || "",
   });
-  const [isApply, setIsApply] = useState({
-    title: "m1",
-    value: false,
-    applyDate: "",
-  });
   const [isLoading, setIsLoading] = useState(false);
-  const [chkValue, setChkValue] = useState("");
-  const [chkAllItem, setChkAllItem] = useState(false);
+  const [chkValue, setChkValue] = useState(false);
   const [modal, setModal] = useState(false);
   const [modalComponent, setModalComponent] = useState("");
 
   const [playerJoinGames, setPlayerJoinGames] = useState([]);
-  const [joinGameInvoice, setJoinGameInvoice] = useState({});
   const navigate = useNavigate();
 
   const initCheckBox = (datas) => {
     let initValue = "";
     let initClass = [];
     let dummy = [];
+    //console.log(datas);
 
     datas.length > 0 &&
-      datas.map((items, idx) => {
-        items.class.map((item) => {
-          const classValue = { title: item.title, chk: false };
+      datas.map((item, idx) => {
+        item.class.map((classes) => {
+          //console.log(classes.title);
+          const classValue = { title: classes.title, chk: false };
           initClass.push({ ...classValue });
+          //console.log(initClass);
         });
-        initValue = { title: items.title, class: initClass };
+        initValue = { title: item.title, class: initClass };
         dummy.push(initValue);
         initClass = [];
       });
+
+    setChkValue((prev) => (prev = dummy));
+    //console.log(dummy);
   };
 
   const getCup = async () => {
@@ -123,6 +118,8 @@ const CupJoin = () => {
     const birthDate = dayjs(birth).format("YYYY-MM-DD");
     const cupDate = dayjs(cup).format("YYYY-MM-DD");
 
+    console.log(dayjs(birthDate).year());
+    console.log(dayjs(cupDate).year());
     let age = dayjs(cupDate).year() - dayjs(birthDate).year();
     const month = dayjs(cupDate).month() - dayjs(birthDate).month();
 
@@ -132,42 +129,43 @@ const CupJoin = () => {
     ) {
       age--;
     }
+    console.log(age);
     age && setPlayerAge((prev) => (prev = age));
     return age;
   };
 
-  const handleApply = () => {
-    const apply = {
-      title: "m1",
-      value: !isApply.value,
-      date: dayjs().format("YYYY-MM-DD HH:MM:ss"),
-    };
-
-    console.log(apply);
-
-    setIsApply((prev) => (prev = apply));
+  const handlePlayerProfile = (e) => {
+    e.preventDefault();
+    const playerUpdate = { ...playerProfile, [e.target.name]: e.target.value };
+    setPlayerProfile((prev) => (prev = playerUpdate));
+    console.log(playerUpdate);
   };
 
   const refreshCheck = () => {
-    setChkValue((prev) => (prev = "refresh"));
+    setChkValue(false);
     setPlayerJoinGames([]);
   };
 
-  const handlePlayerJoinGames = (e, gameTitle, gameId) => {
+  const handlePlayerJoinGames = (e) => {
     // e.preventDefault();
+    setChkValue(undefined);
+    const chkValue = e.target.value.split("_");
 
+    const newGame = { gameName: chkValue[0], gameClass: chkValue[1] };
     let dummy = [...playerJoinGames];
-    const dummyIndex = dummy.findIndex((game) => game.gameTitle === gameTitle);
+    const dummyIndex = dummy.findIndex((game) => game.gameName === chkValue[0]);
 
     dummyIndex === -1
-      ? dummy.push({ id: gameId, gameTitle, gameClass: e.target.value })
-      : dummy.splice(dummyIndex, 1, {
-          id: gameId,
-          gameTitle,
-          gameClass: e.target.value,
-        });
+      ? dummy.push(newGame)
+      : dummy.splice(dummyIndex, 1, newGame);
     console.log("dummy", dummy);
     setPlayerJoinGames((prev) => (prev = dummy));
+  };
+
+  const handleEnd = () => {
+    // const cupDatas = JSON.parse(localStorage.getItem("newCup"));
+    // cupDatas !== undefined && setCupData((prev) => (prev = cupDatas));
+    //addCupData(cupDatas);
   };
 
   const saveJoinCup = async (datas) => {
@@ -203,87 +201,36 @@ const CupJoin = () => {
       return posterTitleLink;
     }
   };
-
-  const handleFilterdGamesCategory = (gender, games) => {
-    let dummy = [...games];
-
-    let filterdGamesCategory = [];
-
-    !chkAllItem
-      ? (filterdGamesCategory = dummy.filter(
+  useMemo(() => getCup(), []);
+  //useMemo(() => , [cupData.cupInfo.cupPoster]);
+  useMemo(() => {
+    console.log(playerJoinGames);
+  }, [playerJoinGames]);
+  useMemo(() => {
+    console.log(chkValue);
+  }, [chkValue]);
+  useMemo(
+    () =>
+      console.log(
+        cupData.gamesCategory.filter(
           (filter) =>
             filter.launched === true &&
-            (filter.gender === gender || filter.gender === "all")
-        ))
-      : (filterdGamesCategory = dummy.filter(
-          (filter) => filter.launched === true
-        ));
-
-    return filterdGamesCategory;
-  };
-
-  const handleJoinGameInvoice = () => {
-    const gameInvoice = {
-      ...playerProfile,
-      ...cupData,
-      joinGames: [...playerJoinGames],
-      apply: isApply,
-    };
-    console.log(gameInvoice);
-    return gameInvoice;
-  };
-
-  useMemo(() => {
-    setFilterdGameCategory(
-      (prev) =>
-        (prev = handleFilterdGamesCategory(
-          playerProfile.pGender,
-          cupData.gamesCategory
-        ))
-    );
-  }, [chkAllItem, playerProfile, cupData.gamesCategory]);
-
-  useMemo(() => {
-    console.log(filterdGameCategory);
-  }, [filterdGameCategory]);
+            (filter.gender === playerProfile.pGender || filter.gender === "all")
+        )
+      ),
+    [playerProfile]
+  );
 
   useMemo(
     () => handleAge(playerProfile.pBirth, cupData.cupInfo.cupDate.startDate),
     [playerProfile.pBirth, cupData.cupInfo.cupDate.startDate]
   );
 
-  useMemo(
-    () => setJoinGameInvoice((prev) => (prev = handleJoinGameInvoice())),
-    [playerJoinGames, isApply]
-  );
-  useMemo(() => console.log(playerProfile), [playerProfile]);
-
-  useEffect(() => {
-    getCup();
-
-    return () => {
-      setCupData({
-        cupInfo: {
-          cupName: "",
-          cupOrg: "",
-          cupDate: { startDate: "", endDate: "" },
-          cupLocation: "",
-          cupPoster: [],
-          cupState: "",
-          cupNotice: "많은 참여 부탁드립니다.",
-        },
-        gamesCategory: [],
-        refereeAssing: [],
-        refereePool: [],
-      });
-    };
-  }, []);
-
   return (
     <div className="flex justify-center items-start align-top bg-white">
       <BottomMenu />
       <div
-        className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-24"
+        className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-32"
         style={{ maxWidth: "420px" }}
       >
         <div
@@ -444,132 +391,152 @@ const CupJoin = () => {
               </div>
             </div>
 
-            <div className="flex  w-full flex-col bg-white px-2">
-              <div className="flex flex-col w-full p-4 border">
-                <div className="flex justify-between">
-                  <span className="text-lg font-medium z-10">
-                    종목참가
-                    <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
-                  </span>
-                </div>
+            <div className="flex w-full h-full flex-col bg-white rounded-lg shadow-sm">
+              <div className="flex w-full items-start justify-center p-4 flex-col">
+                <span>참가종목</span>
                 <span className="text-sm font-light">
-                  상향지원 가능하지만 하향지원은 불가능합니다.
+                  대회당일 계측을 통해 상향지원 가능하지만
+                </span>
+                <span className="text-sm font-light">
+                  하향지원은 불가능합니다.
                 </span>
                 <span className="text-sm font-light">
                   신중한 선택 부탁드립니다.
                 </span>
-                <div className="flex w-full justify-around mt-2">
-                  <button
-                    className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"
-                    onClick={() => setChkAllItem(!chkAllItem)}
-                  >
-                    {chkAllItem === true ? "최적종목표시" : "전체종목표시"}
-                  </button>
-                  <button
-                    className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"
-                    onClick={() => refreshCheck()}
-                  >
-                    선택초기화
-                  </button>
-                </div>
-              </div>
-              <div className="flex w-full items-start justify-between mt-4 flex-wrap gap-2">
-                {filterdGameCategory.length > 0 &&
-                  filterdGameCategory.map((game, idx) => {
-                    let ageGrade = "";
-                    if (playerAge < 20) {
-                      ageGrade = "학생부";
-                    }
-                    if (playerAge > 40 && playerAge < 49) {
-                      ageGrade = "장년부";
-                    }
-
-                    if (playerAge > 50) {
-                      ageGrade = "마스터즈";
-                    }
-
-                    return (
-                      <div
-                        className={`flex w-28 h-20 border flex-col ${
-                          chkAllItem === false &&
-                          (game.title === "학생부" ||
-                            game.title === "장년부" ||
-                            game.title === "마스터즈")
-                            ? game.title !== ageGrade
-                              ? "hidden"
-                              : ""
-                            : ""
-                        }`}
-                      >
-                        <div className="flex text-xs font-light w-full h-10 justify-center items-center">
-                          {game.title}
-                        </div>
-                        <div className="flex text-xs font-light w-full h-10 justify-center items-center px-1">
-                          <select
-                            name={`${game.title}Item`}
-                            id={`${game.title}Item`}
-                            className="border-b focus:ring-0 outline-none bg-whitetext-gray-800 w-full"
-                            onChange={(e) => {
-                              handlePlayerJoinGames(e, game.title, game.id);
-                            }}
-                          >
-                            <option
-                              name="default"
-                              id="default"
-                              value="notSelected"
-                              className="bg-gray-300"
-                              selected={playerJoinGames.length === 0}
-                            >
-                              종목선택
-                            </option>
-                            {game.class.map((item, iIdx) => (
-                              <option
-                                name={`${game.title}_${item.title}`}
-                                id={`${game.title}_${item.title}`}
-                                value={item.title}
-                              >
-                                {item.title}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-            <div className="flex  w-full flex-col bg-white px-2 mt-4">
-              <div className="flex flex-col w-full p-4 border">
-                <span className="text-md">개인정보수집동의</span>
-                <div className="flex w-full justify-between">
-                  <label className="flex justify-start items-center align-middle">
-                    <input
-                      type="checkbox"
-                      name="m2Apply"
-                      value="m2Apply"
-                      className="mr-2"
-                      onChange={() => handleApply()}
-                    />
-                    <span className="text-gray-500 mr-1">[필수]</span>
-                    개인정보 수집 및 이용 동의
-                  </label>
-                  <button>
-                    <span className="font-bold">
-                      <FontAwesomeIcon icon={faArrowRight} />
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="flex w-full h-full mt-4">
-              <div className="flex w-full justify-center items px-2">
                 <button
-                  className="flex w-full bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
+                  className="text-sm font-light"
+                  onClick={() => refreshCheck()}
+                >
+                  선택초기화
+                </button>
+              </div>
+              <div className="flex w-full items-start justify-center p-4 flex-col gap-y-2">
+                {cupData.gamesCategory.length > 0 &&
+                  cupData.gamesCategory
+                    .filter(
+                      (filter) =>
+                        filter.launched === true &&
+                        (filter.gender === playerProfile.pGender ||
+                          filter.gender === "all")
+                    )
+                    .map((game, idx) => {
+                      return (
+                        <div className="flex flex-col w-full">
+                          <div className="flex w-full">
+                            <span className="text-sm">{game.title}</span>
+                          </div>
+                          <div className="flex w-full mt-1 flex-wrap">
+                            {game.class.length > 0 &&
+                              game.class.map((item, iIdx) => {
+                                let chk;
+                                playerJoinGames.length === 0 && (chk = false);
+                                return game.title !== "학생부" ? (
+                                  game.title !== "장년부" ? (
+                                    game.title !== "마스터즈" ? (
+                                      <div className="flex mr-4">
+                                        <input
+                                          type="radio"
+                                          name={game.title + "_"}
+                                          checked={chk}
+                                          value={game.title + "_" + item.title}
+                                          id={game.title + "_" + item.title}
+                                          onChange={(e) => {
+                                            handlePlayerJoinGames(e);
+                                          }}
+                                        />
+                                        <label
+                                          htmlFor={
+                                            game.title + "_" + item.title
+                                          }
+                                          className="text-sm ml-1"
+                                        >
+                                          {item.title}
+                                        </label>
+                                      </div>
+                                    ) : (
+                                      <div className="flex mr-4">연령제한</div>
+                                    )
+                                  ) : playerAge >= 40 && playerAge < 49 ? (
+                                    <div className="flex mr-4">
+                                      <input
+                                        type="radio"
+                                        name={game.title + "_"}
+                                        checked={chk}
+                                        value={game.title + "_" + item.title}
+                                        id={game.title + "_" + item.title}
+                                        onChange={(e) => {
+                                          handlePlayerJoinGames(e);
+                                        }}
+                                      />
+                                      <label
+                                        htmlFor={game.title + "_" + item.title}
+                                        className="text-sm ml-1"
+                                      >
+                                        {item.title}
+                                      </label>
+                                    </div>
+                                  ) : (
+                                    <div className="flex mr-4">연령제한</div>
+                                  )
+                                ) : playerAge > 0 && playerAge < 20 ? (
+                                  <div className="flex mr-4">
+                                    <input
+                                      type="radio"
+                                      name={game.title + "_"}
+                                      checked={chk}
+                                      value={game.title + "_" + item.title}
+                                      id={game.title + "_" + item.title}
+                                      onChange={(e) => {
+                                        handlePlayerJoinGames(e);
+                                      }}
+                                    />
+                                    <label
+                                      htmlFor={game.title + "_" + item.title}
+                                      className="text-sm ml-1"
+                                    >
+                                      {item.title}
+                                    </label>
+                                  </div>
+                                ) : (
+                                  <div className="flex mr-4">연령제한</div>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      );
+                    })}
+              </div>
+            </div>
+            <div className="flex w-full h-full flex-col bg-white rounded-lg shadow-sm p-4 gap-y-1">
+              <span className="text-md">개인정보수집동의</span>
+              <div className="flex w-full justify-between">
+                <label className="flex justify-start items-center align-middle">
+                  <input
+                    type="checkbox"
+                    name="m2Apply"
+                    value="m2Apply"
+                    className="mr-2"
+                  />
+                  <span className="text-gray-500 mr-1">[필수]</span>
+                  개인정보 수집 및 이용 동의
+                </label>
+                <button>
+                  <span className="font-bold">
+                    <FontAwesomeIcon icon={faArrowRight} />
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div className="flex w-full h-full ">
+              <div className="flex w-full justify-center items'">
+                <button
+                  className="flex w-3/4 bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
                   onClick={() =>
                     handleOpenModal({
                       component: (
                         <JoinCupConfirm
-                          joinGameInvoice={joinGameInvoice}
+                          cupData={cupData}
+                          joinGames={playerJoinGames}
                           prevSetModal={setModal}
                         />
                       ),
