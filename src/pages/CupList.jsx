@@ -14,7 +14,7 @@ import useFirestoreSearch from "../customHooks/useFirestoreSearch";
 
 const CupList = () => {
   //const [cupsData, setCupsData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isRefresh, setIsRefresh] = useState(false);
   const navigate = useNavigate();
   const conditions = [where("cupInfo.cupState", "==", "대회준비중")];
@@ -25,12 +25,14 @@ const CupList = () => {
   );
 
   useMemo(() => {
-    console.log(data);
+    if (data.length) {
+      setIsLoading(false);
+    }
   }, [data]);
 
   return (
     <div className="flex justify-center items-start align-top bg-white">
-      {loading && (
+      {isLoading && (
         <div
           className={`absolute top-0 left-1/2 w-full h-full border-0 px-10 py-3 outline-none flex flex-col z-50 justify-center items-center`}
           style={{
@@ -49,7 +51,7 @@ const CupList = () => {
         </div>
       )}
       {error && <div>error</div>}
-      {data && (
+      {!isLoading && (
         <>
           <BottomMenu />
           <div

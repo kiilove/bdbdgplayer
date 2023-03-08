@@ -15,7 +15,12 @@ import JoinCupConfirm from "../modals/JoinCupConfirm";
 import dayjs from "dayjs";
 import { useContext } from "react";
 import { PlayerEditContext } from "../context/PlayerContext";
-import { RiTimeLine, RiBankLine, RiCalendarLine } from "react-icons/ri";
+import {
+  RiTimeLine,
+  RiBankLine,
+  RiCalendarLine,
+  RiCheckDoubleFill,
+} from "react-icons/ri";
 import {
   MdOutlineLocationOn,
   MdCreditCard,
@@ -32,20 +37,7 @@ const CupJoin = () => {
   const { pInfo } = useContext(PlayerEditContext);
   const { userInfo } = useContext(AuthContext);
   const [cupId, setCupId] = useState(params.cupId);
-  const [cupData, setCupData] = useState({
-    cupInfo: {
-      cupName: "",
-      cupOrg: "",
-      cupDate: { startDate: "", endDate: "" },
-      cupLocation: "",
-      cupPoster: [],
-      cupState: "",
-      cupNotice: "많은 참여 부탁드립니다.",
-    },
-    gamesCategory: [],
-    refereeAssing: [],
-    refereePool: [],
-  });
+  const [cupData, setCupData] = useState({});
   const [filterdGameCategory, setFilterdGameCategory] = useState([
     {
       title: "",
@@ -82,7 +74,7 @@ const CupJoin = () => {
   const [playerJoinGames, setPlayerJoinGames] = useState([]);
   const [joinGameInvoice, setJoinGameInvoice] = useState({});
   const navigate = useNavigate();
-  const { data, loading, error, getDocument } = useFirestore();
+  const { data, error, getDocument } = useFirestore();
 
   const handleOpenModal = ({ component }) => {
     setModal(() => true);
@@ -148,19 +140,31 @@ const CupJoin = () => {
 
   const handlePlayerJoinGames = (e, gameTitle, gameId) => {
     // e.preventDefault();
+    let dummy;
+    let dummyIndex;
+    if (e.target.name === "default") {
+      console.log(e.target.value);
+    }
 
-    let dummy = [...playerJoinGames];
-    const dummyIndex = dummy.findIndex((game) => game.gameTitle === gameTitle);
+    dummy = [...playerJoinGames];
 
-    dummyIndex === -1
-      ? dummy.push({ id: gameId, gameTitle, gameClass: e.target.value })
-      : dummy.splice(dummyIndex, 1, {
-          id: gameId,
-          gameTitle,
-          gameClass: e.target.value,
-        });
-    console.log("dummy", dummy);
-    setPlayerJoinGames((prev) => (prev = dummy));
+    if (e.target.value !== "notSelected") {
+      dummyIndex = dummy.findIndex((game) => game.gameTitle === gameTitle);
+      dummyIndex === -1
+        ? dummy.push({ id: gameId, gameTitle, gameClass: e.target.value })
+        : dummy.splice(dummyIndex, 1, {
+            id: gameId,
+            gameTitle,
+            gameClass: e.target.value,
+          });
+      console.log("dummy", dummy);
+      setPlayerJoinGames((prev) => (prev = dummy));
+    } else {
+      dummyIndex = dummy.findIndex((game) => game.id === gameId);
+      dummyIndex !== -1 && dummy.splice(dummyIndex, 1);
+      console.log("dummy", dummy);
+      setPlayerJoinGames((prev) => (prev = dummy));
+    }
   };
 
   const handlePosterTitle = () => {
@@ -184,6 +188,7 @@ const CupJoin = () => {
 
   const handleFilterdGamesCategory = (gender, games) => {
     let dummy = [...games];
+    console.log(dummy);
 
     let filterdGamesCategory = [];
 
@@ -212,56 +217,46 @@ const CupJoin = () => {
   };
 
   // useMemo(() => {
-  //   setFilterdGameCategory(
-  //     (prev) =>
-  //       (prev = handleFilterdGamesCategory(
-  //         playerProfile.pGender,
-  //         cupData.gamesCategory
-  //       ))
-  //   );
+  //   if (cupData) {
+  //     setFilterdGameCategory(
+  //       (prev) =>
+  //         (prev = handleFilterdGamesCategory(
+  //           playerProfile.pGender,
+  //           cupData.gamesCategory
+  //         ))
+  //     );
+  //   }
   // }, [chkAllItem, playerProfile, cupData.gamesCategory]);
-
-  useMemo(() => {
-    console.log(filterdGameCategory);
-  }, [filterdGameCategory]);
-
-  useMemo(
-    () => setJoinGameInvoice((prev) => (prev = handleJoinGameInvoice())),
-    [playerJoinGames, isApply]
-  );
-
-  const prepareRender = async () => {
-    getDocument("cups", cupId).then((data) => {
-      setCupData({ ...data });
-      console.log(data);
-    });
-  };
 
   useEffect(() => {
     getDocument("cups", cupId);
   }, []);
 
-  useEffect(() => {
-    data && setCupData(data);
-  }, [data]);
+  useMemo(() => {
+    console.log(filterdGameCategory);
+  }, [filterdGameCategory]);
 
-  useEffect(() => {
-    console.log(cupData);
-  }, [cupData]);
+  useMemo(() => {
+    setJoinGameInvoice((prev) => (prev = handleJoinGameInvoice()));
+  }, [playerJoinGames, isApply]);
 
-  // useEffect(() => {
-  //   console.log(data);
-  //   const birthDate = playerProfile.pBirth || "";
-  //   const cupDate = cupData.cupInfo.cupDate.startDate || "";
-
-  //   birthDate &&
-  //     cupData &&
-  //     handleAge(playerProfile.pBirth, cupData.cupInfo.cupDate.startDate);
-  // }, [cupData]);
-
+  useMemo(() => {
+    setCupData(data);
+    if (cupData.cupInfo) {
+      setFilterdGameCategory(
+        (prev) =>
+          (prev = handleFilterdGamesCategory(
+            playerProfile.pGender,
+            cupData.gamesCategory
+          ))
+      );
+      handleAge(playerProfile.pBirth, cupData.cupInfo.cupDate.startDate);
+      setIsLoading(false);
+    }
+  }, [data, cupData, playerProfile]);
   return (
     <div className="flex justify-center items-start align-top bg-white">
-      {loading && (
+      {isLoading && (
         <div
           className={`absolute top-0 left-1/2 w-full h-full border-0 px-10 py-3 outline-none flex flex-col z-50 justify-center items-center`}
           style={{
@@ -280,7 +275,7 @@ const CupJoin = () => {
         </div>
       )}
       {error && <div>error</div>}
-      {cupData ? (
+      {!isLoading && (
         <>
           <BottomMenu />
           <div
@@ -293,12 +288,10 @@ const CupJoin = () => {
             </Modal>
             <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white">
               <div className="flex flex-col w-full mb-5">
-                <div className="flex w-full h-44 flex-col bg-orange-300  p-4 gap-y-1">
+                <div className="flex w-full h-52 flex-col bg-orange-300 p-4 gap-y-1">
                   <div className="flex">
                     <span className="text-lg font-medium z-10">
-                      {cupData && cupData.cupInfo.cupOrg === undefined
-                        ? ""
-                        : cupData.cupInfo.cupOrg}
+                      {cupData.cupInfo.cupOrg}
                       -참가공고
                       <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
                     </span>
@@ -337,23 +330,48 @@ const CupJoin = () => {
                       </div>
                       <div className="flex">
                         <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          100,000원
+                          {Number(
+                            cupData.cupInfo.cupFee.basicFee
+                          ).toLocaleString()}
                         </span>
                       </div>
                     </div>
-                    <div className="flex w-3/4">
-                      <div className="flex justify-start items-center ml-5">
-                        <RiBankLine />
+                    <div className="flex w-3/4 items-center">
+                      <div className="flex justify-start items-center">
+                        <RiCheckDoubleFill />
                       </div>
-                      <div className="flex">
+                      <div className="flex justify-start items-center">
                         <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          대한은행 : 000-0000-00000-0000
+                          {Number(
+                            cupData.cupInfo.cupFee.extraFee
+                          ).toLocaleString()}
                         </span>
+                        <span className="text-xs ml-2">중복출전비용</span>
                       </div>
                     </div>
                   </div>
+                  <div className="flex w-full text-gray-700 ">
+                    <div className="flex w-3/4">
+                      <div className="flex justify-start items-center">
+                        <RiBankLine />
+                      </div>
+                      <div className="flex items-center">
+                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                          대한은행 000-00000-0000000
+                        </span>
+                        <button className="ml-1">
+                          <RxCopy />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex w-1/4 justify-end mr-2">
+                      <button className="text-xs text-orange-800 p-1 border border-orange-500 bg-orange-400">
+                        자세한공고
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex w-full px-6 relative -top-5 z-10">
+                <div className="flex w-full px-6 relative -top-8 z-10">
                   <div className="flex w-full h-full">
                     {cupData.cupInfo.cupPoster.length > 0 &&
                       cupData.cupInfo.cupPoster[0] !== (undefined || null) && (
@@ -494,7 +512,7 @@ const CupJoin = () => {
                                 name={`${game.title}Item`}
                                 id={`${game.title}Item`}
                                 className="border-b focus:ring-0 outline-none bg-whitetext-gray-800 w-full"
-                                onChange={(e) => {
+                                onClick={(e) => {
                                   handlePlayerJoinGames(e, game.title, game.id);
                                 }}
                               >
@@ -525,7 +543,7 @@ const CupJoin = () => {
                 </div>
                 <div className="flex  w-full flex-col bg-white px-2 mt-4">
                   <div className="flex flex-col w-full p-4 border">
-                    <span className="text-md">개인정보수집동의</span>
+                    <span className="text-sm">개인정보수집동의</span>
                     <div className="flex w-full justify-between">
                       <label className="flex justify-start items-center align-middle">
                         <input
@@ -535,8 +553,12 @@ const CupJoin = () => {
                           className="mr-2"
                           onChange={() => handleApply()}
                         />
-                        <span className="text-gray-500 mr-1">[필수]</span>
-                        개인정보 수집 및 이용 동의
+                        <span className="text-gray-500 mr-1 text-xs">
+                          [필수]
+                        </span>
+                        <span className="text-xs">
+                          개인정보 수집 및 이용 동의
+                        </span>
                       </label>
                       <button>
                         <span className="font-bold">
@@ -548,31 +570,40 @@ const CupJoin = () => {
                 </div>
                 <div className="flex w-full h-full mt-4">
                   <div className="flex w-full justify-center items px-2">
-                    <button
-                      className="flex w-full bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
-                      onClick={() =>
-                        handleOpenModal({
-                          component: (
-                            <JoinCupConfirm
-                              joinGameInvoice={joinGameInvoice}
-                              prevSetModal={setModal}
-                            />
-                          ),
-                        })
-                      }
-                    >
-                      <span className="font-bold text-white text-lg">
-                        참가신청
-                      </span>
-                    </button>
+                    {playerJoinGames.length !== 0 && isApply.value ? (
+                      <button
+                        className="flex w-full bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
+                        onClick={() =>
+                          handleOpenModal({
+                            component: (
+                              <JoinCupConfirm
+                                joinGameInvoice={joinGameInvoice}
+                                prevSetModal={setModal}
+                              />
+                            ),
+                          })
+                        }
+                      >
+                        <span className="font-bold text-white text-lg">
+                          참가신청
+                        </span>
+                      </button>
+                    ) : (
+                      <button
+                        className="flex w-full bg-gray-500 h-14 rounded-lg shadow justify-center items-center"
+                        disabled
+                      >
+                        <span className="font-bold text-white text-lg">
+                          종목선택과 개인정보 수집동의가 필요합니다.
+                        </span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </>
-      ) : (
-        <div></div>
       )}
     </div>
   );
