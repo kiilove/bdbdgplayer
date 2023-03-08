@@ -29,8 +29,14 @@ const JoinCupConfirm = ({ joinGameInvoice, prevSetModal }) => {
   };
 
   const saveJoinCup = async (datas) => {
-    await addDoc(collection(db, "cupsjoin"), { ...datas }).then((addDoc) =>
-      console.log(addDoc.id)
+    const randomString = Math.random().toString(36).substring(2, 6);
+    const id = (
+      randomString +
+      "-" +
+      Date.now().toString().substr(-6)
+    ).toUpperCase();
+    await addDoc(collection(db, "cupsjoin"), { docuId: id, ...datas }).then(
+      (addDoc) => console.log(addDoc.id)
     );
   };
   return (
