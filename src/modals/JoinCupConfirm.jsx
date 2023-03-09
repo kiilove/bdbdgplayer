@@ -57,8 +57,8 @@ const JoinCupConfirm = ({ joinGameInvoice, prevSetModal }) => {
       cupDate: dayjs(joinGameInvoice.cupInfo.cupDate.startDate).format(
         "YYYY-MM-DD"
       ),
-      joinFee: joinFee,
-      incomeInfo: {
+      feeInfo: {
+        joinFee,
         incomeFee: 0,
         incomeType: "",
         incomeChecker: "",
