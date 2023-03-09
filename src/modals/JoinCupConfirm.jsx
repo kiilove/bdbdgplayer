@@ -1,13 +1,24 @@
 import dayjs from "dayjs";
 import { addDoc, collection } from "firebase/firestore";
+import { replace } from "formik";
 import moment from "moment/moment";
 import React from "react";
 import { useMemo } from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
+
+const successMessage = (
+  <div className="flex w-full h-full flex-col">
+    <div className="flex w-full h-full justify-center items-center">
+      <span className="text-xl">가입신청이 정상적으로 처리되었습니다.</span>
+    </div>
+  </div>
+);
 
 const JoinCupConfirm = ({ joinGameInvoice, prevSetModal }) => {
   const [joinFee, setJoinFee] = useState(0);
+  const navigate = useNavigate();
 
   const handleFee = () => {
     let sumFee = 0;
@@ -87,9 +98,11 @@ const JoinCupConfirm = ({ joinGameInvoice, prevSetModal }) => {
       "-" +
       Date.now().toString().substr(-6)
     ).toUpperCase();
-    await addDoc(collection(db, "cupsjoin"), { docuId: id, ...datas }).then(
-      (addDoc) => console.log(addDoc.id)
-    );
+    await addDoc(collection(db, "cupsjoin"), { docuId: id, ...datas })
+      .then((addDoc) => console.log(addDoc.id))
+      .then(() => {
+        navigate("/successpage", { replace: true });
+      });
   };
   useMemo(() => console.log(joinGameInvoice), []);
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   collection,
   doc,
@@ -14,6 +15,7 @@ const useFirestore = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const getDocument = async (collectionName, collectionId) => {
     console.log(collectionId);
@@ -50,8 +52,8 @@ const useFirestore = () => {
     try {
       const docRef = await addDoc(collection(db, collectionName), newData);
       const addedData = { id: docRef.id, ...newData };
-      setData((prevState) => [...prevState, addedData]);
       callback && callback();
+      navigate("/successpage", { replace: true });
     } catch (error) {
       setError(error);
     }

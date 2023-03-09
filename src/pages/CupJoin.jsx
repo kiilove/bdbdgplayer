@@ -512,7 +512,7 @@ const CupJoin = () => {
                                 name={`${game.title}Item`}
                                 id={`${game.title}Item`}
                                 className="border-b focus:ring-0 outline-none bg-whitetext-gray-800 w-full"
-                                onClick={(e) => {
+                                onChange={(e) => {
                                   handlePlayerJoinGames(e, game.title, game.id);
                                 }}
                               >

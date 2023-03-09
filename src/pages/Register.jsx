@@ -30,7 +30,7 @@ const Register = () => {
           className="flex justify-center mt-10 flex-col gap-y-3 px-4 w-full"
           style={{ maxWidth: "400px" }}
         >
-          <button
+          {/* <button
             className="w-full h-12 bg-yellow-400 rounded-md border-gray-300 border "
             onClick={() => {
               window.location.href = "/registeremail";
@@ -45,7 +45,7 @@ const Register = () => {
             }}
           >
             <span className=" text-base font-semibold">네이버로 시작하기</span>
-          </button>
+          </button> */}
           <button
             className="w-full h-12 bg-white rounded-md border-gray-300 border "
             onClick={() => {

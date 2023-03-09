@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
+import MessageBox from "./components/MessageBox";
 import { AuthContext } from "./context/AuthContext";
 import AnalyzeDetail from "./pages/AnalyzeDetail";
 import Career from "./pages/Career";
@@ -18,6 +19,7 @@ import QrFull from "./pages/QrFull";
 import Register from "./pages/Register";
 import RegisterSuccess from "./pages/RegisterSuccess";
 import RegisterWithEmail from "./pages/RegisterWithEmail";
+import SuccessPage from "./pages/SuccessPage";
 
 function App() {
   const { userInfo } = useContext(AuthContext);
@@ -48,7 +50,8 @@ function App() {
         <Route path="/loginerror" element={<LoginError />} />
         <Route path="/register" element={<Register />} />
         <Route path="/registeremail" element={<RegisterWithEmail />} />
-        <Route path="/regsuccess" element={<RegisterSuccess />} />
+        <Route path="/regsuccess" element={<SuccessPage />} />
+        <Route path="/successpage" element={<SuccessPage />} />
         <Route
           path="/career"
           element={
