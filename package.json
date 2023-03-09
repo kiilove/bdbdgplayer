@@ -26,6 +26,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
+    "react-image": "^4.0.3",
     "react-loader-spinner": "^5.3.4",
     "react-modern-drawer": "^1.2.0",
     "react-qr-code": "^2.0.11",
