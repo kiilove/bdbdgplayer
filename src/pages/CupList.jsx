@@ -72,7 +72,10 @@ const CupList = () => {
                       titleLink = posterTitle[0].link;
                     }
                     return (
-                      <div className="flex w-full h-36 flex-col bg-white rounded-lg shadow-sm">
+                      <div
+                        className="flex w-full h-36 flex-col bg-white rounded-lg shadow-sm cursor-pointer"
+                        onClick={() => navigate(`/cupjoin/${item.id}`)}
+                      >
                         <div className="flex w-full h-20">
                           <img
                             src={titleLink}

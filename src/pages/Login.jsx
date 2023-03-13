@@ -206,6 +206,7 @@ const Login = () => {
               ref={loginPasswordRef}
               className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-400 px-5 font-light"
               placeholder="비밀번호"
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
           </div>
           <button

@@ -26,9 +26,23 @@ const SuccessPage = () => {
   }, []);
 
   return (
-    <div>
-      <h1>감사합니다.</h1>
-      <p>곧 첫화면으로 이동합니다. {countdown} 초...</p>
+    <div className="flex w-full h-screen flex-col bg-white items-center">
+      <div
+        className="flex flex-col h-screen justify-center items-center"
+        style={{ maxWidth: "420px" }}
+      >
+        <div className="flex w-full flex-col justify-center items-center h-96">
+          <h1 className="text-2xl font-semibold text-gray-900 mx-5">
+            정상적으로 접수되었습니다.
+          </h1>
+          <h1 className="text-2xl font-semibold text-gray-900 mx-5">
+            참여해주셔서 감사합니다.
+          </h1>
+        </div>
+        <div className="flex w-full h-full justify-center items-center">
+          <p>곧 첫화면으로 이동합니다. {countdown}</p>
+        </div>
+      </div>
     </div>
   );
 };
