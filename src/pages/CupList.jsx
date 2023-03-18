@@ -17,7 +17,7 @@ const CupList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefresh, setIsRefresh] = useState(false);
   const navigate = useNavigate();
-  const conditions = [where("cupInfo.cupState", "==", "대회준비중")];
+  const conditions = [where("cupInfo.cupState", "==", "신청접수중")];
   const { data, loading, error } = useFirestoreSearch(
     "cups",
     conditions,
