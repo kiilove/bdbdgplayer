@@ -24,7 +24,7 @@ const Login = () => {
   const getPlayerProfile = async (pUid) => {
     console.log(pUid);
     let playerProfile = {};
-    const playerRef = collection(db, "player");
+    const playerRef = collection(db, "players_pool");
     const playerQ = query(playerRef, where("playerUid", "==", pUid));
 
     try {
@@ -45,7 +45,7 @@ const Login = () => {
   const getPlayerEmail = async () => {
     let isPlayerEmail;
     let dummy = [];
-    const playerRef = collection(db, "player");
+    const playerRef = collection(db, "players_pool");
     const playerQ = query(
       playerRef,
       where("pEmail", "==", loginEmailRef.current.value)
@@ -175,13 +175,13 @@ const Login = () => {
           >
             <span className=" text-base font-semibold">네이버로 로그인</span>
           </button> */}
-          <button
+          {/* <button
             className="w-full h-12 bg-white rounded-md border-gray-300 border"
             disabled
             onClick={() => (window.location.href = "/home")}
           >
             <span className=" text-base font-semibold">구글 로그인</span>
-          </button>
+          </button> */}
         </div>
         <div
           className="flex justify-center mt-10 flex-col gap-y-3 px-4 w-full"

@@ -132,8 +132,11 @@ const Home = () => {
               </span>
             </Link>
           </div>
-          <div className="flex h-80 bg-white w-full rounded-lg shadow-sm flex-col">
+          <div className="flex h-80 bg-white w-full rounded-lg shadow-sm flex-col relative">
             <MyResponsiveRadar data={data} />
+            <div className="flex absolute left-0 top-0 bg-white w-full h-full rounded-lg opacity-70 justify-center items-center">
+              현재 준비중입니다.
+            </div>
           </div>
         </div>
         <div className="flex w-full h-full flex-col">
@@ -145,7 +148,10 @@ const Home = () => {
               더보기
             </span>
           </div>
-          <div className="flex h-60 bg-white w-full rounded-lg shadow-sm p-5 mb-20 gap-x-2 overflow-x-auto overflow-y-hidden flex-nowrap">
+          <div className="flex h-60 bg-white w-full rounded-lg shadow-sm p-5 mb-20 gap-x-2 overflow-x-auto overflow-y-hidden flex-nowrap relative">
+            <div className="flex absolute left-0 top-0 bg-white w-full h-full rounded-lg opacity-70 justify-center items-center">
+              현재 준비중입니다.
+            </div>
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmsyrN_VtrlXd3FkyugXUBrmKvlowe_nq3aQ&usqp=CAU"
               className="w-32 h-48 object-cover rounded-lg"

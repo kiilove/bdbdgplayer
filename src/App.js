@@ -20,6 +20,7 @@ import Register from "./pages/Register";
 import RegisterSuccess from "./pages/RegisterSuccess";
 import RegisterWithEmail from "./pages/RegisterWithEmail";
 import SuccessPage from "./pages/SuccessPage";
+import ContestJoin from "./pages/ContestJoin";
 
 function App() {
   const { userInfo } = useContext(AuthContext);
@@ -101,10 +102,10 @@ function App() {
           }
         />
         <Route
-          path="/cupjoin/:cupId"
+          path="/contestjoin/:contestId"
           element={
             <RequireAuth>
-              <CupJoin />
+              <ContestJoin />
             </RequireAuth>
           }
         />

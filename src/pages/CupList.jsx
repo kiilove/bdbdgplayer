@@ -10,25 +10,47 @@ import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import { async } from "q";
 import { useEffect } from "react";
-import useFirestoreSearch from "../customHooks/useFirestoreSearch";
+import {
+  useFirestoreGetDocument,
+  useFirestoreQuery,
+} from "../hooks/useFirestores";
 
 const CupList = () => {
   //const [cupsData, setCupsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [contests, setContests] = useState({});
+  const [noticeList, setNoticeList] = useState([]);
   const [isRefresh, setIsRefresh] = useState(false);
+  const [error, setError] = useState(false);
+  const getQuery = useFirestoreQuery();
+  const getContests = useFirestoreGetDocument("contests");
   const navigate = useNavigate();
-  const conditions = [where("cupInfo.cupState", "==", "신청접수중")];
-  const { data, loading, error } = useFirestoreSearch(
-    "cups",
-    conditions,
-    "cupInfo.cupDate.startDate"
-  );
 
-  useMemo(() => {
-    if (data.length) {
+  const fetchNotice = async () => {
+    setIsLoading(true);
+    const conditions = [where("contestStatus", "==", "접수중")];
+    try {
+      const data = await getQuery.getDocuments(
+        "contest_notice",
+        conditions,
+        "contestDate"
+      );
+
+      if (data.length > 0) {
+        setNoticeList([...data]);
+      } else {
+        setNoticeList([]);
+      }
+    } catch (error) {
+      setError(error);
+    } finally {
       setIsLoading(false);
     }
-  }, [data]);
+  };
+
+  useEffect(() => {
+    fetchNotice();
+  }, []);
 
   return (
     <div className="flex justify-center items-start align-top bg-white">
@@ -61,20 +83,17 @@ const CupList = () => {
             <Header title="대회 일정" />
             <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-slate-100 px-2">
               <div className="flex flex-col w-full gap-y-5 mt-5 mb-5">
-                {data &&
-                  data.map((item, idx) => {
+                {noticeList?.length > 0 &&
+                  noticeList.map((item, idx) => {
                     let titleLink =
                       "https://firebasestorage.googleapis.com/v0/b/body-36982.appspot.com/o/images%2Fblank%2Fdefault_poster.jpg?alt=media&token=9501d1f2-3e92-45f3-9d54-8d8746ba288d";
-                    const posterTitle = item.cupInfo.cupPoster.filter(
-                      (poster) => poster.title === true
-                    );
-                    if (posterTitle.length > 0) {
-                      titleLink = posterTitle[0].link;
+                    if (item.contestPoster) {
+                      titleLink = item.contestPoster;
                     }
                     return (
                       <div
                         className="flex w-full h-36 flex-col bg-white rounded-lg shadow-sm cursor-pointer"
-                        onClick={() => navigate(`/cupjoin/${item.id}`)}
+                        onClick={() => navigate(`/contestjoin/${item.id}`)}
                       >
                         <div className="flex w-full h-20">
                           <img
@@ -87,24 +106,21 @@ const CupList = () => {
                           <div className="flex w-3/4 flex-col">
                             <div className="flex w-full h-6 p-2">
                               <span className="text-sm">
-                                {item.cupInfo.cupName}
-                              </span>
-                              <span className="text-sm ml-2">
-                                {item.cupInfo.cupCount}회
+                                {item.contestTitle}
                               </span>
                             </div>
                             <div className="flex w-full h-6 p-2">
                               <span className="text-sm">
-                                {moment(item.cupInfo.cupDate.startDate).format(
-                                  "YYYY-MM-DD"
-                                )}
+                                {moment(item.contestDate).format("YYYY-MM-DD")}
                               </span>
                             </div>
                           </div>
                           <div className="flex w-1/4">
                             <button
                               className="w-full flex justify-center items-center bg-orange-300 h-10 rounded-lg mr-2"
-                              onClick={() => navigate(`/cupjoin/${item.id}`)}
+                              onClick={() =>
+                                navigate(`/contestjoin/${item.id}`)
+                              }
                             >
                               참가신청
                             </button>

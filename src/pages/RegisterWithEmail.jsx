@@ -43,6 +43,7 @@ const RegisterWithEmail = () => {
   const pEmailRef = useRef();
   const pwdRef = useRef();
   const rePwdRef = useRef();
+  const pTelRef = useRef();
 
   const navigate = useNavigate();
 
@@ -51,6 +52,7 @@ const RegisterWithEmail = () => {
       ...prev,
       pName: pNameRef.current.value,
       pEmail: pEmailRef.current.value,
+      pTel: pTelRef.current.value,
     }));
   };
 
@@ -105,8 +107,13 @@ const RegisterWithEmail = () => {
   };
   const addPlayer = async (uid) => {
     try {
-      await addDoc(collection(db, "player"), { ...playerInfo, playerUid: uid });
+      console.log(playerInfo);
+      await addDoc(collection(db, "players_pool"), {
+        ...playerInfo,
+        playerUid: uid,
+      });
     } catch (error) {
+      console.log(error);
       console.log(error.message);
     } finally {
     }
@@ -138,7 +145,7 @@ const RegisterWithEmail = () => {
     return genderChk;
   };
 
-  useMemo(() => {
+  useEffect(() => {
     setValidates((prev) => ({
       ...prev,
       inputs: validateInputs(),
@@ -157,6 +164,12 @@ const RegisterWithEmail = () => {
     setIsValidates(!validatesChk);
     console.log(playerInfo);
   }, [validates]);
+
+  useEffect(() => {
+    return () => {
+      setPwdValidate(false);
+    };
+  }, []);
 
   return (
     <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">
@@ -191,6 +204,16 @@ const RegisterWithEmail = () => {
               ref={pEmailRef}
               onChange={() => handleInputs()}
               placeholder="이메일"
+            />
+          </div>
+          <div className="flex justify-center">
+            <input
+              type="text"
+              className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
+              name="pTel"
+              ref={pTelRef}
+              onChange={() => handleInputs()}
+              placeholder="연락처"
             />
           </div>
           <div className="flex justify-center">

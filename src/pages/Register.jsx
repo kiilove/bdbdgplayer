@@ -46,14 +46,14 @@ const Register = () => {
           >
             <span className=" text-base font-semibold">네이버로 시작하기</span>
           </button> */}
-          <button
+          {/* <button
             className="w-full h-12 bg-white rounded-md border-gray-300 border "
             onClick={() => {
               window.location.href = "/registeremail";
             }}
           >
             <span className=" text-base font-semibold">구글 시작하기</span>
-          </button>
+          </button> */}
           <button
             className="w-full h-12 bg-orange-500 rounded-md border-gray-300 border"
             onClick={() => {

@@ -28,16 +28,16 @@ const BottomMenu = () => {
             <span className="text-xs">홈</span>
           </div>
         </Link>
-        <Link to="/career">
+        <Link to="">
           <div className="flex w-16 h-16 justify-center items-center flex-col gap-y-1">
-            <RxSketchLogo className="text-gray-700 text-xl" />
-            <span className="text-xs">커리어</span>
+            <RxSketchLogo className="text-gray-300 text-xl" />
+            <span className="text-xs">(준비중)</span>
           </div>
         </Link>
-        <Link to="/feed">
+        <Link to="">
           <div className="flex w-16 h-16 justify-center items-center flex-col gap-y-1">
-            <RxCamera className="text-gray-700 text-xl" />
-            <span className="text-xs">포토</span>
+            <RxCamera className="text-gray-300 text-xl" />
+            <span className="text-xs">(준비중)</span>
           </div>
         </Link>
         <Link to="/cuplist">
