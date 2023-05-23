@@ -195,7 +195,17 @@ const MyProfile = () => {
                 {pInfo.pTel || "전화번호 입력이 필요합니다."}
               </span>
             </button>
-
+            <button
+              className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
+              onClick={() =>
+                navigate("/editprofile", { state: { editType: "pGym" } })
+              }
+            >
+              <span className="text-sm">소속</span>
+              <span className="text-sm font-light text-gray-400">
+                {pInfo.pGym || "소속클럽을 설정할 수 있습니다."}
+              </span>
+            </button>
             <button
               className="flex w-full h-full flex-col bg-white p-4 gap-y-1 border-b"
               onClick={() =>

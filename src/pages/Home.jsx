@@ -3,7 +3,7 @@ import { DEFAULT_AVATAR } from "../consts";
 
 import { ResponsiveRadar } from "@nivo/radar";
 import BottomMenu from "../components/BottomMenu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
 
@@ -76,6 +76,7 @@ const MyResponsiveRadar = ({ data /* see data tab */ }) => (
 const Home = () => {
   const { userInfo } = useContext(AuthContext);
   const { pInfo } = useContext(PlayerEditContext);
+  const navigate = useNavigate();
 
   //console.log(userInfo);
   return (
@@ -108,17 +109,23 @@ const Home = () => {
           </div>
         </div>
         <div className="flex w-full h-full flex-col">
-          <div className="flex h-32 bg-white w-full rounded-lg shadow-sm flex-col relative ">
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/body-36982.appspot.com/o/images%2Fbanner%2Fmaxresdefault.jpg?alt=media&token=a91c2cc7-0733-4445-8c3f-5b4edf125d77"
-              className="object-cover w-full h-full rounded-lg "
-            />
-            <span
-              className="absolute top-3/4 left-1/2 text-white text-lg font-bold drop-shadow-xl shadow-black"
-              style={{ transform: "translate(-50%,-50%)" }}
-            >
-              용인대회 출전신청
-            </span>
+          <div className="flex h-full bg-white w-full rounded-lg shadow-sm flex-col ">
+            <div className="flex">
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/bdbdgmain.appspot.com/o/images%2Fposter%2Fcompress%2Fbdbdg_1684842361004?alt=media&token=a8a289bd-3450-4d3a-8f2f-ab49289876ec"
+                className="object-cover w-full h-full rounded-lg "
+              />
+            </div>
+            <div className="flex w-full h-10 px-2">
+              <button
+                className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                onClick={() => {
+                  navigate("/contestjoin/GVD75Y1hAMFzsqMnRge1");
+                }}
+              >
+                참가신청
+              </button>
+            </div>
           </div>
         </div>
         <div className="flex w-full h-full flex-col">

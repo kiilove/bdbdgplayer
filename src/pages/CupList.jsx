@@ -14,6 +14,7 @@ import {
   useFirestoreGetDocument,
   useFirestoreQuery,
 } from "../hooks/useFirestores";
+import dayjs from "dayjs";
 
 const CupList = () => {
   //const [cupsData, setCupsData] = useState([]);
@@ -81,7 +82,7 @@ const CupList = () => {
             style={{ maxWidth: "420px" }}
           >
             <Header title="대회 일정" />
-            <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-slate-100 px-2">
+            <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-slate-100 px-2 mb-10">
               <div className="flex flex-col w-full gap-y-5 mt-5 mb-5">
                 {noticeList?.length > 0 &&
                   noticeList.map((item, idx) => {
@@ -92,26 +93,26 @@ const CupList = () => {
                     }
                     return (
                       <div
-                        className="flex w-full h-36 flex-col bg-white rounded-lg shadow-sm cursor-pointer"
+                        className="flex w-full h-auto flex-col bg-white rounded-lg shadow-sm cursor-pointer"
                         onClick={() => navigate(`/contestjoin/${item.id}`)}
                       >
-                        <div className="flex w-full h-20">
+                        <div className="flex w-full h-auto">
                           <img
                             src={titleLink}
                             alt=""
-                            className="w-full h-20 object-cover object-center rounded-t-lg"
+                            className="w-full h-full object-cover object-center rounded-t-lg"
                           />
                         </div>
                         <div className="flex w-full justify-center items-center h-full">
                           <div className="flex w-3/4 flex-col">
-                            <div className="flex w-full h-6 p-2">
+                            <div className="flex w-full h-auto p-2">
                               <span className="text-sm">
                                 {item.contestTitle}
                               </span>
                             </div>
-                            <div className="flex w-full h-6 p-2">
+                            <div className="flex w-full h-auto p-2">
                               <span className="text-sm">
-                                {moment(item.contestDate).format("YYYY-MM-DD")}
+                                {dayjs(item.contestDate).format("YYYY-MM-DD")}
                               </span>
                             </div>
                           </div>

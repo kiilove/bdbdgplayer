@@ -112,6 +112,7 @@ const Login = () => {
             pNick: profile.pNick || "",
             pGender: profile.gender || "",
             pBirth: profile.pBirth || "",
+            pGym: profile.pGym || "",
           },
         });
       })

@@ -31,6 +31,7 @@ import { PlayerEditContext } from "../context/PlayerContext";
 import { useContext } from "react";
 import JoinCupConfirm from "../modals/JoinCupConfirm";
 import dayjs from "dayjs";
+import { AuthContext } from "../context/AuthContext";
 
 const ContestJoin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +43,7 @@ const ContestJoin = () => {
   const [chkAllItem, setChkAllItem] = useState(false);
   const [categorys, setCategorys] = useState([]);
   const [grades, setGrades] = useState([]);
+  const [invoiceInfo, setInvoiceInfo] = useState({ joins: [] });
   const [joinCategorys, setJoinCategorys] = useState([]);
   const [isApply, setIsApply] = useState({
     title: "m1",
@@ -53,6 +55,7 @@ const ContestJoin = () => {
   const getCategorys = useFirestoreGetDocument("contest_categorys_list");
   const getGrades = useFirestoreGetDocument("contest_grades_list");
   const { pInfo } = useContext(PlayerEditContext);
+  const { userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
   const params = useParams();
   const handleOpenModal = ({ component }) => {
@@ -74,37 +77,81 @@ const ContestJoin = () => {
 
     setIsApply((prev) => (prev = apply));
   };
-  const handleJoinGrade = (e) => {
-    const { name, id, value } = e.target;
-    const dummy = [...joinCategorys];
 
+  const handleInvoiceInfo = (e) => {
+    const { name, id, value } = e.target;
+    const splitValue = value.split(",");
+    const gradeId = splitValue[0];
+    const gradeTitle = splitValue[1];
+    const categoryPriceType = splitValue[2];
+    let dummy = [...invoiceInfo.joins];
+    let newInvoiceInfo = { ...invoiceInfo };
     const findCategory = dummy.some(
       (category) => category.contestCategoryId === id
     );
     const findIndex = dummy.findIndex(
       (category) => category.contestCategoryId === id
     );
-    console.log(findCategory);
 
-    if (!findCategory) {
-      dummy.push({
-        contestCategoryId: id,
-        contestCategoryName: name,
-        contestGradeId: value,
-        contests: { ...contests },
-      });
+    const newValue = {
+      contestCategoryId: id,
+      contestCategoryTitle: name,
+      contestCategoryPriceType: categoryPriceType,
+      contestGradeId: gradeId,
+      contestGradeTitle: gradeTitle,
+    };
+
+    if (gradeId === "체급선택") {
+      dummy.splice(findIndex, 1);
+    } else if (!findCategory) {
+      dummy.push({ ...newValue });
     } else {
-      dummy.splice(findIndex, 1, {
-        contestCategoryId: id,
-        contestCategoryName: name,
-        contestGradeId: value,
-        contests: { ...contests },
-      });
+      dummy.splice(findIndex, 1, { ...newValue });
     }
 
-    setJoinCategorys(dummy);
-    console.log(joinCategorys);
+    setInvoiceInfo({ ...newInvoiceInfo, joins: [...dummy] });
   };
+  // const handleJoinGrade = (e) => {
+  //   const { name, id, value } = e.target;
+  //   const dummy = [...joinCategorys];
+
+  //   const findCategory = dummy.some(
+  //     (category) => category.contestCategoryId === id
+  //   );
+  //   const findIndex = dummy.findIndex(
+  //     (category) => category.contestCategoryId === id
+  //   );
+  //   console.log(findCategory);
+
+  //   if (!findCategory) {
+  //     dummy.push({
+  //       contestCategoryId: id,
+  //       contestCategoryTitle: name,
+  //       contestGradeId: value,
+  //       invoicePoolId: contests.invoicesPoolId,
+  //       contestId: contests.id,
+  //       contests: { ...contests },
+  //       pUid: userInfo.pUid,
+  //       playerInfo: { ...pInfo },
+  //       noticeInfo: { ...noticeInfo },
+  //     });
+  //   } else {
+  //     dummy.splice(findIndex, 1, {
+  //       contestCategoryId: id,
+  //       contestCategoryTitle: name,
+  //       contestGradeId: value,
+  //       invoicePoolId: contests.invoicesPoolId,
+  //       contestId: contests.id,
+  //       contests: { ...contests },
+  //       pUid: userInfo.pUid,
+  //       playerInfo: { ...pInfo },
+  //       noticeInfo: { ...noticeInfo },
+  //     });
+  //   }
+
+  //   setJoinCategorys(dummy);
+  //   console.log(joinCategorys);
+  // };
   const fetchNotice = async () => {
     setIsLoading(true);
     try {
@@ -158,6 +205,43 @@ const ContestJoin = () => {
     );
     console.log("contests", contests);
   }, [contests]);
+
+  useEffect(() => {
+    if (
+      !noticeInfo.contestTitle ||
+      !contests.contestNoticeId ||
+      !pInfo.pName ||
+      !userInfo.pUid
+    ) {
+      console.log("??", noticeInfo.contestTitle);
+      return;
+    }
+    const initInvocieInfo = {
+      invoicePoolId: contests.invoicesPoolId,
+      contestId: contests.id,
+      contestTitle: noticeInfo.contestTitle,
+      contestDate: noticeInfo.contestDate,
+      contestLocation: noticeInfo.contestLocation,
+      contestPriceBasic: noticeInfo.contestPriceBasic,
+      contestPriceExtra: noticeInfo.contestPriceExtra,
+      contestPriceExtraType: noticeInfo.contestPriceExtraType,
+      contestPriceType1: noticeInfo.contestPriceType1,
+      contestPriceType2: noticeInfo.contestPriceType2,
+      playerUid: userInfo.pUid,
+      playerName: pInfo.pName,
+      playerTel: pInfo.pTel,
+      playerEmail: pInfo.pEmail,
+      playerBirth: pInfo.pBirth,
+      playerGym: pInfo.pGym || "무소속",
+      playerGender: pInfo.pGender,
+      joins: [],
+    };
+    setInvoiceInfo({ ...initInvocieInfo });
+  }, [noticeInfo, contests, pInfo, userInfo]);
+
+  useEffect(() => {
+    console.log(invoiceInfo);
+  }, [invoiceInfo]);
 
   return (
     <div className="flex justify-center items-start align-top bg-white">
@@ -255,7 +339,9 @@ const ContestJoin = () => {
                       </div>
                       <div className="flex items-center">
                         <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          대한은행 000-00000-0000000
+                          {noticeInfo?.contestBankName}{" "}
+                          {noticeInfo?.contestAccountNumber}{" "}
+                          {noticeInfo?.contestAccountOwner}
                         </span>
                         <button className="ml-1">
                           <RxCopy />
@@ -273,7 +359,7 @@ const ContestJoin = () => {
                   <div className="flex w-full h-full">
                     <img
                       src={noticeInfo?.contestPoster}
-                      className="flex w-full h-80 object-cover object-top"
+                      className="flex w-full h-full object-cover object-top"
                     />
                   </div>
                 </div>
@@ -375,6 +461,7 @@ const ContestJoin = () => {
                         const {
                           contestCategoryTitle: cTitle,
                           contestCategoryId: cId,
+                          contestCategoryPriceType: cType,
                         } = category;
                         const matchGrades = grades.filter(
                           (grade) => grade.refCategoryId === cId
@@ -392,7 +479,7 @@ const ContestJoin = () => {
                                   id={cId}
                                   name={cTitle}
                                   className="text-sm"
-                                  onChange={(e) => handleJoinGrade(e)}
+                                  onChange={(e) => handleInvoiceInfo(e)}
                                 >
                                   <option>체급선택</option>
                                   {matchGrades.map((grade, gIdx) => {
@@ -402,7 +489,10 @@ const ContestJoin = () => {
                                     } = grade;
 
                                     return (
-                                      <option id={gId} value={gId}>
+                                      <option
+                                        id={gId}
+                                        value={gId + "," + gTitle + "," + cType}
+                                      >
                                         {gTitle}
                                       </option>
                                     );
@@ -431,10 +521,10 @@ const ContestJoin = () => {
                           [필수]
                         </span>
                         <span className="text-xs">
-                          개인정보 수집 및 이용 동의
+                          개인정보 수집 이용 동의 및 초상권 사용동의서
                         </span>
                       </label>
-                      <button>
+                      <button onClick={() => navigate("/policy3")}>
                         <span className="font-bold">
                           <FontAwesomeIcon icon={faArrowRight} />
                         </span>
@@ -444,14 +534,14 @@ const ContestJoin = () => {
                 </div>
                 <div className="flex w-full h-full mt-4">
                   <div className="flex w-full justify-center items px-2">
-                    {joinCategorys.length !== 0 && isApply.value ? (
+                    {invoiceInfo.joins.length > 0 && isApply.value ? (
                       <button
                         className="flex w-full bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
                         onClick={() =>
                           handleOpenModal({
                             component: (
                               <JoinCupConfirm
-                                joinGameInvoice={joinCategorys}
+                                propInvoiceInfo={invoiceInfo}
                                 prevSetModal={setModal}
                               />
                             ),

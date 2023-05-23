@@ -21,6 +21,7 @@ import RegisterSuccess from "./pages/RegisterSuccess";
 import RegisterWithEmail from "./pages/RegisterWithEmail";
 import SuccessPage from "./pages/SuccessPage";
 import ContestJoin from "./pages/ContestJoin";
+import Policy3 from "./components/Policy3";
 
 function App() {
   const { userInfo } = useContext(AuthContext);
@@ -122,6 +123,14 @@ function App() {
           element={
             <RequireAuth>
               <EditProfile />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/policy3"
+          element={
+            <RequireAuth>
+              <Policy3 />
             </RequireAuth>
           }
         />

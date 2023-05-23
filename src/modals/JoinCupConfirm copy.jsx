@@ -8,11 +8,6 @@ import { useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import { useEffect } from "react";
-import {
-  useFirestoreAddData,
-  useFirestoreUpdateData,
-} from "../hooks/useFirestores";
 
 const successMessage = (
   <div className="flex w-full h-full flex-col">
@@ -22,115 +17,101 @@ const successMessage = (
   </div>
 );
 
-const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
-  const [invoicePrice, setInvoicePrice] = useState(0);
-  const [invoiceInfo, setInvoiceInfo] = useState({ ...propInvoiceInfo });
+const JoinCupConfirm = ({ joinGameInvoice, prevSetModal }) => {
+  const [joinFee, setJoinFee] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const addInvoice = useFirestoreAddData("invoices_pool");
   const navigate = useNavigate();
 
-  const handlePrice = (data, priceInfo) => {
-    let basePrice = 0;
-    let extraPrice = 0;
-    let totalPrice = 0;
-    const categoryCount = data.length;
+  const handleFee = () => {
+    let sumFee = 0;
+    let extraCount = 0;
+    const basicFee = joinGameInvoice.cupInfo.cupFee.basicFee;
+    const extraFee = joinGameInvoice.cupInfo.cupFee.extraFee;
+    const extraType = joinGameInvoice.cupInfo.cupFee.extraType;
+    const gameCount = joinGameInvoice.joinGames.length;
 
-    if (categoryCount <= 1) {
-      switch (data[0].contestCategoryPriceType) {
-        case "기본참가비":
-          totalPrice = parseInt(priceInfo.contestPriceBasic);
-          break;
-        case "타입1":
-          totalPrice = parseInt(priceInfo.contestPriceType1);
-          break;
-        case "타입2":
-          totalPrice = parseInt(priceInfo.contestPriceType2);
-          break;
-        default:
-          break;
-      }
+    if (gameCount <= 1) {
+      extraCount = 0;
     } else {
-      if (priceInfo.contestPriceExtraType === "누적") {
-        extraPrice =
-          parseInt(priceInfo.contestPriceExtra) * (categoryCount - 1);
-      } else if (priceInfo.contestPriceExtraType === "정액") {
-        extraPrice = parseInt(priceInfo.contestPriceExtra);
-      } else {
-        extraPrice = 0;
-      }
-
-      const findType1 = data.some(
-        (d) => d.contestCategoryPriceType === "타입1"
-      );
-      const findType2 = data.some(
-        (d) => d.contestCategoryPriceType === "타입2"
-      );
-      const findBasic = data.some(
-        (d) => d.contestCategoryPriceType === "기본참가비"
-      );
-
-      if (findType1) {
-        basePrice = parseInt(priceInfo.contestPriceType1);
-      } else if (findType2) {
-        basePrice = parseInt(priceInfo.contestPriceType2);
-      } else {
-        basePrice = parseInt(priceInfo.contestPriceBasic);
-      }
-
-      totalPrice = basePrice + extraPrice;
+      extraCount = gameCount - 1;
     }
 
-    return totalPrice;
-  };
+    switch (extraType) {
+      case "정액":
+        console.log("정액");
+        if (extraCount > 0) {
+          sumFee = basicFee + extraFee;
+        } else {
+          sumFee = basicFee;
+        }
+        break;
+      case "누적":
+        console.log(extraCount);
+        if (extraCount > 0) {
+          sumFee = basicFee + extraFee * extraCount;
+        } else {
+          sumFee = basicFee;
+        }
+        break;
+      case "없음":
+        sumFee = basicFee;
 
+      default:
+        break;
+    }
+
+    setJoinFee(sumFee);
+  };
   const handleInvoice = () => {
     setIsLoading(true);
+    const invoice = {
+      cupId: joinGameInvoice.id,
+      cupName: joinGameInvoice.cupInfo.cupName,
+      cupOrg: joinGameInvoice.cupInfo.cupOrg,
+      cupDate: dayjs(joinGameInvoice.cupInfo.cupDate.startDate).format(
+        "YYYY-MM-DD"
+      ),
+      feeInfo: {
+        joinFee,
+        incomeFee: 0,
+        incomeType: "",
+        incomeChecker: "",
+        incomeDate: "",
+        incomeMemo: "",
+      },
+      pId: joinGameInvoice.pId,
+      pUid: joinGameInvoice.pUid,
+      pName: joinGameInvoice.pName,
+      pBirth: joinGameInvoice.pBirth,
+      pGender: joinGameInvoice.pGender,
+      pTel: joinGameInvoice.pTel,
+      pEmail: joinGameInvoice.pEmail,
+      invoiceDate: dayjs().format("YYYY-MM-DD HH:MM:ss"),
+      joinGames: joinGameInvoice.joinGames,
+      apply: joinGameInvoice.apply,
+    };
 
-    saveJoinCup(invoiceInfo);
+    saveJoinCup(invoice);
   };
-
-  useEffect(() => {
-    console.log(invoiceInfo);
-  }, [invoiceInfo]);
 
   const saveJoinCup = async (datas) => {
     const randomString = Math.random().toString(36).substring(2, 6);
-    const docuId = (
+    const id = (
       randomString +
       "-" +
       Date.now().toString().substr(-6)
     ).toUpperCase();
-    // await addDoc(collection(db, "cupsjoin"), { docuId: id, ...datas })
-    //   .then((addDoc) => console.log(addDoc.id))
-    //   .then(() => setIsLoading(false))
-    //   .then(() => {
-    //     navigate("/successpage", { replace: true });
-    //   });
-    const newData = { docuId, ...datas };
-    try {
-      await addInvoice
-        .addData(newData)
-        .then(() => setIsLoading(false))
-        .then(() => {
-          navigate("/successpage", { replace: true });
-        });
-    } catch (error) {
-      console.log(error);
-    }
+    await addDoc(collection(db, "cupsjoin"), { docuId: id, ...datas })
+      .then((addDoc) => console.log(addDoc.id))
+      .then(() => setIsLoading(false))
+      .then(() => {
+        navigate("/successpage", { replace: true });
+      });
   };
+  useMemo(() => console.log(joinGameInvoice), []);
 
-  useEffect(() => {
-    const priceInfo = {
-      contestPriceBasic: invoiceInfo.contestPriceBasic,
-      contestPriceExtra: invoiceInfo.contestPriceExtra,
-      contestPriceExtraType: invoiceInfo.contestPriceExtraType,
-      contestPriceType1: invoiceInfo.contestPriceType1,
-      contestPriceType2: invoiceInfo.contestPriceType2,
-    };
-
-    setInvoicePrice(handlePrice(invoiceInfo.joins, priceInfo));
-  }, [invoiceInfo]);
-
+  useMemo(() => handleFee(), [joinGameInvoice]);
+  useMemo(() => console.log(joinFee), [joinFee]);
   return (
     <div className="flex w-full h-screen flex-col bg-white items-center">
       <div
@@ -143,37 +124,38 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
           </div>
           <div className="flex w-full justify-start items-center px-2">
             <span className="text-sm ">
-              대회명 : {invoiceInfo?.contestTitle}
+              대회명 : {joinGameInvoice.cupInfo.cupName}
             </span>
           </div>
           <div className="flex w-full justify-start items-center px-2">
             <span className="text-sm ">
-              대회일자 : {invoiceInfo?.contestDate}
+              대회일자 :{" "}
+              {moment(joinGameInvoice.cupInfo.cupDate.startDate).format(
+                "YYYY-MM-DD"
+              )}
             </span>
           </div>
           <div className="flex w-full justify-start items-center px-2">
             <span className="text-sm ">
-              대회장소 : {invoiceInfo?.contestLocation}
+              대회장소 : {joinGameInvoice.cupInfo.cupLocation}
             </span>
           </div>
           <div className="flex w-full justify-start items-center px-2">
             <span className="text-sm ">
-              참가비 : {invoicePrice?.toLocaleString()} 원
+              참가비 : {Number(joinFee).toLocaleString()}
             </span>
           </div>
           <div className="flex w-full justify-start items-center  flex-col">
             <div className="flex w-full justify-start items-center px-2">
               <span className="text-sm ">참가신청</span>
             </div>
-            {invoiceInfo.joins.length > 0 ? (
+            {joinGameInvoice.joinGames.length > 0 ? (
               <div className="flex w-full justify-start flex-col">
-                {invoiceInfo.joins.map((item, idx) => (
+                {joinGameInvoice.joinGames.map((item, idx) => (
                   <div className="flex w-full ml-2">
                     <span className="text-sm mr-1">{idx + 1}.</span>
-                    <span className="text-sm mr-1">
-                      {item.contestCategoryTitle}
-                    </span>
-                    <span className="text-sm">({item.contestGradeTitle})</span>
+                    <span className="text-sm mr-1">{item.gameTitle}</span>
+                    <span className="text-sm">({item.gameClass})</span>
                   </div>
                 ))}
               </div>

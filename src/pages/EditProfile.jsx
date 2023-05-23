@@ -12,6 +12,8 @@ import EditTel from "../components/EditTel";
 import EditEmail from "../components/EditEmail";
 import EditNick from "../components/EditNick";
 import EditBirth from "../components/EditBirth";
+import EditGym from "../components/EditGym";
+import EditGender from "../components/EditGender";
 
 const EditProfile = () => {
   const { userInfo } = useContext(AuthContext);
@@ -52,6 +54,20 @@ const EditProfile = () => {
         ...initInfo,
         headerTitle: "생년월일",
         component: <EditBirth />,
+      };
+      break;
+    case "pGender":
+      initInfo = {
+        ...initInfo,
+        headerTitle: "성별",
+        component: <EditGender />,
+      };
+      break;
+    case "pGym":
+      initInfo = {
+        ...initInfo,
+        headerTitle: "소속클럽",
+        component: <EditGym />,
       };
       break;
     default:
