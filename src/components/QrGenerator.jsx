@@ -7,7 +7,7 @@ const QrGenerator = () => {
       <QRCode
         size={256}
         className="w-full h-full"
-        value={"https://bdbdg-demo.web.app/"}
+        value={"https://www.bdbdg.kr/"}
       />
     </div>
   );
