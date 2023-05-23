@@ -19,7 +19,11 @@ const EditEmail = () => {
 
   const updatePlayer = async (data) => {
     setIsLoading(true);
-    await setDoc(doc(db, "player", userInfo.id), { ...data }, { merge: true })
+    await setDoc(
+      doc(db, "players_pool", userInfo.id),
+      { ...data },
+      { merge: true }
+    )
       .then(() => {
         if (pEmail !== ("" || undefined || null)) {
           editDispatch({ type: "EDIT", payload: data });

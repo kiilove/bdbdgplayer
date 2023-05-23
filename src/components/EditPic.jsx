@@ -75,7 +75,7 @@ const EditPic = ({}) => {
   const updatePlayerPic = async (data) => {
     console.log(data);
     await setDoc(
-      doc(db, "player", userInfo.id),
+      doc(db, "players_pool", userInfo.id),
       { ...data },
       { merge: true }
     ).then(() => {

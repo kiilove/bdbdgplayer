@@ -27,6 +27,10 @@ import {
   useFirestoreQuery,
 } from "../hooks/useFirestores";
 import { useEffect } from "react";
+import { PlayerEditContext } from "../context/PlayerContext";
+import { useContext } from "react";
+import JoinCupConfirm from "../modals/JoinCupConfirm";
+import dayjs from "dayjs";
 
 const ContestJoin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,9 +39,20 @@ const ContestJoin = () => {
   const [error, setError] = useState(false);
   const [modal, setModal] = useState(false);
   const [modalComponent, setModalComponent] = useState("");
+  const [chkAllItem, setChkAllItem] = useState(false);
+  const [categorys, setCategorys] = useState([]);
+  const [grades, setGrades] = useState([]);
+  const [joinCategorys, setJoinCategorys] = useState([]);
+  const [isApply, setIsApply] = useState({
+    title: "m1",
+    value: false,
+    applyDate: "",
+  });
   const getNotice = useFirestoreGetDocument("contest_notice");
   const getContests = useFirestoreGetDocument("contests");
-
+  const getCategorys = useFirestoreGetDocument("contest_categorys_list");
+  const getGrades = useFirestoreGetDocument("contest_grades_list");
+  const { pInfo } = useContext(PlayerEditContext);
   const navigate = useNavigate();
   const params = useParams();
   const handleOpenModal = ({ component }) => {
@@ -48,7 +63,46 @@ const ContestJoin = () => {
   const handleCloseModal = () => {
     setModal(() => false);
   };
+  const handleApply = () => {
+    const apply = {
+      title: "m1",
+      value: !isApply.value,
+      date: dayjs().format("YYYY-MM-DD HH:MM:ss"),
+    };
 
+    console.log(apply);
+
+    setIsApply((prev) => (prev = apply));
+  };
+  const handleJoinGrade = (e) => {
+    const { name, id, value } = e.target;
+    const dummy = [...joinCategorys];
+
+    const findCategory = dummy.some(
+      (category) => category.contestCategoryId === id
+    );
+    const findIndex = dummy.findIndex(
+      (category) => category.contestCategoryId === id
+    );
+    console.log(findCategory);
+
+    if (!findCategory) {
+      dummy.push({
+        contestCategoryId: id,
+        contestCategoryName: name,
+        contestGradeId: value,
+      });
+    } else {
+      dummy.splice(findIndex, 1, {
+        contestCategoryId: id,
+        contestCategoryName: name,
+        contestGradeId: value,
+      });
+    }
+
+    setJoinCategorys(dummy);
+    console.log(joinCategorys);
+  };
   const fetchNotice = async () => {
     setIsLoading(true);
     try {
@@ -73,11 +127,36 @@ const ContestJoin = () => {
     } finally {
       setIsLoading(false);
     }
+
+    //console.log("contests", contests);
+  };
+
+  const fetchCategorysAndGrades = async (categoryListId, gradeListId) => {
+    try {
+      const categoryData = await getCategorys.getDocument(categoryListId);
+      console.log(categoryData);
+      const gradeData = await getGrades.getDocument(gradeListId);
+      if (categoryData.id && gradeData.id) {
+        setCategorys([...categoryData.categorys]);
+        setGrades([...gradeData.grades]);
+      } else {
+        return;
+      }
+    } catch (error) {
+      setError(true);
+    }
   };
 
   useEffect(() => {
     fetchNotice();
   }, []);
+
+  useEffect(() => {
+    fetchCategorysAndGrades(
+      contests.contestCategorysListId,
+      contests.contestGradesListId
+    );
+  }, [contests]);
 
   return (
     <div className="flex justify-center items-start align-top bg-white">
@@ -99,7 +178,7 @@ const ContestJoin = () => {
           />
         </div>
       )}
-      {error && <div>error</div>}
+      {error && console.log(error)}
       {!isLoading && (
         <>
           <BottomMenu />
@@ -113,10 +192,10 @@ const ContestJoin = () => {
             </Modal>
             <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white">
               <div className="flex flex-col w-full mb-5">
-                <div className="flex w-full h-52 flex-col bg-orange-300 p-4 gap-y-1">
+                <div className="flex w-full h-60 flex-col bg-orange-300 p-4 gap-y-1">
                   <div className="flex">
                     <span className="text-lg font-medium z-10">
-                      {noticeInfo.contestOrg}-참가공고
+                      {noticeInfo.contestPromoter}-참가공고
                       <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
                     </span>
                   </div>
@@ -152,7 +231,7 @@ const ContestJoin = () => {
                       </div>
                       <div className="flex">
                         <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          {noticeInfo.contestPriceBasic.toLocaleString()}
+                          {noticeInfo.contestPriceBasic?.toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -162,7 +241,7 @@ const ContestJoin = () => {
                       </div>
                       <div className="flex justify-start items-center">
                         <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          {noticeInfo.contestPriceExtra.toLocaleString()}
+                          {noticeInfo.contestPriceExtra?.toLocaleString()}
                         </span>
                         <span className="text-xs ml-2">중복출전비용</span>
                       </div>
@@ -189,7 +268,7 @@ const ContestJoin = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex w-full px-6 relative -top-8 z-10">
+                <div className="flex w-full px-2 relative -top-4 z-10">
                   <div className="flex w-full h-full">
                     <img
                       src={noticeInfo?.contestPoster}
@@ -197,8 +276,8 @@ const ContestJoin = () => {
                     />
                   </div>
                 </div>
-                <div className="flex  w-full h-44 flex-col bg-white px-2">
-                  <div className="flex flex-col w-full p-4 border">
+                <div className="flex  w-full h-auto flex-col bg-white px-2 gap-y-2">
+                  <div className="flex flex-col w-full p-4 border h-auto gap-y-1">
                     <div className="flex justify-between">
                       <span className="text-lg font-medium z-10">
                         프로필
@@ -211,14 +290,20 @@ const ContestJoin = () => {
                         <span className="text-xs text-white">프로필설정</span>
                       </button>
                     </div>
-                    <span className="text-xl font-normal font-san"></span>
+                    <span className="text-xl font-normal font-san">
+                      {pInfo.pName && pInfo.pName}
+                    </span>
                     <div className="flex w-full text-purple-700">
                       <div className="flex w-1/4 justify-start">
                         <div className="flex justify-start items-center">
                           <BsGenderAmbiguous />
                         </div>
                         <div className="flex">
-                          <span className="ml-1 text-sm font-semi-bold justify-start items-center"></span>
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {pInfo.pGender && pInfo.pGender === "m"
+                              ? "남자"
+                              : "여자"}
+                          </span>
                         </div>
                       </div>
                       <div className="flex w-3/4">
@@ -226,17 +311,21 @@ const ContestJoin = () => {
                           <RiCalendarLine />
                         </div>
                         <div className="flex">
-                          <span className="ml-1 text-sm font-semi-bold justify-start items-center"></span>
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {pInfo.pBirth && pInfo.pBirth}
+                          </span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex w-full text-gray-700 flex-col">
+                    <div className="flex w-full text-gray-700 flex-col gap-y-1">
                       <div className="flex w-full">
                         <div className="flex justify-start items-center">
                           <MdOutlineAlternateEmail />
                         </div>
                         <div className="flex">
-                          <span className="ml-1 text-sm font-light justify-start items-center"></span>
+                          <span className="ml-1 text-sm font-light justify-start items-center">
+                            {pInfo.pEmail && pInfo.pEmail}
+                          </span>
                         </div>
                       </div>
                       <div className="flex w-full">
@@ -244,18 +333,20 @@ const ContestJoin = () => {
                           <GoDeviceMobile />
                         </div>
                         <div className="flex">
-                          <span className="ml-1 text-sm font-light justify-start items-center"></span>
+                          <span className="ml-1 text-sm font-light justify-start items-center">
+                            {pInfo.pTel && pInfo.pTel}
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex  w-full flex-col bg-white px-2">
+                <div className="flex  w-full flex-col bg-white px-2 mt-4">
                   <div className="flex flex-col w-full p-4 border">
                     <div className="flex justify-between">
                       <span className="text-lg font-medium z-10">
-                        종목참가
+                        참가종목선택
                         <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
                       </span>
                     </div>
@@ -265,14 +356,63 @@ const ContestJoin = () => {
                     <span className="text-sm font-light">
                       신중한 선택 부탁드립니다.
                     </span>
-                    <div className="flex w-full justify-around mt-2">
-                      <button className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"></button>
+                    {/* <div className="flex w-full justify-around mt-2">
+                      <button
+                        className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"
+                        onClick={() => setChkAllItem(!chkAllItem)}
+                      >
+                        {chkAllItem === true ? "최적종목표시" : "전체종목표시"}
+                      </button>
                       <button className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light">
                         선택초기화
                       </button>
-                    </div>
+                    </div> */}
                   </div>
-                  <div className="flex w-full items-start justify-between mt-4 flex-wrap gap-2"></div>
+                  <div className="flex w-full items-start justify-between mt-4 flex-wrap gap-2">
+                    {categorys?.length > 0 &&
+                      categorys.map((category, cIdex) => {
+                        const {
+                          contestCategoryTitle: cTitle,
+                          contestCategoryId: cId,
+                        } = category;
+                        const matchGrades = grades.filter(
+                          (grade) => grade.refCategoryId === cId
+                        );
+                        //console.log(matchGrades);
+
+                        return (
+                          <div className="flex w-full h-14 border px-2 items-center justify-center">
+                            <div className="flex h-10 justify-start items-center w-2/3">
+                              <span className="text-sm">{cTitle}</span>
+                            </div>
+                            <div className="flex h-10 justify-start items-center w-1/3">
+                              {matchGrades?.length > 0 && (
+                                <select
+                                  id={cId}
+                                  name={cTitle}
+                                  className="text-sm"
+                                  onChange={(e) => handleJoinGrade(e)}
+                                >
+                                  <option>체급선택</option>
+                                  {matchGrades.map((grade, gIdx) => {
+                                    const {
+                                      contestGradeTitle: gTitle,
+                                      contestGradeId: gId,
+                                    } = grade;
+
+                                    return (
+                                      <option id={gId} value={gId}>
+                                        {gTitle}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
                 </div>
                 <div className="flex  w-full flex-col bg-white px-2 mt-4">
                   <div className="flex flex-col w-full p-4 border">
@@ -284,6 +424,7 @@ const ContestJoin = () => {
                           name="m2Apply"
                           value="m2Apply"
                           className="mr-2"
+                          onChange={() => handleApply()}
                         />
                         <span className="text-gray-500 mr-1 text-xs">
                           [필수]
@@ -302,14 +443,14 @@ const ContestJoin = () => {
                 </div>
                 <div className="flex w-full h-full mt-4">
                   <div className="flex w-full justify-center items px-2">
-                    {/* {playerJoinGames.length !== 0 && isApply.value ? (
+                    {joinCategorys.length !== 0 && isApply.value ? (
                       <button
                         className="flex w-full bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
                         onClick={() =>
                           handleOpenModal({
                             component: (
                               <JoinCupConfirm
-                                joinGameInvoice={joinGameInvoice}
+                                joinGameInvoice={joinCategorys}
                                 prevSetModal={setModal}
                               />
                             ),
@@ -329,7 +470,7 @@ const ContestJoin = () => {
                           종목선택과 개인정보 수집동의가 필요합니다.
                         </span>
                       </button>
-                    )} */}
+                    )}
                   </div>
                 </div>
               </div>

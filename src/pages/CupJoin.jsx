@@ -85,20 +85,22 @@ const CupJoin = () => {
     setModal(() => false);
   };
   const initCheckBox = (datas) => {
-    let initValue = "";
-    let initClass = [];
-    let dummy = [];
-
-    datas.length > 0 &&
-      datas.map((items, idx) => {
-        items.class.map((item) => {
-          const classValue = { title: item.title, chk: false };
-          initClass.push({ ...classValue });
-        });
-        initValue = { title: items.title, class: initClass };
-        dummy.push(initValue);
-        initClass = [];
-      });
+    // let initValue = "";
+    // let initClass = [];
+    // let dummy = [];
+    // datas.length > 0 &&
+    //   datas.map((items, idx) => {
+    //     items.class.map((item) => {
+    //       const classValue = { title: item.title, chk: false };
+    //       initClass.push({ ...classValue });
+    //     });
+    //     {
+    //       pInfo.pBirth && pInfo.pBirth;
+    //     }
+    //     initValue = { title: items.title, class: initClass };
+    //     dummy.push(initValue);
+    //     initClass = [];
+    //   });
   };
 
   const handleAge = (birth, cup) => {
