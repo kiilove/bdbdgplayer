@@ -22,6 +22,7 @@ import RegisterWithEmail from "./pages/RegisterWithEmail";
 import SuccessPage from "./pages/SuccessPage";
 import ContestJoin from "./pages/ContestJoin";
 import Policy3 from "./components/Policy3";
+import ContestJoinEdit from "./pages/ContestJoinEdit";
 
 function App() {
   const { userInfo } = useContext(AuthContext);
@@ -107,6 +108,14 @@ function App() {
           element={
             <RequireAuth>
               <ContestJoin />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/contestjoinedit/:invoiceId"
+          element={
+            <RequireAuth>
+              <ContestJoinEdit />
             </RequireAuth>
           }
         />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import moment from "moment";
 import { useMemo } from "react";
@@ -15,16 +15,20 @@ import {
   useFirestoreQuery,
 } from "../hooks/useFirestores";
 import dayjs from "dayjs";
+import { AuthContext } from "../context/AuthContext";
 
 const CupList = () => {
   //const [cupsData, setCupsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isJoin, setIsJoin] = useState(false);
+  const [invoiceId, setInvoiceId] = useState("");
   const [contests, setContests] = useState({});
   const [noticeList, setNoticeList] = useState([]);
   const [isRefresh, setIsRefresh] = useState(false);
   const [error, setError] = useState(false);
   const getQuery = useFirestoreQuery();
   const getContests = useFirestoreGetDocument("contests");
+  const { userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const fetchNotice = async () => {
@@ -49,9 +53,27 @@ const CupList = () => {
     }
   };
 
+  const fetchQuery = async () => {
+    const conditions = [where("playerUid", "==", userInfo.pUid)];
+    try {
+      const data = await getQuery.getDocuments("invoices_pool", conditions);
+      if (data.length > 0) {
+        setIsJoin(true);
+
+        setInvoiceId(data[0].id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchNotice();
   }, []);
+
+  useEffect(() => {
+    fetchQuery();
+  }, [noticeList]);
 
   return (
     <div className="flex justify-center items-start align-top bg-white">
@@ -117,14 +139,25 @@ const CupList = () => {
                             </div>
                           </div>
                           <div className="flex w-1/4">
-                            <button
-                              className="w-full flex justify-center items-center bg-orange-300 h-10 rounded-lg mr-2"
-                              onClick={() =>
-                                navigate(`/contestjoin/${item.id}`)
-                              }
-                            >
-                              참가신청
-                            </button>
+                            {isJoin ? (
+                              <button
+                                className="w-full flex justify-center items-center bg-orange-300 h-10 rounded-lg mr-2"
+                                onClick={() =>
+                                  navigate(`/contestjoinedit/${invoiceId}`)
+                                }
+                              >
+                                변경신청
+                              </button>
+                            ) : (
+                              <button
+                                className="w-full flex justify-center items-center bg-orange-300 h-10 rounded-lg mr-2"
+                                onClick={() =>
+                                  navigate(`/contestjoin/${item.id}`)
+                                }
+                              >
+                                참가신청
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>

@@ -106,7 +106,13 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
     //   .then(() => {
     //     navigate("/successpage", { replace: true });
     //   });
-    const newData = { docuId, ...datas };
+
+    //console.log(dayjs(new Date()).format("YYYY-MM-DD HH:mm"));
+    const newData = {
+      docuId,
+      invoiceCreateAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
+      ...datas,
+    };
     try {
       await addInvoice
         .addData(newData)
