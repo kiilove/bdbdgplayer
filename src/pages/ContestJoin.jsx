@@ -91,12 +91,14 @@ const ContestJoin = () => {
         contestCategoryId: id,
         contestCategoryName: name,
         contestGradeId: value,
+        contests: { ...contests },
       });
     } else {
       dummy.splice(findIndex, 1, {
         contestCategoryId: id,
         contestCategoryName: name,
         contestGradeId: value,
+        contests: { ...contests },
       });
     }
 
@@ -127,8 +129,6 @@ const ContestJoin = () => {
     } finally {
       setIsLoading(false);
     }
-
-    //console.log("contests", contests);
   };
 
   const fetchCategorysAndGrades = async (categoryListId, gradeListId) => {
@@ -156,6 +156,7 @@ const ContestJoin = () => {
       contests.contestCategorysListId,
       contests.contestGradesListId
     );
+    console.log("contests", contests);
   }, [contests]);
 
   return (
