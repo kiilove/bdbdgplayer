@@ -2,6 +2,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
   getAuth,
   signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -16,6 +17,8 @@ import { ThreeDots } from "react-loader-spinner";
 
 const RegisterWithEmail = () => {
   const [playerInfo, setPlayerInfo] = useState({});
+  const [existEmail, setExistEmail] = useState(false);
+  const [chkEmail, setChkEmail] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [inputs, setInputs] = useState({
     pName: undefined,
@@ -34,6 +37,11 @@ const RegisterWithEmail = () => {
     pwd: false,
     gender: false,
     license: false,
+  });
+
+  const [alertMessage, setAlertMessage] = useState({
+    email: { code: "", message: "" },
+    pwd: { code: "", message: "" },
   });
   const [isValidates, setIsValidates] = useState(false);
   const [inputsValidate, setInputsValidate] = useState(false);
@@ -93,6 +101,39 @@ const RegisterWithEmail = () => {
     return licenseChk;
   };
 
+  async function checkEmailExists(email) {
+    try {
+      const auth = getAuth();
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+
+      if (signInMethods.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Error fetching sign-in methods:", error);
+      throw error;
+    }
+  }
+
+  const handleChkEmail = async () => {
+    try {
+      const result = await checkEmailExists(pEmailRef.current.value.trim());
+      if (result === true) {
+        setAlertMessage({
+          ...alertMessage,
+          email: { code: "exist", message: "이미 사용중인 이메일입니다." },
+        });
+      } else {
+        setAlertMessage({ ...alertMessage, email: { code: "", message: "" } });
+        setChkEmail(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const addAuth = async () => {
     setIsLoading(true);
     const auth = getAuth();
@@ -134,15 +175,35 @@ const RegisterWithEmail = () => {
   };
 
   const validatePwd = () => {
-    const pwdChk =
-      rePwdRef.current !== undefined
-        ? pwdRef.current.value === rePwdRef.current.value
-          ? true
-          : false
-        : false;
+    // const pwdChk =
+    //   rePwdRef.current !== undefined
+    //     ? pwdRef.current.value === rePwdRef.current.value
+    //       ? true
+    //       : false
+    //     : false;
+    if (pwdRef.current.value.length < 6) {
+      setPwdValidate(true);
+      setAlertMessage({
+        ...alertMessage,
+        pwd: { code: "short", message: "6자리이상 입력해주세요." },
+      });
+      return;
+    }
+    if (pwdRef.current.value !== rePwdRef.current.value) {
+      setPwdValidate(true);
+      setAlertMessage({
+        ...alertMessage,
+        pwd: { code: "wrong", message: "비밀번호가 일치하지 않습니다." },
+      });
+      return;
+    }
+    if (pwdRef.current.value === rePwdRef.current.value) {
+      setPwdValidate(false);
+      setAlertMessage({ ...alertMessage, pwd: { code: "", message: "" } });
+      return;
+    }
 
-    setPwdValidate(pwdChk);
-    return pwdChk;
+    return pwdValidate;
   };
 
   const validateGender = () => {
@@ -202,15 +263,34 @@ const RegisterWithEmail = () => {
               placeholder="실명(별명은 마이페이지에서)"
             />
           </div>
-          <div className="flex justify-center">
-            <input
-              type="text"
-              className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
-              name="pEmail"
-              ref={pEmailRef}
-              onChange={() => handleInputs()}
-              placeholder="이메일"
-            />
+          <div className="flex justify-center w-full gap-x-2 flex-col">
+            <div className="flex justify-center w-full gap-x-2 ">
+              <div className="flex w-3/4">
+                <input
+                  type="text"
+                  className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
+                  name="pEmail"
+                  ref={pEmailRef}
+                  onChange={() => handleInputs()}
+                  placeholder="이메일"
+                />
+              </div>
+              <div className="flex w-1/4 py-1">
+                <button
+                  className="bg-orange-500 w-24 rounded-md text-gray-100"
+                  onClick={() => handleChkEmail()}
+                >
+                  중복확인
+                </button>
+              </div>
+            </div>
+            {alertMessage.email.code === "exist" && (
+              <div className="flex justify-start mt-3">
+                <span className="text-xs ml-2 bg-yellow-200 p-2">
+                  {alertMessage.email.message}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex justify-center">
             <input
@@ -222,6 +302,7 @@ const RegisterWithEmail = () => {
               placeholder="연락처"
             />
           </div>
+
           <div className="flex justify-center">
             <input
               type="password"
@@ -232,11 +313,19 @@ const RegisterWithEmail = () => {
               placeholder="비밀번호"
             />
           </div>
+          {alertMessage.pwd.code === "short" && (
+            <div className="flex justify-start">
+              <span className="text-xs ml-2 bg-yellow-200 p-2">
+                {alertMessage.pwd.message}
+              </span>
+            </div>
+          )}
+
           <div className="flex justify-center">
             <input
               type="password"
               className={
-                pwdValidate
+                !pwdValidate
                   ? "w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
                   : "w-full h-12 rounded-md focus:ring-0 focus:outline-red-600 border-red-600 border-2 px-5 font-light"
               }
@@ -246,10 +335,10 @@ const RegisterWithEmail = () => {
               placeholder="비밀번호확인"
             />
           </div>
-          {!pwdValidate && (
+          {alertMessage.pwd.code === "wrong" && (
             <div className="flex justify-start">
               <span className="text-xs ml-2 bg-yellow-200 p-2">
-                비밀번호가 일치하지 않습니다.
+                {alertMessage.pwd.message}
               </span>
             </div>
           )}
@@ -409,9 +498,15 @@ const RegisterWithEmail = () => {
             )
           ) : (
             <button className="w-full h-12 bg-gray-400 rounded-md border-gray-300 border mt-5 disabled cursor-not-allowed">
-              <span className=" text-base font-medium text-white">
-                회원가입
-              </span>
+              {chkEmail ? (
+                <span className=" text-base font-medium text-white">
+                  회원가입
+                </span>
+              ) : (
+                <span className=" text-base font-medium text-white">
+                  이메일중복확인필요
+                </span>
+              )}
             </button>
           )}
         </div>

@@ -12,7 +12,8 @@ import { db } from "../firebase";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [loginUSer, setLoginUser] = useState({});
+  const [loginInfo, setLoginInfo] = useState({});
+  const [existEmail, setExistEmail] = useState(true);
 
   const loginEmailRef = useRef();
   const loginPasswordRef = useRef();
@@ -63,8 +64,8 @@ const Login = () => {
     });
   };
   const handleLogin = async () => {
-    const lEmail = loginEmailRef.current.value;
-    const lPwd = loginPasswordRef.current.value;
+    const lEmail = loginInfo.email.trim();
+    const lPwd = loginInfo.password.trim();
 
     if (!lEmail && !lPwd) {
       window.alert("아이디와 비밀번호를 입력해주세요");
@@ -72,19 +73,15 @@ const Login = () => {
       setIsLoading(true);
       await getPlayerEmail().then((result) =>
         result
-          ? playerLogin()
+          ? playerLogin(lEmail, lPwd)
           : navigate("/loginerror", { state: "auth/user-not-found" })
       );
     }
   };
 
-  const playerLogin = async () => {
+  const playerLogin = async (email, pwd) => {
     const auth = getAuth();
-    await signInWithEmailAndPassword(
-      auth,
-      loginEmailRef.current.value,
-      loginPasswordRef.current.value
-    )
+    await signInWithEmailAndPassword(auth, email.trim(), pwd.trim())
       .then(async (user) => {
         const userInfo = user;
         const profile = await getPlayerProfile(userInfo.user.uid);
@@ -127,6 +124,11 @@ const Login = () => {
 
         //handleToast({ type: "error", msg: errorMessage });
       });
+  };
+
+  const handleInputs = (e) => {
+    const { name, value } = e.target;
+    setLoginInfo(() => ({ ...loginInfo, [name]: value.trim() }));
   };
 
   return (
@@ -194,7 +196,9 @@ const Login = () => {
           <div className="flex justify-center">
             <input
               type="text"
-              name="refEmail"
+              name="email"
+              value={loginInfo.email}
+              onChange={(e) => handleInputs(e)}
               ref={loginEmailRef}
               className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-400 px-5 font-light"
               placeholder="이메일"
@@ -203,7 +207,9 @@ const Login = () => {
           <div className="flex justify-center">
             <input
               type="password"
-              name="refPassword"
+              name="password"
+              value={loginInfo.password}
+              onChange={(e) => handleInputs(e)}
               ref={loginPasswordRef}
               className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-400 px-5 font-light"
               placeholder="비밀번호"

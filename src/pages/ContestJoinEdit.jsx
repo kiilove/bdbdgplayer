@@ -479,6 +479,13 @@ const ContestJoinEdit = () => {
                         </span>
                       </div>
                     </div>
+                    <div className="flex">
+                      {pBirthRef.current?.value.length < 7 && (
+                        <span className="text-xs ml-2 bg-yellow-200 p-2">
+                          8자리 생년월일을 작성해주세요.
+                        </span>
+                      )}
+                    </div>
                     <div className="flex w-full">
                       <div className="flex w-1/5 items-center">
                         <span>전화번호 : </span>
@@ -583,9 +590,12 @@ const ContestJoinEdit = () => {
                 </div>
                 {!isValidate ? (
                   <div className="flex  w-full flex-col bg-white px-2 mt-4 justify-center items-center">
-                    <span className="text-sm text-orange-500">
+                    <span className="text-sm text-orange-500 font-sans font-semibold">
                       필수 개인정보를 정확하게 입력하시면 종목선택화면이
                       표시됩니다.
+                    </span>
+                    <span className="text-sm text-gray-500 font-sans font-semibold">
+                      필수항목 : 이름, 성별, 생년월일, 전화번호, 소속
                     </span>
                   </div>
                 ) : (

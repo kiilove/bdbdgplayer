@@ -365,7 +365,7 @@ const ContestJoin = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && noticeInfo.contestTitle && (
         <>
           <BottomMenu />
           <div
@@ -555,6 +555,13 @@ const ContestJoin = () => {
                         </span>
                       </div>
                     </div>
+                    <div className="flex">
+                      {pBirthRef.current?.value.length < 7 && (
+                        <span className="text-xs ml-2 bg-yellow-200 p-2">
+                          8자리 생년월일을 작성해주세요.
+                        </span>
+                      )}
+                    </div>
                     <div className="flex w-full">
                       <div className="flex w-1/5 items-center">
                         <span>전화번호 : </span>
@@ -658,10 +665,13 @@ const ContestJoin = () => {
                   </div>
                 </div>
                 {!isValidate ? (
-                  <div className="flex  w-full flex-col bg-white px-2 mt-4 justify-center items-center">
-                    <span className="text-sm text-orange-500">
+                  <div className="flex  w-full flex-col bg-white  mt-4 justify-center items-start">
+                    <span className="text-sm text-orange-500 font-sans font-semibold">
                       필수 개인정보를 정확하게 입력하시면 종목선택화면이
                       표시됩니다.
+                    </span>
+                    <span className="text-sm text-gray-500 font-sans font-semibold">
+                      필수항목 : 이름, 성별, 생년월일, 전화번호, 소속
                     </span>
                   </div>
                 ) : (
@@ -765,34 +775,36 @@ const ContestJoin = () => {
                     </div>
                   </div>
                 )}
-
-                <div className="flex  w-full flex-col bg-white px-2 mt-4">
-                  <div className="flex flex-col w-full p-4 border">
-                    <span className="text-sm">개인정보수집동의</span>
-                    <div className="flex w-full justify-between">
-                      <label className="flex justify-start items-center align-middle">
-                        <input
-                          type="checkbox"
-                          name="m2Apply"
-                          value="m2Apply"
-                          className="mr-2"
-                          onChange={() => handleApply()}
-                        />
-                        <span className="text-gray-500 mr-1 text-xs">
-                          [필수]
-                        </span>
-                        <span className="text-xs">
-                          개인정보 수집 이용 동의 및 초상권 사용동의서
-                        </span>
-                      </label>
-                      <button onClick={() => navigate("/policy3")}>
-                        <span className="font-bold">
-                          <FontAwesomeIcon icon={faArrowRight} />
-                        </span>
-                      </button>
+                {isValidate && (
+                  <div className="flex  w-full flex-col bg-white px-2 mt-4">
+                    <div className="flex flex-col w-full p-4 border">
+                      <span className="text-sm">개인정보수집동의</span>
+                      <div className="flex w-full justify-between">
+                        <label className="flex justify-start items-center align-middle">
+                          <input
+                            type="checkbox"
+                            name="m2Apply"
+                            value="m2Apply"
+                            className="mr-2"
+                            onChange={() => handleApply()}
+                          />
+                          <span className="text-gray-500 mr-1 text-xs">
+                            [필수]
+                          </span>
+                          <span className="text-xs">
+                            개인정보 수집 이용 동의 및 초상권 사용동의서
+                          </span>
+                        </label>
+                        <button onClick={() => navigate("/policy3")}>
+                          <span className="font-bold">
+                            <FontAwesomeIcon icon={faArrowRight} />
+                          </span>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+
                 <div className="flex w-full h-full mt-4">
                   <div className="flex w-full justify-center items px-2">
                     {invoiceInfo.joins.length > 0 &&

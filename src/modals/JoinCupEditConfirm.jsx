@@ -96,9 +96,9 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
 
   const saveJoinCup = async (datas) => {
     const newData = {
-      invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
-      contestPriceSum: parseInt(invoicePrice),
       ...datas,
+      invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
+      contestPriceSum: parseInt(handlePrice(invoiceInfo.joins, priceInfo)),
     };
     try {
       await updateInvoice
@@ -112,15 +112,14 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
     }
   };
 
+  const priceInfo = {
+    contestPriceBasic: invoiceInfo.contestPriceBasic,
+    contestPriceExtra: invoiceInfo.contestPriceExtra,
+    contestPriceExtraType: invoiceInfo.contestPriceExtraType,
+    contestPriceType1: invoiceInfo.contestPriceType1,
+    contestPriceType2: invoiceInfo.contestPriceType2,
+  };
   useEffect(() => {
-    const priceInfo = {
-      contestPriceBasic: invoiceInfo.contestPriceBasic,
-      contestPriceExtra: invoiceInfo.contestPriceExtra,
-      contestPriceExtraType: invoiceInfo.contestPriceExtraType,
-      contestPriceType1: invoiceInfo.contestPriceType1,
-      contestPriceType2: invoiceInfo.contestPriceType2,
-    };
-
     setInvoicePrice(handlePrice(invoiceInfo.joins, priceInfo));
   }, [invoiceInfo]);
 
