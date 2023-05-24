@@ -23,6 +23,7 @@ import SuccessPage from "./pages/SuccessPage";
 import ContestJoin from "./pages/ContestJoin";
 import Policy3 from "./components/Policy3";
 import ContestJoinEdit from "./pages/ContestJoinEdit";
+import EditSuccessPage from "./pages/EditSuccessPage";
 
 function App() {
   const { userInfo } = useContext(AuthContext);
@@ -55,6 +56,7 @@ function App() {
         <Route path="/registeremail" element={<RegisterWithEmail />} />
         <Route path="/regsuccess" element={<RegisterSuccess />} />
         <Route path="/successpage" element={<SuccessPage />} />
+        <Route path="/editsuccesspage" element={<EditSuccessPage />} />
         <Route
           path="/career"
           element={
@@ -104,14 +106,6 @@ function App() {
           }
         />
         <Route
-          path="/contestjoin/:contestId"
-          element={
-            <RequireAuth>
-              <ContestJoin />
-            </RequireAuth>
-          }
-        />
-        <Route
           path="/contestjoinedit/:invoiceId"
           element={
             <RequireAuth>
@@ -119,6 +113,15 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route
+          path="/contestjoin/:contestId"
+          element={
+            <RequireAuth>
+              <ContestJoin />
+            </RequireAuth>
+          }
+        />
+
         <Route
           path="/myprofile"
           element={

@@ -114,10 +114,7 @@ const CupList = () => {
                       titleLink = item.contestPoster;
                     }
                     return (
-                      <div
-                        className="flex w-full h-auto flex-col bg-white rounded-lg shadow-sm cursor-pointer"
-                        onClick={() => navigate(`/contestjoin/${item.id}`)}
-                      >
+                      <div className="flex w-full h-auto flex-col bg-white rounded-lg shadow-sm cursor-pointer">
                         <div className="flex w-full h-auto">
                           <img
                             src={titleLink}
@@ -139,7 +136,7 @@ const CupList = () => {
                             </div>
                           </div>
                           <div className="flex w-1/4">
-                            {isJoin ? (
+                            {isJoin && (
                               <button
                                 className="w-full flex justify-center items-center bg-orange-300 h-10 rounded-lg mr-2"
                                 onClick={() =>
@@ -148,11 +145,12 @@ const CupList = () => {
                               >
                                 변경신청
                               </button>
-                            ) : (
+                            )}
+                            {!isJoin && (
                               <button
                                 className="w-full flex justify-center items-center bg-orange-300 h-10 rounded-lg mr-2"
                                 onClick={() =>
-                                  navigate(`/contestjoin/${item.id}`)
+                                  navigate(`/contestjoin/${item.contesId}`)
                                 }
                               >
                                 참가신청

@@ -22,11 +22,12 @@ const successMessage = (
   </div>
 );
 
-const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
+const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
   const [invoicePrice, setInvoicePrice] = useState(0);
   const [invoiceInfo, setInvoiceInfo] = useState({ ...propInvoiceInfo });
   const [isLoading, setIsLoading] = useState(false);
   const addInvoice = useFirestoreAddData("invoices_pool");
+  const updateInvoice = useFirestoreUpdateData("invoices_pool");
   const navigate = useNavigate();
 
   const handlePrice = (data, priceInfo) => {
@@ -94,32 +95,17 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
   }, [invoiceInfo]);
 
   const saveJoinCup = async (datas) => {
-    const randomString = Math.random().toString(36).substring(2, 6);
-    const docuId = (
-      randomString +
-      "-" +
-      Date.now().toString().substr(-6)
-    ).toUpperCase();
-    // await addDoc(collection(db, "cupsjoin"), { docuId: id, ...datas })
-    //   .then((addDoc) => console.log(addDoc.id))
-    //   .then(() => setIsLoading(false))
-    //   .then(() => {
-    //     navigate("/successpage", { replace: true });
-    //   });
-
-    //console.log(dayjs(new Date()).format("YYYY-MM-DD HH:mm"));
     const newData = {
-      docuId,
-      invoiceCreateAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
+      invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
       contestPriceSum: parseInt(invoicePrice),
       ...datas,
     };
     try {
-      await addInvoice
-        .addData(newData)
+      await updateInvoice
+        .updateData(invoiceInfo.id, newData)
         .then(() => setIsLoading(false))
         .then(() => {
-          navigate("/successpage", { replace: true });
+          navigate("/editsuccesspage", { replace: true });
         });
     } catch (error) {
       console.log(error);
@@ -146,7 +132,7 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
       >
         <div className="flex w-full flex-col gap-y-1 h-full mt-5 border-2 border-dashed p-5">
           <div className="flex w-full h-20 justify-center items-center p-5">
-            <span className="text-2xl font-semibold">참가신청내용확인</span>
+            <span className="text-2xl font-semibold">변경내용확인</span>
           </div>
           <div className="flex  w-full h-auto flex-col bg-white px-2 gap-y-2">
             <div className="flex flex-col w-full p-4 border h-auto gap-y-3">
@@ -269,7 +255,7 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
               className="w-32 h-12 bg-orange-500 rounded-lg shasdow text-white font-semibold"
               onClick={() => handleInvoice()}
             >
-              신청서접수
+              변경신청
             </button>
           )}
         </div>
@@ -278,4 +264,4 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
   );
 };
 
-export default JoinCupConfirm;
+export default JoinCupEditConfirm;

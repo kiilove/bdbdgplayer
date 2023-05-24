@@ -6,6 +6,10 @@ import BottomMenu from "../components/BottomMenu";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
+import { useFirestoreQuery } from "../hooks/useFirestores";
+import { useState } from "react";
+import { where } from "firebase/firestore";
+import { useEffect } from "react";
 
 const data = [
   {
@@ -76,9 +80,29 @@ const MyResponsiveRadar = ({ data /* see data tab */ }) => (
 const Home = () => {
   const { userInfo } = useContext(AuthContext);
   const { pInfo } = useContext(PlayerEditContext);
+  const [isJoin, setIsJoin] = useState(false);
+  const [invoiceId, setInvoiceId] = useState("");
   const navigate = useNavigate();
+  const getQuery = useFirestoreQuery();
 
-  //console.log(userInfo);
+  const fetchQuery = async () => {
+    const conditions = [where("playerUid", "==", userInfo.pUid)];
+    try {
+      const data = await getQuery.getDocuments("invoices_pool", conditions);
+      if (data.length > 0) {
+        setIsJoin(true);
+
+        setInvoiceId(data[0].id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuery();
+  }, []);
+
   return (
     <div className="flex justify-center items-start align-top bg-slate-100">
       <BottomMenu />
@@ -117,14 +141,24 @@ const Home = () => {
               />
             </div>
             <div className="flex w-full h-10 px-2">
-              <button
-                className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
-                onClick={() => {
-                  navigate("/contestjoin/GVD75Y1hAMFzsqMnRge1");
-                }}
-              >
-                참가신청
-              </button>
+              {isJoin && (
+                <button
+                  className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                  onClick={() => navigate(`/contestjoinedit/${invoiceId}`)}
+                >
+                  변경신청
+                </button>
+              )}
+              {!isJoin && (
+                <button
+                  className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                  onClick={() => {
+                    navigate("/contestjoin/GVD75Y1hAMFzsqMnRge1");
+                  }}
+                >
+                  참가신청
+                </button>
+              )}
             </div>
           </div>
         </div>

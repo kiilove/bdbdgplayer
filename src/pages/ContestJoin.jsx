@@ -39,11 +39,13 @@ const ContestJoin = () => {
   const [noticeInfo, setNoticeInfo] = useState({});
   const [contests, setContests] = useState({});
   const [error, setError] = useState(false);
+  const [playerAge, setPlayerAge] = useState();
   const [modal, setModal] = useState(false);
   const [modalComponent, setModalComponent] = useState("");
   const [chkAllItem, setChkAllItem] = useState(false);
   const [isValidate, setIsValidate] = useState(false);
   const [categorys, setCategorys] = useState([]);
+  const [filteredCategorys, setFilteredCategorys] = useState([]);
   const [grades, setGrades] = useState([]);
   const [invoiceInfo, setInvoiceInfo] = useState({ joins: [] });
   const [playerInfo, setPlayerInfo] = useState({});
@@ -130,47 +132,7 @@ const ContestJoin = () => {
 
     setInvoiceInfo({ ...newInvoiceInfo, joins: [...dummy] });
   };
-  // const handleJoinGrade = (e) => {
-  //   const { name, id, value } = e.target;
-  //   const dummy = [...joinCategorys];
 
-  //   const findCategory = dummy.some(
-  //     (category) => category.contestCategoryId === id
-  //   );
-  //   const findIndex = dummy.findIndex(
-  //     (category) => category.contestCategoryId === id
-  //   );
-  //   console.log(findCategory);
-
-  //   if (!findCategory) {
-  //     dummy.push({
-  //       contestCategoryId: id,
-  //       contestCategoryTitle: name,
-  //       contestGradeId: value,
-  //       invoicePoolId: contests.invoicesPoolId,
-  //       contestId: contests.id,
-  //       contests: { ...contests },
-  //       pUid: userInfo.pUid,
-  //       playerInfo: { ...pInfo },
-  //       noticeInfo: { ...noticeInfo },
-  //     });
-  //   } else {
-  //     dummy.splice(findIndex, 1, {
-  //       contestCategoryId: id,
-  //       contestCategoryTitle: name,
-  //       contestGradeId: value,
-  //       invoicePoolId: contests.invoicesPoolId,
-  //       contestId: contests.id,
-  //       contests: { ...contests },
-  //       pUid: userInfo.pUid,
-  //       playerInfo: { ...pInfo },
-  //       noticeInfo: { ...noticeInfo },
-  //     });
-  //   }
-
-  //   setJoinCategorys(dummy);
-  //   console.log(joinCategorys);
-  // };
   const fetchNotice = async () => {
     setIsLoading(true);
     try {
@@ -204,6 +166,7 @@ const ContestJoin = () => {
       const gradeData = await getGrades.getDocument(gradeListId);
       if (categoryData.id && gradeData.id) {
         setCategorys([...categoryData.categorys]);
+        setFilteredCategorys([...categoryData.categorys]);
         setGrades([...gradeData.grades]);
       } else {
         return;
@@ -212,7 +175,22 @@ const ContestJoin = () => {
       setError(true);
     }
   };
+  function calculateAge(birthDate) {
+    const today = new Date();
+    const birth = new Date(birthDate);
 
+    let age = today.getFullYear() - birth.getFullYear();
+
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  }
   useEffect(() => {
     fetchNotice();
   }, []);
@@ -222,8 +200,27 @@ const ContestJoin = () => {
       contests.contestCategorysListId,
       contests.contestGradesListId
     );
-    console.log("contests", contests);
   }, [contests]);
+
+  useEffect(() => {
+    let age;
+    const gender = invoiceInfo.playerGender === "m" ? "남" : "여";
+    if (invoiceInfo.playerBirth) {
+      age = calculateAge(invoiceInfo.playerBirth);
+    }
+    setPlayerAge(age);
+
+    if (chkAllItem) {
+      setFilteredCategorys([...categorys]);
+    } else {
+      const dummy = categorys.filter(
+        (category) =>
+          category.contestCategoryGender === gender ||
+          category.contestCategoryGender === "무관"
+      );
+      setFilteredCategorys([...dummy]);
+    }
+  }, [chkAllItem, invoiceInfo.playerGender, invoiceInfo.playerBirth]);
 
   useEffect(() => {
     if (
@@ -232,7 +229,6 @@ const ContestJoin = () => {
       !pInfo.pName ||
       !userInfo.pUid
     ) {
-      console.log("??", noticeInfo.contestTitle);
       return;
     }
     const initInvocieInfo = {
@@ -247,6 +243,9 @@ const ContestJoin = () => {
       contestPriceExtraType: noticeInfo.contestPriceExtraType,
       contestPriceType1: noticeInfo.contestPriceType1,
       contestPriceType2: noticeInfo.contestPriceType2,
+      contestBankName: noticeInfo.contestBankName,
+      contestAccountNumber: noticeInfo.contestAccountNumber,
+      contestAccountOwner: noticeInfo.contestAccountOwner,
       playerUid: userInfo.pUid,
       playerName: pInfo.pName,
       playerTel: pInfo.pTel,
@@ -254,6 +253,8 @@ const ContestJoin = () => {
       playerBirth: pInfo.pBirth,
       playerGym: pInfo.pGym,
       playerGender: pInfo.pGender,
+      playerText: "",
+      isPriceCheck: false,
       joins: [],
     };
     setInvoiceInfo({ ...initInvocieInfo });
@@ -267,14 +268,18 @@ const ContestJoin = () => {
 
   useEffect(() => {
     handlePlayerValidate();
-    console.log(invoiceInfo);
-    console.log(playerValidate);
-    console.log("생일", pBirthRef.current?.value);
   }, [invoiceInfo]);
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
-    setInvoiceInfo({ ...invoiceInfo, [name]: value.trim() });
+
+    if (name === "playerText") {
+      e.preventDefault();
+      setInvoiceInfo({ ...invoiceInfo, [name]: value });
+    } else {
+      setInvoiceInfo({ ...invoiceInfo, [name]: value.trim() });
+    }
+
     handlePlayerValidate();
   };
 
@@ -337,12 +342,7 @@ const ContestJoin = () => {
 
     const formattedDate = match.slice(1).filter(Boolean).join("-"); // '-' 추가하여 조합
     return formattedDate;
-    //setInvoiceInfo({ ...invoiceInfo, playerBirth: formattedDate });
   }
-
-  // 예시 사용
-  const formattedDate = formatDate("20231225"); // 입력: "20231225"
-  console.log(formattedDate); // 출력: "2023-12-25"
 
   return (
     <div className="flex justify-center items-start align-top bg-white">
@@ -364,7 +364,7 @@ const ContestJoin = () => {
           />
         </div>
       )}
-      {error && console.log(error)}
+
       {!isLoading && (
         <>
           <BottomMenu />
@@ -545,10 +545,14 @@ const ContestJoin = () => {
                           }}
                           className={`${
                             playerValidate.playerBirth
-                              ? "border-2 p-2 outline-none border-red-400 rounded-lg w-full"
-                              : "border p-2 outline-none rounded-lg w-full"
+                              ? "border-2 p-2 outline-none border-red-400 rounded-lg w-40"
+                              : "border p-2 outline-none rounded-lg w-40"
                           }`}
                         />
+                        <span className="flex justify-start items-center ml-2 text-sm">
+                          {Number.isInteger(playerAge) &&
+                            "만 " + playerAge + "세"}
+                        </span>
                       </div>
                     </div>
                     <div className="flex w-full">
@@ -653,83 +657,115 @@ const ContestJoin = () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="flex  w-full flex-col bg-white px-2 mt-4">
-                  <div className="flex flex-col w-full p-4 border">
-                    <div className="flex justify-between">
-                      <span className="text-lg font-medium z-10">
-                        참가종목선택
-                        <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
+                {!isValidate ? (
+                  <div className="flex  w-full flex-col bg-white px-2 mt-4 justify-center items-center">
+                    <span className="text-sm text-orange-500">
+                      필수 개인정보를 정확하게 입력하시면 종목선택화면이
+                      표시됩니다.
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex  w-full flex-col bg-white px-2 mt-4">
+                    <div className="flex flex-col w-full p-4 border">
+                      <div className="flex justify-between">
+                        <span className="text-lg font-medium z-10">
+                          참가종목선택
+                          <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
+                        </span>
+                      </div>
+                      <span className="text-sm font-light">
+                        상향지원 가능하지만 하향지원은 불가능합니다.
                       </span>
+                      <span className="text-sm font-light">
+                        신중한 선택 부탁드립니다.
+                      </span>
+                      <div className="flex w-full justify-around mt-2">
+                        <button
+                          className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"
+                          onClick={() => setChkAllItem(!chkAllItem)}
+                        >
+                          {chkAllItem === true
+                            ? "최적종목표시"
+                            : "전체종목표시"}
+                        </button>
+                        <button
+                          className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"
+                          onClick={() =>
+                            setInvoiceInfo(() => ({
+                              ...invoiceInfo,
+                              joins: [],
+                            }))
+                          }
+                        >
+                          선택초기화
+                        </button>
+                      </div>
                     </div>
-                    <span className="text-sm font-light">
-                      상향지원 가능하지만 하향지원은 불가능합니다.
-                    </span>
-                    <span className="text-sm font-light">
-                      신중한 선택 부탁드립니다.
-                    </span>
-                    {/* <div className="flex w-full justify-around mt-2">
-                      <button
-                        className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"
-                        onClick={() => setChkAllItem(!chkAllItem)}
-                      >
-                        {chkAllItem === true ? "최적종목표시" : "전체종목표시"}
-                      </button>
-                      <button className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light">
-                        선택초기화
-                      </button>
-                    </div> */}
-                  </div>
-                  <div className="flex w-full items-start justify-between mt-4 flex-wrap gap-2">
-                    {categorys?.length > 0 &&
-                      categorys.map((category, cIdex) => {
-                        const {
-                          contestCategoryTitle: cTitle,
-                          contestCategoryId: cId,
-                          contestCategoryPriceType: cType,
-                        } = category;
-                        const matchGrades = grades.filter(
-                          (grade) => grade.refCategoryId === cId
-                        );
-                        //console.log(matchGrades);
+                    <div className="flex w-full items-start justify-between mt-4 flex-wrap gap-2">
+                      {filteredCategorys?.length > 0 &&
+                        filteredCategorys.map((category, cIdex) => {
+                          const {
+                            contestCategoryTitle: cTitle,
+                            contestCategoryId: cId,
+                            contestCategoryPriceType: cType,
+                          } = category;
+                          const matchGrades = grades.filter(
+                            (grade) => grade.refCategoryId === cId
+                          );
+                          //console.log(matchGrades);
 
-                        return (
-                          <div className="flex w-full h-14 border px-2 items-center justify-center">
-                            <div className="flex h-10 justify-start items-center w-2/3">
-                              <span className="text-sm">{cTitle}</span>
-                            </div>
-                            <div className="flex h-10 justify-start items-center w-1/3">
-                              {matchGrades?.length > 0 && (
-                                <select
-                                  id={cId}
-                                  name={cTitle}
-                                  className="text-sm"
-                                  onChange={(e) => handleInvoiceInfo(e)}
-                                >
-                                  <option>체급선택</option>
-                                  {matchGrades.map((grade, gIdx) => {
-                                    const {
-                                      contestGradeTitle: gTitle,
-                                      contestGradeId: gId,
-                                    } = grade;
+                          return (
+                            <div
+                              className={`${
+                                invoiceInfo?.joins.some(
+                                  (join) => join.contestCategoryId === cId
+                                )
+                                  ? "flex w-full h-14 border px-2 items-center justify-center bg-orange-300"
+                                  : "flex w-full h-14 border px-2 items-center justify-center"
+                              }`}
+                            >
+                              <div className="flex h-10 justify-start items-center w-2/3">
+                                <span className="text-sm">{cTitle}</span>
+                              </div>
+                              <div className="flex h-10 justify-start items-center w-1/3">
+                                {matchGrades?.length > 0 && (
+                                  <select
+                                    id={cId}
+                                    name={cTitle}
+                                    className="text-sm bg-transparent outline-none"
+                                    onChange={(e) => handleInvoiceInfo(e)}
+                                  >
+                                    <option>체급선택</option>
+                                    {matchGrades.map((grade, gIdx) => {
+                                      const {
+                                        contestGradeTitle: gTitle,
+                                        contestGradeId: gId,
+                                      } = grade;
 
-                                    return (
-                                      <option
-                                        id={gId}
-                                        value={gId + "," + gTitle + "," + cType}
-                                      >
-                                        {gTitle}
-                                      </option>
-                                    );
-                                  })}
-                                </select>
-                              )}
+                                      return (
+                                        <option
+                                          id={gId}
+                                          selected={invoiceInfo?.joins.some(
+                                            (i) => i.contestGradeId === gId
+                                          )}
+                                          value={
+                                            gId + "," + gTitle + "," + cType
+                                          }
+                                        >
+                                          {gTitle}
+                                        </option>
+                                      );
+                                    })}
+                                  </select>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                    </div>
                   </div>
-                </div>
+                )}
+
                 <div className="flex  w-full flex-col bg-white px-2 mt-4">
                   <div className="flex flex-col w-full p-4 border">
                     <span className="text-sm">개인정보수집동의</span>
