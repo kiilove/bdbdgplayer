@@ -53,7 +53,7 @@ function App() {
         <Route path="/loginerror" element={<LoginError />} />
         <Route path="/register" element={<Register />} />
         <Route path="/registeremail" element={<RegisterWithEmail />} />
-        <Route path="/regsuccess" element={<SuccessPage />} />
+        <Route path="/regsuccess" element={<RegisterSuccess />} />
         <Route path="/successpage" element={<SuccessPage />} />
         <Route
           path="/career"

@@ -32,7 +32,6 @@ import { useContext } from "react";
 import JoinCupConfirm from "../modals/JoinCupConfirm";
 import dayjs from "dayjs";
 import { AuthContext } from "../context/AuthContext";
-import { useRef } from "react";
 
 const ContestJoin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,18 +41,9 @@ const ContestJoin = () => {
   const [modal, setModal] = useState(false);
   const [modalComponent, setModalComponent] = useState("");
   const [chkAllItem, setChkAllItem] = useState(false);
-  const [isValidate, setIsValidate] = useState(false);
   const [categorys, setCategorys] = useState([]);
   const [grades, setGrades] = useState([]);
   const [invoiceInfo, setInvoiceInfo] = useState({ joins: [] });
-  const [playerInfo, setPlayerInfo] = useState({});
-  const [playerValidate, setPlayerValidate] = useState({
-    playerName: false,
-    playerTel: false,
-    playerBirth: false,
-    playerGym: false,
-    playerGender: false,
-  });
   const [joinCategorys, setJoinCategorys] = useState([]);
   const [isApply, setIsApply] = useState({
     title: "m1",
@@ -67,15 +57,6 @@ const ContestJoin = () => {
   const { pInfo } = useContext(PlayerEditContext);
   const { userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  const pNameRef = useRef();
-  const pTelRef = useRef();
-  const pGenderRef = useRef();
-  const pEmailRef = useRef();
-  const pBirthRef = useRef();
-  const pGymRef = useRef();
-  const pTextRef = useRef();
-
   const params = useParams();
   const handleOpenModal = ({ component }) => {
     setModal(() => true);
@@ -252,7 +233,7 @@ const ContestJoin = () => {
       playerTel: pInfo.pTel,
       playerEmail: pInfo.pEmail,
       playerBirth: pInfo.pBirth,
-      playerGym: pInfo.pGym,
+      playerGym: pInfo.pGym || "무소속",
       playerGender: pInfo.pGender,
       joins: [],
     };
@@ -266,83 +247,8 @@ const ContestJoin = () => {
   };
 
   useEffect(() => {
-    handlePlayerValidate();
     console.log(invoiceInfo);
-    console.log(playerValidate);
-    console.log("생일", pBirthRef.current?.value);
   }, [invoiceInfo]);
-
-  const handleInputs = (e) => {
-    const { name, value } = e.target;
-    setInvoiceInfo({ ...invoiceInfo, [name]: value.trim() });
-    handlePlayerValidate();
-  };
-
-  const handlePlayerValidate = () => {
-    const updatedPlayerValidate = {
-      playerName:
-        !invoiceInfo.playerName || invoiceInfo.playerName.trim() === "",
-      playerTel:
-        !invoiceInfo.playerTel || !validatePhoneNumber(invoiceInfo.playerTel),
-      playerBirth:
-        !invoiceInfo.playerBirth || !validateDate(invoiceInfo.playerBirth),
-      playerGender: !invoiceInfo.playerGender,
-      playerGym: !invoiceInfo.playerGym || invoiceInfo.playerGym.trim() === "",
-    };
-
-    setPlayerValidate(updatedPlayerValidate);
-    const validate = Object.values(updatedPlayerValidate).some(
-      (u) => u === true
-    );
-    setIsValidate(!validate);
-  };
-
-  function validateEmail(email) {
-    return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  function validatePhoneNumber(phoneNumber) {
-    return phoneNumber && /^\d{3}-\d{3,4}-\d{4}$/.test(phoneNumber);
-  }
-
-  function validateDate(date) {
-    return date && /^\d{4}-\d{2}-\d{2}$/.test(date);
-  }
-
-  function formatPhoneNumber(phoneNumber) {
-    if (!phoneNumber) {
-      return;
-    }
-    const trimmedNumber = phoneNumber.replace(/-/g, ""); // 기존의 '-' 제거
-    const match = trimmedNumber.match(/^(\d{2,3})(\d{0,4})(\d{0,4})$/); // 숫자 그룹으로 분리
-
-    if (!match) {
-      return phoneNumber; // 형식에 맞지 않는 경우 그대로 반환
-    }
-
-    const formattedNumber = match.slice(1).filter(Boolean).join("-"); // '-' 추가하여 조합
-
-    return formattedNumber;
-  }
-
-  function formatDate(date) {
-    if (!date) {
-      return;
-    }
-    const sanitizedDate = date.replace(/[^\d.-]/g, ""); // `.`과 `,`을 제외한 다른 문자 제거
-
-    const match = sanitizedDate.match(/^(\d{0,4})(\d{0,2})(\d{0,2})$/); // 숫자 그룹으로 분리
-
-    if (!match) return date; // 형식에 맞지 않는 경우 그대로 반환
-
-    const formattedDate = match.slice(1).filter(Boolean).join("-"); // '-' 추가하여 조합
-    return formattedDate;
-    //setInvoiceInfo({ ...invoiceInfo, playerBirth: formattedDate });
-  }
-
-  // 예시 사용
-  const formattedDate = formatDate("20231225"); // 입력: "20231225"
-  console.log(formattedDate); // 출력: "2023-12-25"
 
   return (
     <div className="flex justify-center items-start align-top bg-white">
@@ -470,185 +376,66 @@ const ContestJoin = () => {
                   </div>
                 </div> */}
                 <div className="flex  w-full h-auto flex-col bg-white px-2 gap-y-2">
-                  <div className="flex flex-col w-full p-4 border h-auto gap-y-3">
+                  <div className="flex flex-col w-full p-4 border h-auto gap-y-1">
                     <div className="flex justify-between">
                       <span className="text-lg font-medium z-10">
-                        개인정보
+                        프로필
                         <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
                       </span>
+                      <button
+                        className="bg-orange-400 rounded-md px-2 py-1 flex justify-center items-center mt-2"
+                        onClick={() => navigate("/myprofile")}
+                      >
+                        <span className="text-xs text-white">프로필설정</span>
+                      </button>
                     </div>
-                    <div className="flex flex-col w-full">
+                    <span className="text-xl font-normal font-san">
+                      {pInfo.pName && pInfo.pName}
+                    </span>
+                    <div className="flex w-full text-purple-700">
+                      <div className="flex w-1/4 justify-start">
+                        <div className="flex justify-start items-center">
+                          <BsGenderAmbiguous />
+                        </div>
+                        <div className="flex">
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {pInfo.pGender && pInfo.pGender === "m"
+                              ? "남자"
+                              : "여자"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex w-3/4">
+                        <div className="flex justify-start items-center ml-5">
+                          <RiCalendarLine />
+                        </div>
+                        <div className="flex">
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {pInfo.pBirth && pInfo.pBirth}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex w-full text-gray-700 flex-col gap-y-1">
                       <div className="flex w-full">
-                        <div className="flex w-1/5 items-center">
-                          <span>이름 : </span>
+                        <div className="flex justify-start items-center">
+                          <MdOutlineAlternateEmail />
                         </div>
-                        <div className="flex w-auto px-2">
-                          <input
-                            type="text"
-                            value={invoiceInfo.playerName}
-                            name="playerName"
-                            ref={pNameRef}
-                            onChange={(e) => {
-                              handleInputs(e);
-                            }}
-                            className={`${
-                              playerValidate.playerName
-                                ? "border-2 p-2 outline-none border-red-400 rounded-lg w-full"
-                                : "border p-2 outline-none rounded-lg w-full"
-                            }`}
-                          />
+                        <div className="flex">
+                          <span className="ml-1 text-sm font-light justify-start items-center">
+                            {pInfo.pEmail && pInfo.pEmail}
+                          </span>
                         </div>
                       </div>
-                      <div className="flex">
-                        <span></span>
-                      </div>
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
-                        <span>성별 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <select
-                          name="playerGender"
-                          ref={pGenderRef}
-                          value={
-                            invoiceInfo.playerGender === "m" ? "남자" : "여자"
-                          }
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className=" bg-transparent border rounded-lg p-2"
-                        >
-                          <option>남자</option>
-                          <option>여자</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
-                        <span>생년월일 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <input
-                          type="text"
-                          value={invoiceInfo.playerBirth}
-                          name="playerBirth"
-                          ref={pBirthRef}
-                          onBlur={(e) =>
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              playerBirth: formatDate(e.target.value),
-                            }))
-                          }
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className={`${
-                            playerValidate.playerBirth
-                              ? "border-2 p-2 outline-none border-red-400 rounded-lg w-full"
-                              : "border p-2 outline-none rounded-lg w-full"
-                          }`}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
-                        <span>전화번호 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <input
-                          type="text"
-                          value={invoiceInfo.playerTel}
-                          name="playerTel"
-                          ref={pTelRef}
-                          onBlur={(e) =>
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              playerTel: formatPhoneNumber(e.target.value),
-                            }))
-                          }
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className={`${
-                            playerValidate.playerTel
-                              ? "border-2 p-2 outline-none border-red-400 rounded-lg w-full"
-                              : "border p-2 outline-none rounded-lg w-full"
-                          }`}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
-                        <span>이메일 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <input
-                          type="text"
-                          value={invoiceInfo.playerEmail}
-                          name="playerEmail"
-                          ref={pEmailRef}
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className="border p-2 outline-none rounded-lg"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
-                        <span>소속 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <input
-                          type="text"
-                          value={invoiceInfo.playerGym}
-                          name="playerGym"
-                          ref={pGymRef}
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className={`${
-                            playerValidate.playerGym
-                              ? "border-2 p-2 outline-none border-red-400 rounded-lg w-full"
-                              : "border p-2 outline-none rounded-lg w-full"
-                          }`}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-start">
-                        <span>참여동기 : </span>
-                      </div>
-                      <div className="flex w-auto pl-2 ">
-                        <textarea
-                          value={invoiceInfo.playerText}
-                          name="playerText"
-                          ref={pTextRef}
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className="border p-2 outline-none rounded-lg w-60"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/3 items-center">
-                        <span>무대사진신청 : </span>
-                      </div>
-                      <div className="flex w-2/3 px-2 justify-start items-center">
-                        <input
-                          type="checkbox"
-                          checked={invoiceInfo.playerService}
-                          name="playerService"
-                          onChange={(e) => {
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              playerService: e.target.checked,
-                            }));
-                          }}
-                        />
-                        <span className="ml-2">유료서비스</span>
+                      <div className="flex w-full">
+                        <div className="flex justify-start items-center">
+                          <GoDeviceMobile />
+                        </div>
+                        <div className="flex">
+                          <span className="ml-1 text-sm font-light justify-start items-center">
+                            {pInfo.pTel && pInfo.pTel}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -759,9 +546,7 @@ const ContestJoin = () => {
                 </div>
                 <div className="flex w-full h-full mt-4">
                   <div className="flex w-full justify-center items px-2">
-                    {invoiceInfo.joins.length > 0 &&
-                    isApply.value &&
-                    isValidate ? (
+                    {invoiceInfo.joins.length > 0 && isApply.value ? (
                       <button
                         className="flex w-full bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
                         onClick={() =>
@@ -784,8 +569,8 @@ const ContestJoin = () => {
                         className="flex w-full bg-gray-500 h-14 rounded-lg shadow justify-center items-center"
                         disabled
                       >
-                        <span className="font-bold text-white">
-                          개인정보/종목선택과 개인정보 수집동의가 필요합니다.
+                        <span className="font-bold text-white text-lg">
+                          종목선택과 개인정보 수집동의가 필요합니다.
                         </span>
                       </button>
                     )}

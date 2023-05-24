@@ -68,7 +68,7 @@ const DrawMenu = ({ setOpen }) => {
         className="flex w-full bg-slate-200 my-5"
         style={{ height: "1px" }}
       ></div>
-      <div className="flex w-full px-5 flex-col gap-y-5">
+      {/* <div className="flex w-full px-5 flex-col gap-y-5">
         <div className="flex w-full h-full justify-between">
           <div className="flex w-1/2 justify-start px-3">QR인증</div>
           <div className="flex w-1/2 justify-end">
@@ -88,7 +88,7 @@ const DrawMenu = ({ setOpen }) => {
             <QrGenerator />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

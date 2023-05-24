@@ -12,9 +12,11 @@ import { useCallback } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { handleToast } from "../components/HandleToast";
 import { db } from "../firebase";
+import { ThreeDots } from "react-loader-spinner";
 
 const RegisterWithEmail = () => {
   const [playerInfo, setPlayerInfo] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const [inputs, setInputs] = useState({
     pName: undefined,
     pEmail: undefined,
@@ -44,15 +46,17 @@ const RegisterWithEmail = () => {
   const pwdRef = useRef();
   const rePwdRef = useRef();
   const pTelRef = useRef();
+  const pGymRef = useRef();
 
   const navigate = useNavigate();
 
   const handleInputs = () => {
     setInputs((prev) => ({
       ...prev,
-      pName: pNameRef.current.value,
-      pEmail: pEmailRef.current.value,
-      pTel: pTelRef.current.value,
+      pName: pNameRef.current.value.trim(),
+      pEmail: pEmailRef.current.value.trim(),
+      pTel: pTelRef.current.value.trim(),
+      //pGym: pGymRef.current.value.trim(),
     }));
   };
 
@@ -90,12 +94,13 @@ const RegisterWithEmail = () => {
   };
 
   const addAuth = async () => {
+    setIsLoading(true);
     const auth = getAuth();
-    console.log(pEmailRef.current.value, pwdRef.current.value);
+    //console.log(pEmailRef.current.value, pwdRef.current.value);
     await createUserWithEmailAndPassword(
       auth,
-      pEmailRef.current.value,
-      pwdRef.current.value
+      pEmailRef.current.value.trim(),
+      pwdRef.current.value.trim()
     )
       .then((user) => {
         const userInfo = user;
@@ -116,6 +121,7 @@ const RegisterWithEmail = () => {
       console.log(error);
       console.log(error.message);
     } finally {
+      setIsLoading(false);
     }
   };
   // 회원가입 빨간줄 처리해야함
@@ -265,6 +271,16 @@ const RegisterWithEmail = () => {
               </option>
             </select>
           </div>
+          {/* <div className="flex justify-center">
+            <input
+              type="text"
+              className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
+              name="pGym"
+              ref={pGymRef}
+              onChange={() => handleInputs()}
+              placeholder="소속클럽(체육관)"
+            />
+          </div> */}
         </div>
         <div
           className="flex justify-center mt-10 flex-col gap-y-5 px-4 w-full"
@@ -366,16 +382,33 @@ const RegisterWithEmail = () => {
             </div>
           </div>
           {isValidates ? (
-            <button
-              className="w-full h-12 bg-orange-400 rounded-md border-gray-300 border mt-5"
-              onClick={() => addAuth()}
-            >
-              <span className=" text-base font-medium text-white">
-                회원가입
-              </span>
-            </button>
+            isLoading ? (
+              <button className="w-full h-12 bg-orange-400 rounded-md border-gray-300 border mt-5">
+                <span className="flex w-full h-full text-white text-base justify-center items-center">
+                  <ThreeDots
+                    height="40"
+                    width="40"
+                    radius="9"
+                    color="#fff"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClassName=""
+                    visible={true}
+                  />
+                </span>
+              </button>
+            ) : (
+              <button
+                className="w-full h-12 bg-orange-400 rounded-md border-gray-300 border mt-5"
+                onClick={() => addAuth()}
+              >
+                <span className=" text-base font-medium text-white">
+                  회원가입
+                </span>
+              </button>
+            )
           ) : (
-            <button className="w-full h-12 bg-gray-400 rounded-md border-gray-300 border mt-5 disabled">
+            <button className="w-full h-12 bg-gray-400 rounded-md border-gray-300 border mt-5 disabled cursor-not-allowed">
               <span className=" text-base font-medium text-white">
                 회원가입
               </span>
