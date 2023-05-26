@@ -5,8 +5,7 @@ export const Encrypter = (keyValue) => {
     keyValue,
     process.env.REACT_APP_SECRET_KEY
   ).toString();
-  console.log(encryptText);
-  console.log(Decrypter(encryptText));
+
   return encryptText;
 };
 
