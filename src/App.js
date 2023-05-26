@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
@@ -24,11 +24,17 @@ import ContestJoin from "./pages/ContestJoin";
 import Policy3 from "./components/Policy3";
 import ContestJoinEdit from "./pages/ContestJoinEdit";
 import EditSuccessPage from "./pages/EditSuccessPage";
+import { UserContext } from "./context/UserContext";
 
 function App() {
-  const { userInfo } = useContext(AuthContext);
+  const { currentUserInfo } = useContext(UserContext);
+
   const RequireAuth = ({ children }) => {
-    return userInfo ? children : <Navigate to="/login" />;
+    if (!currentUserInfo.playerUid) {
+      return <Navigate to="/login" />;
+    }
+
+    return children;
   };
   return (
     <BrowserRouter>

@@ -5,14 +5,13 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { AuthContextProvider } from "./context/AuthContext";
 import { PlayerEditContextProvider } from "./context/PlayerContext";
+import { UserContextProvider } from "./context/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <AuthContextProvider>
-    <PlayerEditContextProvider>
-      <App />
-    </PlayerEditContextProvider>
-  </AuthContextProvider>
+  <UserContextProvider>
+    <App />
+  </UserContextProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

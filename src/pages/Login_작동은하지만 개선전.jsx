@@ -1,6 +1,6 @@
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
-import React, { useEffect } from "react";
+import React from "react";
 import { useRef } from "react";
 import { useContext } from "react";
 import { useState } from "react";
@@ -9,113 +9,121 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
 import { db } from "../firebase";
-import useFirebaseAuth from "../hooks/useFirebaseAuth";
-import ConfirmationModal from "../messageBox/ConfirmationModal";
-import { UserContext } from "../context/UserContext";
-import {
-  useFirestoreGetDocument,
-  useFirestoreQuery,
-} from "../hooks/useFirestores";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
+  const [loginInfo, setLoginInfo] = useState({});
   const [existEmail, setExistEmail] = useState(true);
-
-  const [message, setMessage] = useState("");
-  const [messageOpen, setMessageOpen] = useState(false);
 
   const loginEmailRef = useRef();
   const loginPasswordRef = useRef();
   const navigate = useNavigate();
 
-  const getQuery = useFirestoreQuery();
-  const { signInWithEmail, handleSignOut } = useFirebaseAuth();
-  const { setCurrentUid, currentUserInfo, setCurrentUserInfo } =
-    useContext(UserContext);
+  const { dispatch } = useContext(AuthContext);
+  const { pInfo, editDispatch } = useContext(PlayerEditContext);
 
-  const handleLogin = async () => {
-    if (loginInfo.email === "" || loginInfo.password === "") {
-      setMessage({
-        body: "아이디와 패스워드를 입력해주세요",
-        isButton: true,
-        confirmButtonText: "확인",
-      });
-      setMessageOpen(true);
-      return;
-    }
+  const getPlayerProfile = async (pUid) => {
+    console.log(pUid);
+    let playerProfile = {};
+    const playerRef = collection(db, "players_pool");
+    const playerQ = query(playerRef, where("playerUid", "==", pUid));
 
     try {
-      await handleSignOut();
-      setCurrentUid("");
-      setCurrentUserInfo({});
-      await signInWithEmail(
-        loginInfo.email.trim(),
-        loginInfo.password.trim()
-      ).then(({ user, error }) => {
-        if (error) {
-          setMessage({
-            body: error.message,
-            isButton: true,
-            confirmButtonText: "확인",
-          });
-          setMessageOpen(true);
-        }
-        if (user) {
-          setIsLoading(true);
-          setCurrentUid(user.uid);
-          return user;
-        }
-      });
+      const querySnapshot = await getDocs(playerQ);
+      //console.log(querySnapshot);
+      querySnapshot.forEach(
+        (doc) => (playerProfile = { id: doc.id, ...doc.data() })
+      );
+      console.log(playerProfile);
     } catch (error) {
       console.log(error);
-      return;
+    }
+    return new Promise((resolve, reject) => {
+      resolve(playerProfile);
+    });
+  };
+
+  const getPlayerEmail = async () => {
+    let isPlayerEmail;
+    let dummy = [];
+    const playerRef = collection(db, "players_pool");
+    const playerQ = query(
+      playerRef,
+      where("pEmail", "==", loginEmailRef.current.value)
+    );
+    try {
+      const querySnapshot = await getDocs(playerQ);
+      //console.log(querySnapshot);
+      querySnapshot.forEach((doc) => dummy.push(doc.id));
+      dummy.length > 0 ? (isPlayerEmail = true) : (isPlayerEmail = false);
+    } catch (error) {
+      console.log(error);
+    }
+    return new Promise((resolve, reject) => {
+      resolve(isPlayerEmail);
+    });
+  };
+  const handleLogin = async () => {
+    const lEmail = loginInfo.email.trim();
+    const lPwd = loginInfo.password.trim();
+
+    if (!lEmail && !lPwd) {
+      window.alert("아이디와 비밀번호를 입력해주세요");
+    } else {
+      setIsLoading(true);
+      await getPlayerEmail().then((result) =>
+        result
+          ? playerLogin(lEmail, lPwd)
+          : navigate("/loginerror", { state: "auth/user-not-found" })
+      );
     }
   };
 
   const playerLogin = async (email, pwd) => {
-    // const auth = getAuth();
-    // await signInWithEmailAndPassword(auth, email.trim(), pwd.trim())
-    //   .then(async (user) => {
-    //     const userInfo = user;
-    //     const profile = await getPlayerProfile(userInfo.user.uid);
-    //     return profile;
-    //     //
-    //   })
-    //   .then((profile) => {
-    //     //console.log(profile);
-    //     //console.log(window.navigator.userAgent);
-    //     dispatch({
-    //       type: "LOGIN",
-    //       payload: { id: profile.id, pUid: profile.playerUid },
-    //     });
-    //     return profile;
-    //   })
-    //   .then((profile) => {
-    //     //console.log(profile);
-    //     editDispatch({
-    //       type: "EDIT",
-    //       payload: {
-    //         pName: profile.pName,
-    //         pEmail: profile.pEmail,
-    //         pTel: profile.pTel || "",
-    //         pPic: profile.pPic || "",
-    //         pNick: profile.pNick || "",
-    //         pGender: profile.gender || "",
-    //         pBirth: profile.pBirth || "",
-    //         pGym: profile.pGym || "",
-    //       },
-    //     });
-    //   })
-    //   .then(() => setIsLoading(false))
-    //   .then(() => navigate("/"))
-    //   .catch((error) => {
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //     console.log(errorCode);
-    //     navigate("/loginerror", { state: errorCode });
-    //     //handleToast({ type: "error", msg: errorMessage });
-    //   });
+    const auth = getAuth();
+    await signInWithEmailAndPassword(auth, email.trim(), pwd.trim())
+      .then(async (user) => {
+        const userInfo = user;
+        const profile = await getPlayerProfile(userInfo.user.uid);
+        return profile;
+        //
+      })
+      .then((profile) => {
+        //console.log(profile);
+        //console.log(window.navigator.userAgent);
+        dispatch({
+          type: "LOGIN",
+          payload: { id: profile.id, pUid: profile.playerUid },
+        });
+        return profile;
+      })
+      .then((profile) => {
+        //console.log(profile);
+        editDispatch({
+          type: "EDIT",
+          payload: {
+            pName: profile.pName,
+            pEmail: profile.pEmail,
+            pTel: profile.pTel || "",
+            pPic: profile.pPic || "",
+            pNick: profile.pNick || "",
+            pGender: profile.gender || "",
+            pBirth: profile.pBirth || "",
+            pGym: profile.pGym || "",
+          },
+        });
+      })
+      .then(() => setIsLoading(false))
+      .then(() => navigate("/"))
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+
+        navigate("/loginerror", { state: errorCode });
+
+        //handleToast({ type: "error", msg: errorMessage });
+      });
   };
 
   const handleInputs = (e) => {
@@ -123,22 +131,8 @@ const Login = () => {
     setLoginInfo(() => ({ ...loginInfo, [name]: value.trim() }));
   };
 
-  const handleMessageBox = () => {
-    setMessageOpen(false);
-  };
-
-  useEffect(() => {
-    navigate("/");
-  }, [currentUserInfo.playerUid]);
-
   return (
     <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">
-      <ConfirmationModal
-        isOpen={messageOpen}
-        onCancel={handleMessageBox}
-        onConfirm={handleMessageBox}
-        message={message}
-      />
       <div className="flex w-full flex-col items-center">
         <div
           className={`absolute top-0 left-1/2 w-full h-screen bg-orange-600 border-0 px-10 py-3 outline-none flex flex-col z-50 justify-center items-center ${

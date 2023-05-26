@@ -10,21 +10,13 @@ import {
 const useFirebaseAuth = () => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (user) => {
-        setUser(user);
-        setIsLoading(false);
-      },
-      (error) => {
-        setError(error);
-        setIsLoading(false);
-      }
-    );
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setIsLoading(false);
+    });
 
     return () => unsubscribe();
   }, []);
@@ -38,22 +30,27 @@ const useFirebaseAuth = () => {
         password
       );
       setUser(userCredential.user);
+      return { user: userCredential.user, error: null };
     } catch (error) {
-      setError(error);
+      let errorMessage;
       switch (error.code) {
+        case "auth/too-many-requests":
+          errorMessage = "비밀번호 입력횟수가 초과되었습니다.";
+          break;
         case "auth/user-not-found":
-          setError({ message: "사용자를 찾을 수 없습니다." });
+          errorMessage = "사용자를 찾을 수 없습니다.";
           break;
         case "auth/wrong-password":
-          setError({ message: "잘못된 비밀번호입니다." });
+          errorMessage = "잘못된 비밀번호입니다.";
           break;
         case "auth/network-request-failed":
-          setError({ message: "네트워크 오류가 발생했습니다." });
+          errorMessage = "네트워크 오류가 발생했습니다.";
           break;
         default:
-          console.error(error);
+          errorMessage = error.message;
           break;
       }
+      return { user: null, error: { message: errorMessage } };
     }
   };
 
@@ -66,46 +63,47 @@ const useFirebaseAuth = () => {
         password
       );
       setUser(userCredential.user);
+      return { user: userCredential.user, error: null };
     } catch (error) {
-      setError(error);
+      let errorMessage;
       switch (error.code) {
         case "auth/email-already-in-use":
-          setError({ message: "이미 사용 중인 이메일입니다." });
+          errorMessage = "이미 사용 중인 이메일입니다.";
           break;
         case "auth/invalid-email":
-          setError({ message: "유효하지 않은 이메일 주소입니다." });
+          errorMessage = "유효하지 않은 이메일 주소입니다.";
           break;
         case "auth/weak-password":
-          setError({ message: "보안 수준이 낮은 비밀번호입니다." });
+          errorMessage = "보안 수준이 낮은 비밀번호입니다.";
           break;
         case "auth/network-request-failed":
-          setError({ message: "네트워크 오류가 발생했습니다." });
+          errorMessage = "네트워크 오류가 발생했습니다.";
           break;
         default:
-          console.error(error);
+          errorMessage = error.message;
           break;
       }
+      return { user: null, error: { message: errorMessage } };
     }
   };
 
-  const signOut = async () => {
+  const handleSignOut = async () => {
     const auth = getAuth();
     try {
       await signOut(auth);
       setUser(null);
+      return { user: null, error: null };
     } catch (error) {
-      setError(error);
-      console.error(error);
+      return { user: null, error: { message: error.message } };
     }
   };
 
   return {
     user,
     isLoading,
-    error,
     signInWithEmail,
     signUpWithEmail,
-    signOut,
+    handleSignOut,
   };
 };
 

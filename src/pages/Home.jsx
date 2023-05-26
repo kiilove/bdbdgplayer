@@ -10,6 +10,7 @@ import { useFirestoreQuery } from "../hooks/useFirestores";
 import { useState } from "react";
 import { where } from "firebase/firestore";
 import { useEffect } from "react";
+import { UserContext } from "../context/UserContext";
 
 const data = [
   {
@@ -78,15 +79,16 @@ const MyResponsiveRadar = ({ data /* see data tab */ }) => (
 );
 
 const Home = () => {
-  const { userInfo } = useContext(AuthContext);
-  const { pInfo } = useContext(PlayerEditContext);
+  const { currentUserInfo: pInfo } = useContext(UserContext);
+  // const { userInfo } = useContext(AuthContext);
+  // const { pInfo } = useContext(PlayerEditContext);
   const [isJoin, setIsJoin] = useState(false);
   const [invoiceId, setInvoiceId] = useState("");
   const navigate = useNavigate();
   const getQuery = useFirestoreQuery();
 
   const fetchQuery = async () => {
-    const conditions = [where("playerUid", "==", userInfo.pUid)];
+    const conditions = [where("playerUid", "==", pInfo.pUid)];
     try {
       const data = await getQuery.getDocuments("invoices_pool", conditions);
       if (data.length > 0) {
