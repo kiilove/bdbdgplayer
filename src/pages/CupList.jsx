@@ -16,20 +16,30 @@ import {
 } from "../hooks/useFirestores";
 import dayjs from "dayjs";
 import { AuthContext } from "../context/AuthContext";
+import ConfirmationModal from "../messageBox/ConfirmationModal";
+import { UserContext } from "../context/UserContext";
 
 const CupList = () => {
-  //const [cupsData, setCupsData] = useState([]);
+  const { currentUserInfo: pInfo } = useContext(UserContext);
+  const [message, setMessage] = useState({});
+  const [messageOpen, setMessageOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isJoin, setIsJoin] = useState(false);
   const [invoiceId, setInvoiceId] = useState("");
-  const [contests, setContests] = useState({});
   const [noticeList, setNoticeList] = useState([]);
-  const [isRefresh, setIsRefresh] = useState(false);
   const [error, setError] = useState(false);
   const getQuery = useFirestoreQuery();
-  const getContests = useFirestoreGetDocument("contests");
-  const { userInfo } = useContext(AuthContext);
+
   const navigate = useNavigate();
+
+  const redirectLogin = () => {
+    navigate("/login");
+    setMessageOpen(false);
+  };
+
+  const messageClose = () => {
+    setMessageOpen(false);
+  };
 
   const fetchNotice = async () => {
     setIsLoading(true);
@@ -54,7 +64,7 @@ const CupList = () => {
   };
 
   const fetchQuery = async () => {
-    const conditions = [where("playerUid", "==", userInfo.pUid)];
+    const conditions = [where("playerUid", "==", pInfo.playerUid)];
     try {
       const data = await getQuery.getDocuments("invoices_pool", conditions);
       if (data.length > 0) {
@@ -99,6 +109,12 @@ const CupList = () => {
       {!isLoading && (
         <>
           <BottomMenu />
+          <ConfirmationModal
+            isOpen={messageOpen}
+            onConfirm={redirectLogin}
+            onCancel={messageClose}
+            message={message}
+          />
           <div
             className="flex w-full h-full justify-center items-start align-top bg-slate-100 flex-col"
             style={{ maxWidth: "420px" }}
@@ -146,16 +162,33 @@ const CupList = () => {
                                 변경신청
                               </button>
                             )}
-                            {!isJoin && (
-                              <button
-                                className="w-full flex justify-center items-center bg-orange-300 h-10 rounded-lg mr-2"
-                                onClick={() =>
-                                  navigate(`/contestjoin/${item.contesId}`)
-                                }
-                              >
-                                참가신청
-                              </button>
-                            )}
+                            {!isJoin &&
+                              (pInfo.playerUid ? (
+                                <button
+                                  className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                                  onClick={() => {
+                                    navigate(
+                                      "/contestjoin/GVD75Y1hAMFzsqMnRge1"
+                                    );
+                                  }}
+                                >
+                                  참가신청
+                                </button>
+                              ) : (
+                                <button
+                                  className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                                  onClick={() => {
+                                    setMessage({
+                                      body: "로그인이 필요합니다.",
+                                      isButton: true,
+                                      confirmButtonText: "이동",
+                                    });
+                                    setMessageOpen(true);
+                                  }}
+                                >
+                                  참가신청
+                                </button>
+                              ))}
                           </div>
                         </div>
                       </div>

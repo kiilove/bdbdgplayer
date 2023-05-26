@@ -45,12 +45,14 @@ const DrawMenu = ({ setOpen }) => {
             }
             className="rounded-full w-16 h-16"
           />
-          <button
-            className="bg-orange-400 rounded-md px-2 py-1 flex justify-center items-center mt-2"
-            onClick={() => navigate("/myprofile")}
-          >
-            <span className="text-xs text-white">프로필설정</span>
-          </button>
+          {pInfo.playerUid && (
+            <button
+              className="bg-orange-400 rounded-md px-2 py-1 flex justify-center items-center mt-2"
+              onClick={() => navigate("/myprofile")}
+            >
+              <span className="text-xs text-white">프로필설정</span>
+            </button>
+          )}
         </div>
         <div className="flex w-2/3 justify-start items-start align-middle flex-col">
           <div className="flex w-full justify-center items-start align-middle flex-col">

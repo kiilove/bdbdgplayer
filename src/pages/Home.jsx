@@ -212,11 +212,10 @@ const Home = () => {
             <span className="flex h-10 text-lg text-gray-600 items-end">
               나의 모습 분석
             </span>
-            <Link to="/analyzedetail">
-              <span className="flex h-10 text-sm text-gray-600 items-end">
-                상세보기
-              </span>
-            </Link>
+
+            <span className="flex h-10 text-sm text-gray-600 items-end">
+              상세보기
+            </span>
           </div>
           <div className="flex h-80 bg-white w-full rounded-lg shadow-sm flex-col relative">
             <MyResponsiveRadar data={data} />

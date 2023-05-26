@@ -379,7 +379,7 @@ const ContestJoin = () => {
             </Modal>
             <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white">
               <div className="flex flex-col w-full mb-5">
-                <div className="flex w-full h-60 flex-col bg-orange-300 p-4 gap-y-1">
+                <div className="flex w-full h-auto flex-col bg-orange-300 p-4 gap-y-1">
                   <div className="flex">
                     <span className="font-medium z-10">
                       {noticeInfo.contestPromoter}-참가공고
@@ -436,15 +436,21 @@ const ContestJoin = () => {
                   </div>
                   <div className="flex w-full text-gray-700 ">
                     <div className="flex w-3/4">
-                      <div className="flex justify-start items-center">
+                      <div className="flex justify-start items-start mt-1">
                         <RiBankLine />
                       </div>
                       <div className="flex items-center">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          {noticeInfo?.contestBankName}{" "}
-                          {noticeInfo?.contestAccountNumber}{" "}
-                          {noticeInfo?.contestAccountOwner}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {invoiceInfo?.contestBankName}{" "}
+                          </span>
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {invoiceInfo?.contestAccountNumber}{" "}
+                          </span>
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {invoiceInfo?.contestAccountOwner}
+                          </span>
+                        </div>
                         <button className="ml-1">
                           <RxCopy />
                         </button>
