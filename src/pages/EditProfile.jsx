@@ -14,10 +14,9 @@ import EditNick from "../components/EditNick";
 import EditBirth from "../components/EditBirth";
 import EditGym from "../components/EditGym";
 import EditGender from "../components/EditGender";
+import { UserContext } from "../context/UserContext";
 
 const EditProfile = () => {
-  const { userInfo } = useContext(AuthContext);
-  const { pInfo } = useContext(PlayerEditContext);
   const location = useLocation();
   let initInfo = { headerTitle: "" };
   switch (location.state.editType) {

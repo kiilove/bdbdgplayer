@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useCallback } from "react";
 import { ColorRing, RotatingLines } from "react-loader-spinner";
+import { UserContext } from "../context/UserContext";
 
 const makeFileName = (filename, salt) => {
   const currentDate = new Date();
@@ -24,8 +25,10 @@ const makeFileName = (filename, salt) => {
 };
 
 const MyProfile = () => {
+  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+    useContext(UserContext);
   const { userInfo } = useContext(AuthContext);
-  const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const { editDispatch } = useContext(PlayerEditContext);
   const [playerInfo, setPlayerInfo] = useState({ ...pInfo });
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +77,7 @@ const MyProfile = () => {
 
   const handleFileSelect = async (e) => {
     e.preventDefault();
-    const path = `images/player/${userInfo.pUid}`;
+    const path = `images/player/${pInfo.pUid}`;
     setFiles((prev) => (prev = Array.prototype.slice.call(e.target.files)));
 
     await uploadFiles(Array.prototype.slice.call(e.target.files), path);
@@ -82,7 +85,7 @@ const MyProfile = () => {
 
   const updatePlayerPic = async (data) => {
     await setDoc(
-      doc(db, "player", userInfo.id),
+      doc(db, "players_pool", pInfo.id),
       { ...data },
       { merge: true }
     ).then(() => {
@@ -92,7 +95,11 @@ const MyProfile = () => {
 
   const updatePlayer = useCallback(
     async (data) => {
-      await setDoc(doc(db, "player", userInfo.id), { ...data }, { merge: true })
+      await setDoc(
+        doc(db, "players_pool", pInfo.id),
+        { ...data },
+        { merge: true }
+      )
         .then(() => setIsLoading(false))
         .then(() => {
           console.log("업데이트 완료");
@@ -110,7 +117,7 @@ const MyProfile = () => {
     console.log(playerInfo);
     if (playerInfo.pPic !== ("" || undefined || null)) {
       updatePlayer(playerInfo);
-      editDispatch({ type: "EDIT", payload: playerInfo });
+      setCurrentUserInfo({ ...pInfo, ...playerInfo });
     }
   }, [playerInfo.pPic]);
 

@@ -7,25 +7,26 @@ import { RotatingLines } from "react-loader-spinner";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
 import { db } from "../firebase";
+import { UserContext } from "../context/UserContext";
 
 const EditGender = () => {
-  const { userInfo } = useContext(AuthContext);
-  const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+    useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [pGender, setPGender] = useState(pInfo.pGender);
+  const [pGender, setPGender] = useState(pInfo.pGender || "m");
   const [genderValidate, setGenderValidate] = useState(false);
 
   const updatePlayer = async (data) => {
     setIsLoading(true);
     await setDoc(
-      doc(db, "players_pool", userInfo.id),
+      doc(db, "players_pool", pInfo.id),
       { ...data },
       { merge: true }
     )
       .then(() => {
         if (pGender !== ("" || undefined || null)) {
-          editDispatch({ type: "EDIT", payload: data });
+          setCurrentUserInfo({ ...data });
         }
       })
       .then(() => setIsLoading(false))

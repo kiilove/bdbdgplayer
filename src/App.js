@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
@@ -25,37 +25,41 @@ import Policy3 from "./components/Policy3";
 import ContestJoinEdit from "./pages/ContestJoinEdit";
 import EditSuccessPage from "./pages/EditSuccessPage";
 import { UserContext } from "./context/UserContext";
+import { RotatingLines } from "react-loader-spinner";
 
 function App() {
   const { currentUserInfo } = useContext(UserContext);
+  const { userState, setUserState } = useState("wait");
+  const { isLoading, setIsLoading } = useState(true);
+
+  const storedValue = localStorage.getItem("globalValue");
 
   const RequireAuth = ({ children }) => {
-    if (!currentUserInfo.playerUid) {
+    if (!currentUserInfo) {
       return <Navigate to="/login" />;
     }
 
     return children;
   };
+
+  const Loading = (
+    <div className="w-full h-full bg-orange-600">
+      <RotatingLines
+        strokeColor="white"
+        strokeWidth="5"
+        animationDuration="0.75"
+        width="96"
+        visible={true}
+      />
+    </div>
+  );
+
   return (
     <BrowserRouter>
       <ToastContainer />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <RequireAuth>
-              <Home />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/home"
-          element={
-            <RequireAuth>
-              <Home />
-            </RequireAuth>
-          }
-        />
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/loginerror" element={<LoginError />} />
         <Route path="/register" element={<Register />} />
@@ -63,95 +67,21 @@ function App() {
         <Route path="/regsuccess" element={<RegisterSuccess />} />
         <Route path="/successpage" element={<SuccessPage />} />
         <Route path="/editsuccesspage" element={<EditSuccessPage />} />
-        <Route
-          path="/career"
-          element={
-            <RequireAuth>
-              <Career />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/cuplist"
-          element={
-            <RequireAuth>
-              <CupList />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/careerview"
-          element={
-            <RequireAuth>
-              <CareerView />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/analyzedetail"
-          element={
-            <RequireAuth>
-              <AnalyzeDetail />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/feed"
-          element={
-            <RequireAuth>
-              <Feed />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/qrfull"
-          element={
-            <RequireAuth>
-              <QrFull />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/contestjoinedit/:invoiceId"
-          element={
-            <RequireAuth>
-              <ContestJoinEdit />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/contestjoin/:contestId"
-          element={
-            <RequireAuth>
-              <ContestJoin />
-            </RequireAuth>
-          }
-        />
+        <Route path="/career" element={<Career />} />
+        <Route path="/cuplist" element={<CupList />} />
+        <Route path="/careerview" element={<CareerView />} />
+        <Route path="/analyzedetail" element={<AnalyzeDetail />} />
+        <Route path="/feed" element={<Feed />} />
 
         <Route
-          path="/myprofile"
-          element={
-            <RequireAuth>
-              <MyProfile />
-            </RequireAuth>
-          }
+          path="/contestjoinedit/:invoiceId"
+          element={<ContestJoinEdit />}
         />
-        <Route
-          path="/editprofile"
-          element={
-            <RequireAuth>
-              <EditProfile />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/policy3"
-          element={
-            <RequireAuth>
-              <Policy3 />
-            </RequireAuth>
-          }
-        />
+        <Route path="/contestjoin/:contestId" element={<ContestJoin />} />
+
+        <Route path="/myprofile" element={<MyProfile />} />
+        <Route path="/editprofile" element={<EditProfile />} />
+        <Route path="/policy3" element={<Policy3 />} />
       </Routes>
     </BrowserRouter>
   );

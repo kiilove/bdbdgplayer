@@ -8,10 +8,11 @@ import { RotatingLines } from "react-loader-spinner";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
 import { db } from "../firebase";
+import { UserContext } from "../context/UserContext";
 
 const EditBirth = () => {
-  const { userInfo } = useContext(AuthContext);
-  const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+    useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const [pAge, setPAge] = useState(0);
@@ -24,13 +25,13 @@ const EditBirth = () => {
   const updatePlayer = async (data) => {
     setIsLoading(true);
     await setDoc(
-      doc(db, "players_pool", userInfo.id),
+      doc(db, "players_pool", pInfo.id),
       { ...data },
       { merge: true }
     )
       .then(() => {
         if (pBirth !== ("" || undefined || null)) {
-          editDispatch({ type: "EDIT", payload: data });
+          setCurrentUserInfo({ ...data });
         }
       })
       .then(() => setIsLoading(false))
@@ -43,10 +44,7 @@ const EditBirth = () => {
   const handleAge = (birth, today) => {
     const birthDate = dayjs(birth).format("YYYY-MM-DD");
     const todayDate = dayjs(today).format("YYYY-MM-DD");
-    console.log(todayDate);
 
-    console.log(dayjs(birthDate).year());
-    console.log(dayjs(todayDate).year());
     let age = dayjs(todayDate).year() - dayjs(birthDate).year();
     const month = dayjs(todayDate).month() - dayjs(birthDate).month();
 
@@ -80,12 +78,10 @@ const EditBirth = () => {
 
   useMemo(() => {
     const ageResult = handleAge(pBirth, new Date());
-    //console.log(ageResult);
+
     setPAge(ageResult);
-    console.log(pBirth);
   }, [pBirth]);
 
-  useMemo(() => console.log(dayjs(pBirth).get("date")), []);
   return (
     <div
       className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-32"

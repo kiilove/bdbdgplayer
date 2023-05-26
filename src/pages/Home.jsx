@@ -11,6 +11,7 @@ import { useState } from "react";
 import { where } from "firebase/firestore";
 import { useEffect } from "react";
 import { UserContext } from "../context/UserContext";
+import ConfirmationModal from "../messageBox/ConfirmationModal";
 
 const data = [
   {
@@ -82,15 +83,18 @@ const Home = () => {
   const { currentUserInfo: pInfo } = useContext(UserContext);
   // const { userInfo } = useContext(AuthContext);
   // const { pInfo } = useContext(PlayerEditContext);
+  const [message, setMessage] = useState({});
+  const [messageOpen, setMessageOpen] = useState(false);
   const [isJoin, setIsJoin] = useState(false);
   const [invoiceId, setInvoiceId] = useState("");
   const navigate = useNavigate();
   const getQuery = useFirestoreQuery();
 
   const fetchQuery = async () => {
-    const conditions = [where("playerUid", "==", pInfo.pUid)];
+    const conditions = [where("playerUid", "==", pInfo.playerUid)];
     try {
       const data = await getQuery.getDocuments("invoices_pool", conditions);
+      console.log(data);
       if (data.length > 0) {
         setIsJoin(true);
 
@@ -101,13 +105,34 @@ const Home = () => {
     }
   };
 
+  const redirectLogin = () => {
+    navigate("/login");
+    setMessageOpen(false);
+  };
+
+  const messageClose = () => {
+    setMessageOpen(false);
+  };
+
   useEffect(() => {
-    fetchQuery();
-  }, []);
+    if (pInfo.playerUid) {
+      fetchQuery();
+    }
+  }, [pInfo?.playerUid]);
+
+  useEffect(() => {
+    console.log(pInfo);
+  }, [pInfo]);
 
   return (
     <div className="flex justify-center items-start align-top bg-slate-100">
       <BottomMenu />
+      <ConfirmationModal
+        isOpen={messageOpen}
+        onConfirm={redirectLogin}
+        onCancel={messageClose}
+        message={message}
+      />
       <div
         className="flex justify-center mt-3 flex-col gap-y-8 px-2 w-full"
         style={{ maxWidth: "420px" }}
@@ -115,25 +140,28 @@ const Home = () => {
         <div className="flex w-full justify-start">
           <span className="flex text-lg font-extrabold">BDBDg</span>
         </div>
-        <div className="flex w-full justify-between">
-          <div className="flex w-1/2 h-full justify-start flex-col gap-y-3 mt-6">
-            <p className="text-3xl font-light">Hi~</p>
-            <p className="text-2xl font-base">
-              {pInfo.pNick ? pInfo.pNick : pInfo.pName} 님
-            </p>
-          </div>
-          <div className="flex w-1/2 justify-end">
-            <div className="flex">
-              <img
-                src={
-                  (pInfo.pPic !== null || undefined || "") &&
-                  (pInfo.pPic || DEFAULT_AVATAR)
-                }
-                className="rounded-full w-32 h-32"
-              />
+        {pInfo.playerUid && (
+          <div className="flex w-full justify-between">
+            <div className="flex w-1/2 h-full justify-start flex-col gap-y-3 mt-6">
+              <p className="text-3xl font-light">Hi~</p>
+              <p className="text-2xl font-base">
+                {pInfo.pNick ? pInfo.pNick : pInfo.pName} 님
+              </p>
+            </div>
+            <div className="flex w-1/2 justify-end">
+              <div className="flex">
+                <img
+                  src={
+                    (pInfo.pPic !== null || undefined || "") &&
+                    (pInfo.pPic || DEFAULT_AVATAR)
+                  }
+                  className="rounded-full w-32 h-32"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
         <div className="flex w-full h-full flex-col">
           <div className="flex h-full bg-white w-full rounded-lg shadow-sm flex-col ">
             <div className="flex">
@@ -151,16 +179,31 @@ const Home = () => {
                   변경신청
                 </button>
               )}
-              {!isJoin && (
-                <button
-                  className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
-                  onClick={() => {
-                    navigate("/contestjoin/GVD75Y1hAMFzsqMnRge1");
-                  }}
-                >
-                  참가신청
-                </button>
-              )}
+              {!isJoin &&
+                (pInfo.playerUid ? (
+                  <button
+                    className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                    onClick={() => {
+                      navigate("/contestjoin/GVD75Y1hAMFzsqMnRge1");
+                    }}
+                  >
+                    참가신청
+                  </button>
+                ) : (
+                  <button
+                    className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                    onClick={() => {
+                      setMessage({
+                        body: "로그인이 필요합니다.",
+                        isButton: true,
+                        confirmButtonText: "이동",
+                      });
+                      setMessageOpen(true);
+                    }}
+                  >
+                    참가신청
+                  </button>
+                ))}
             </div>
           </div>
         </div>

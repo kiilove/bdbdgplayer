@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useMemo } from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { PlayerEditContext } from "../context/PlayerContext";
+import { UserContext } from "../context/UserContext";
 
 const makeFileName = (filename, salt) => {
   const currentDate = new Date();
@@ -19,8 +20,8 @@ const makeFileName = (filename, salt) => {
 };
 
 const EditPic = ({}) => {
-  const { userInfo } = useContext(AuthContext);
-  const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+    useContext(UserContext);
   const [playerInfo, setPlayerInfo] = useState({ ...pInfo });
   const [files, setFiles] = useState([]);
   const [downloadURLs, setDownloadURLs] = useState([
@@ -66,7 +67,7 @@ const EditPic = ({}) => {
 
   const handleFileSelect = async (e) => {
     e.preventDefault();
-    const path = `images/player/${userInfo.playerUid}`;
+    const path = `images/player/${pInfo.playerUid}`;
     setFiles((prev) => (prev = Array.prototype.slice.call(e.target.files)));
 
     await uploadFiles(Array.prototype.slice.call(e.target.files), path);
@@ -75,7 +76,7 @@ const EditPic = ({}) => {
   const updatePlayerPic = async (data) => {
     console.log(data);
     await setDoc(
-      doc(db, "players_pool", userInfo.id),
+      doc(db, "players_pool", pInfo.id),
       { ...data },
       { merge: true }
     ).then(() => {
@@ -92,7 +93,7 @@ const EditPic = ({}) => {
     console.log(playerInfo);
     if (playerInfo.pPic !== ("" || undefined || null)) {
       updatePlayerPic(playerInfo);
-      editDispatch({ type: "EDIT", payload: playerInfo });
+      setCurrentUserInfo({ ...playerInfo });
     }
   }, [playerInfo.pPic]);
 

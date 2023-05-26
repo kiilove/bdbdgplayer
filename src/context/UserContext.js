@@ -7,15 +7,11 @@ import ConfirmationModal from "../messageBox/ConfirmationModal";
 export const UserContext = createContext();
 
 export const UserContextProvider = ({ children }) => {
-  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [messageOpen, setMessageOpen] = useState(false);
   const [currentUid, setCurrentUid] = useState("");
   const [currentUserInfo, setCurrentUserInfo] = useState({});
   const getQuery = useFirestoreQuery();
-
-  const handleMessageBox = () => {
-    setMessageOpen(false);
-  };
 
   const setLoginToken = () => {
     const currentTimestamp = new Date().getTime();
@@ -35,24 +31,11 @@ export const UserContextProvider = ({ children }) => {
     const data = await getQuery.getDocuments("players_pool", condition);
 
     if (!data) {
-      setMessage({
-        body: "유저정보를 불러오지 못했습니다.",
-        isButton: true,
-        confirmButtonText: "확인",
-      });
-      setMessageOpen(true);
+      setCurrentUserInfo({ ...currentUserInfo });
       return;
     }
     setCurrentUserInfo({ ...data[0] });
   };
-
-  useEffect(() => {
-    const encryptedCurrentUid = localStorage.getItem("globalValue");
-    if (encryptedCurrentUid) {
-      const decryptedCurrentUid = Decrypt(encryptedCurrentUid);
-      setCurrentUid(decryptedCurrentUid);
-    }
-  }, []);
 
   useEffect(() => {
     const storedValue = localStorage.getItem("globalValue");
@@ -87,12 +70,6 @@ export const UserContextProvider = ({ children }) => {
     <UserContext.Provider
       value={{ currentUid, setCurrentUid, currentUserInfo, setCurrentUserInfo }}
     >
-      <ConfirmationModal
-        isOpen={messageOpen}
-        onCancel={handleMessageBox}
-        onConfirm={handleMessageBox}
-        message={message}
-      />
       {children}
     </UserContext.Provider>
   );

@@ -4,18 +4,29 @@ import QrGenerator from "./QrGenerator";
 import { IoLogOutOutline, IoCloseOutline } from "react-icons/io5";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 import { PlayerEditContext } from "../context/PlayerContext";
+import { UserContext } from "../context/UserContext";
 
 const DrawMenu = ({ setOpen }) => {
   const navigate = useNavigate();
-  const { dispatch } = useContext(AuthContext);
-  const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+    useContext(UserContext);
+
+  const handleLogin = () => {
+    setOpen();
+    navigate("/login");
+  };
   const handleLogout = () => {
-    dispatch({ type: "LOGOUT" });
-    editDispatch({ type: "END" });
+    setCurrentUserInfo({});
+    localStorage.setItem(
+      "globalValue",
+      JSON.stringify({ value: "", token: "" })
+    );
+    setOpen();
     navigate("/");
   };
+
   return (
     <div className="flex w-full h-full flex-col">
       <div className="flex w-full justify-end px-2 h-10">
@@ -50,12 +61,21 @@ const DrawMenu = ({ setOpen }) => {
                 </span>
               </div>
               <div className="flex w-1/2 justify-end mr-3">
-                <button
-                  className="text-gray-500 text-sm"
-                  onClick={() => handleLogout()}
-                >
-                  로그아웃
-                </button>
+                {pInfo.playerUid ? (
+                  <button
+                    className="text-gray-500 text-sm"
+                    onClick={() => handleLogout()}
+                  >
+                    로그아웃
+                  </button>
+                ) : (
+                  <button
+                    className="text-gray-500 text-sm"
+                    onClick={() => handleLogin()}
+                  >
+                    로그인
+                  </button>
+                )}
               </div>
             </div>
           </div>

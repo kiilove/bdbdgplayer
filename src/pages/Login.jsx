@@ -49,24 +49,26 @@ const Login = () => {
       await handleSignOut();
       setCurrentUid("");
       setCurrentUserInfo({});
-      await signInWithEmail(
-        loginInfo.email.trim(),
-        loginInfo.password.trim()
-      ).then(({ user, error }) => {
-        if (error) {
-          setMessage({
-            body: error.message,
-            isButton: true,
-            confirmButtonText: "확인",
-          });
-          setMessageOpen(true);
-        }
-        if (user) {
-          setIsLoading(true);
-          setCurrentUid(user.uid);
-          return user;
-        }
-      });
+      localStorage.setItem(
+        "globalValue",
+        JSON.stringify({ value: "", token: "" })
+      );
+      await signInWithEmail(loginInfo.email.trim(), loginInfo.password.trim())
+        .then(({ user, error }) => {
+          if (error) {
+            setMessage({
+              body: error.message,
+              isButton: true,
+              confirmButtonText: "확인",
+            });
+            setMessageOpen(true);
+          }
+          if (user) {
+            //setIsLoading(true);
+            setCurrentUid(user.uid);
+          }
+        })
+        .then(() => navigate("/"));
     } catch (error) {
       console.log(error);
       return;
@@ -126,10 +128,6 @@ const Login = () => {
   const handleMessageBox = () => {
     setMessageOpen(false);
   };
-
-  useEffect(() => {
-    navigate("/");
-  }, [currentUserInfo.playerUid]);
 
   return (
     <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">

@@ -31,11 +31,12 @@ import { RotatingLines } from "react-loader-spinner";
 import { BsGenderAmbiguous } from "react-icons/bs";
 import { AuthContext } from "../context/AuthContext";
 import useFirestore from "../customHooks/useFirestore";
+import { UserContext } from "../context/UserContext";
 
 const CupJoin = () => {
   const params = useParams();
-  const { pInfo } = useContext(PlayerEditContext);
-  const { userInfo } = useContext(AuthContext);
+  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+    useContext(UserContext);
   const [cupId, setCupId] = useState(params.cupId);
   const [cupData, setCupData] = useState({});
   const [filterdGameCategory, setFilterdGameCategory] = useState([
@@ -50,8 +51,8 @@ const CupJoin = () => {
   const [playerAge, setPlayerAge] = useState(0);
   const [playerBirth, setPlayerBirth] = useState("");
   const [playerProfile, setPlayerProfile] = useState({
-    pId: userInfo.id || "",
-    pUid: userInfo.pUid || "",
+    pId: pInfo.id || "",
+    pUid: pInfo.playerUid || "",
     pName: pInfo.pName || "",
     pBirth: pInfo.pBirth || "",
     pGender: pInfo.pGender || "",

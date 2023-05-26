@@ -7,10 +7,11 @@ import { RotatingLines } from "react-loader-spinner";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
 import { db } from "../firebase";
+import { UserContext } from "../context/UserContext";
 
 const EditTel = () => {
-  const { userInfo } = useContext(AuthContext);
-  const { pInfo, editDispatch } = useContext(PlayerEditContext);
+  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+    useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const [pTel, setPTel] = useState("");
@@ -20,13 +21,13 @@ const EditTel = () => {
   const updatePlayer = async (data) => {
     setIsLoading(true);
     await setDoc(
-      doc(db, "players_pool", userInfo.id),
+      doc(db, "players_pool", pInfo.id),
       { ...data },
       { merge: true }
     )
       .then(() => {
         if (pTel !== ("" || undefined || null)) {
-          editDispatch({ type: "EDIT", payload: data });
+          setCurrentUserInfo({ ...data });
         }
       })
       .then(() => setIsLoading(false))

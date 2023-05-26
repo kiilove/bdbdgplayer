@@ -33,6 +33,7 @@ import JoinCupConfirm from "../modals/JoinCupConfirm";
 import dayjs from "dayjs";
 import { AuthContext } from "../context/AuthContext";
 import { useRef } from "react";
+import { UserContext } from "../context/UserContext";
 
 const ContestJoin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +43,7 @@ const ContestJoin = () => {
   const [playerAge, setPlayerAge] = useState();
   const [modal, setModal] = useState(false);
   const [modalComponent, setModalComponent] = useState("");
-  const [chkAllItem, setChkAllItem] = useState(false);
+  const [chkAllItem, setChkAllItem] = useState(true);
   const [isValidate, setIsValidate] = useState(false);
   const [categorys, setCategorys] = useState([]);
   const [filteredCategorys, setFilteredCategorys] = useState([]);
@@ -66,8 +67,8 @@ const ContestJoin = () => {
   const getContests = useFirestoreGetDocument("contests");
   const getCategorys = useFirestoreGetDocument("contest_categorys_list");
   const getGrades = useFirestoreGetDocument("contest_grades_list");
-  const { pInfo } = useContext(PlayerEditContext);
-  const { userInfo } = useContext(AuthContext);
+  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+    useContext(UserContext);
   const navigate = useNavigate();
 
   const pNameRef = useRef();
@@ -227,7 +228,7 @@ const ContestJoin = () => {
       !noticeInfo.contestTitle ||
       !contests.contestNoticeId ||
       !pInfo.pName ||
-      !userInfo.pUid
+      !pInfo.playerUid
     ) {
       return;
     }
@@ -246,7 +247,7 @@ const ContestJoin = () => {
       contestBankName: noticeInfo.contestBankName,
       contestAccountNumber: noticeInfo.contestAccountNumber,
       contestAccountOwner: noticeInfo.contestAccountOwner,
-      playerUid: userInfo.pUid,
+      playerUid: pInfo.playerUid,
       playerName: pInfo.pName,
       playerTel: pInfo.pTel,
       playerEmail: pInfo.pEmail,
@@ -258,7 +259,7 @@ const ContestJoin = () => {
       joins: [],
     };
     setInvoiceInfo({ ...initInvocieInfo });
-  }, [noticeInfo, contests, pInfo, userInfo]);
+  }, [noticeInfo, contests, pInfo]);
 
   const fileSave = (fileUrl) => {
     const fileURL = fileUrl;
@@ -334,7 +335,7 @@ const ContestJoin = () => {
     if (!date) {
       return;
     }
-    const sanitizedDate = date.replace(/[^\d.-]/g, ""); // `.`과 `,`을 제외한 다른 문자 제거
+    const sanitizedDate = date.replace(/[^\d.-]/g, "").replace(/-/g, ""); // `.`과 `,`과 `-`을 제외한 다른 문자 제거
 
     const match = sanitizedDate.match(/^(\d{0,4})(\d{0,2})(\d{0,2})$/); // 숫자 그룹으로 분리
 
@@ -380,12 +381,12 @@ const ContestJoin = () => {
               <div className="flex flex-col w-full mb-5">
                 <div className="flex w-full h-60 flex-col bg-orange-300 p-4 gap-y-1">
                   <div className="flex">
-                    <span className="text-lg font-medium z-10">
+                    <span className="font-medium z-10">
                       {noticeInfo.contestPromoter}-참가공고
                       <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
                     </span>
                   </div>
-                  <span className="text-2xl font-normal font-san">
+                  <span className="text-xl font-normal font-san">
                     {noticeInfo.contestTitle}
                   </span>
                   <div className="flex w-full text-purple-700">
@@ -541,7 +542,10 @@ const ContestJoin = () => {
                             }))
                           }
                           onChange={(e) => {
-                            handleInputs(e);
+                            setInvoiceInfo(() => ({
+                              ...invoiceInfo,
+                              playerBirth: formatDate(e.target.value),
+                            }));
                           }}
                           className={`${
                             playerValidate.playerBirth
@@ -556,7 +560,7 @@ const ContestJoin = () => {
                       </div>
                     </div>
                     <div className="flex">
-                      {pBirthRef.current?.value.length < 7 && (
+                      {pBirthRef.current?.value.length < 8 && (
                         <span className="text-xs ml-2 bg-yellow-200 p-2">
                           8자리 생년월일을 작성해주세요.
                         </span>
@@ -579,7 +583,10 @@ const ContestJoin = () => {
                             }))
                           }
                           onChange={(e) => {
-                            handleInputs(e);
+                            setInvoiceInfo(() => ({
+                              ...invoiceInfo,
+                              playerTel: formatPhoneNumber(e.target.value),
+                            }));
                           }}
                           className={`${
                             playerValidate.playerTel
@@ -665,7 +672,7 @@ const ContestJoin = () => {
                   </div>
                 </div>
                 {!isValidate ? (
-                  <div className="flex  w-full flex-col bg-white  mt-4 justify-center items-start">
+                  <div className="flex  w-full flex-col bg-white  mt-4 justify-center items-center">
                     <span className="text-sm text-orange-500 font-sans font-semibold">
                       필수 개인정보를 정확하게 입력하시면 종목선택화면이
                       표시됩니다.
@@ -711,7 +718,7 @@ const ContestJoin = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex w-full items-start justify-between mt-4 flex-wrap gap-2">
+                    <div className="flex w-full items-start justify-between mt-4 mb-8 flex-wrap gap-2">
                       {filteredCategorys?.length > 0 &&
                         filteredCategorys.map((category, cIdex) => {
                           const {

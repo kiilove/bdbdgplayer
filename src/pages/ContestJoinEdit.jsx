@@ -33,7 +33,7 @@ const ContestJoinEdit = () => {
   const [playerAge, setPlayerAge] = useState();
   const [modal, setModal] = useState(false);
   const [modalComponent, setModalComponent] = useState("");
-  const [chkAllItem, setChkAllItem] = useState(false);
+  const [chkAllItem, setChkAllItem] = useState(true);
   const [isValidate, setIsValidate] = useState(false);
   const [categorys, setCategorys] = useState([]);
   const [filteredCategorys, setFilteredCategorys] = useState([]);
@@ -636,7 +636,7 @@ const ContestJoinEdit = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex w-full items-start justify-between mt-4 flex-wrap gap-2">
+                    <div className="flex w-full items-start justify-between mt-4 mb-8 flex-wrap gap-2">
                       {filteredCategorys?.length > 0 &&
                         filteredCategorys.map((category, cIdex) => {
                           const {
