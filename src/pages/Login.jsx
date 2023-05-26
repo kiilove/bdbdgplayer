@@ -53,22 +53,23 @@ const Login = () => {
         "globalValue",
         JSON.stringify({ value: "", token: "" })
       );
-      await signInWithEmail(loginInfo.email.trim(), loginInfo.password.trim())
-        .then(({ user, error }) => {
-          if (error) {
-            setMessage({
-              body: error.message,
-              isButton: true,
-              confirmButtonText: "확인",
-            });
-            setMessageOpen(true);
-          }
-          if (user) {
-            //setIsLoading(true);
-            setCurrentUid(user.uid);
-          }
-        })
-        .then(() => navigate("/"));
+      await signInWithEmail(
+        loginInfo.email.trim(),
+        loginInfo.password.trim()
+      ).then(({ user, error }) => {
+        if (error) {
+          setMessage({
+            body: error.message,
+            isButton: true,
+            confirmButtonText: "확인",
+          });
+          setMessageOpen(true);
+        }
+        if (user) {
+          setCurrentUid(user.uid);
+          navigate("/");
+        }
+      });
     } catch (error) {
       console.log(error);
       return;

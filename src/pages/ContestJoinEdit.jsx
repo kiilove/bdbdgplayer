@@ -309,14 +309,14 @@ const ContestJoinEdit = () => {
             </Modal>
             <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white">
               <div className="flex flex-col w-full mb-5">
-                <div className="flex w-full h-60 flex-col bg-orange-300 p-4 gap-y-1">
+                <div className="flex w-full h-auto flex-col bg-orange-300 p-4 gap-y-1">
                   <div className="flex">
-                    <span className="text-lg font-medium z-10">
+                    <span className="font-medium z-10">
                       {invoiceInfo.contestPromoter}-참가공고
                       <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
                     </span>
                   </div>
-                  <span className="text-2xl font-normal font-san">
+                  <span className="text-xl font-normal font-san">
                     {invoiceInfo.contestTitle}
                   </span>
                   <div className="flex w-full text-purple-700">
@@ -366,15 +366,22 @@ const ContestJoinEdit = () => {
                   </div>
                   <div className="flex w-full text-gray-700 ">
                     <div className="flex w-3/4">
-                      <div className="flex justify-start items-center">
+                      <div className="flex justify-start items-start mt-1">
                         <RiBankLine />
                       </div>
                       <div className="flex items-center">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          {invoiceInfo?.contestBankName}{" "}
-                          {invoiceInfo?.contestAccountNumber}{" "}
-                          {invoiceInfo?.contestAccountOwner}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {invoiceInfo?.contestBankName}{" "}
+                          </span>
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {invoiceInfo?.contestAccountNumber}{" "}
+                          </span>
+                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                            {invoiceInfo?.contestAccountOwner}
+                          </span>
+                        </div>
+
                         <button className="ml-1">
                           <RxCopy />
                         </button>
