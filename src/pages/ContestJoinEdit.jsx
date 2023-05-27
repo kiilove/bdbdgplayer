@@ -211,9 +211,15 @@ const ContestJoinEdit = () => {
     const { name, value } = e.target;
     if (name === "playerText") {
       e.preventDefault();
-      setInvoiceInfo({ ...invoiceInfo, [name]: value });
+      setInvoiceInfo({
+        ...invoiceInfo,
+        [name]: value,
+      });
     } else {
-      setInvoiceInfo({ ...invoiceInfo, [name]: value.trim() });
+      setInvoiceInfo({
+        ...invoiceInfo,
+        [name]: value.trim(),
+      });
     }
     handlePlayerValidate();
   };
@@ -320,7 +326,7 @@ const ContestJoinEdit = () => {
                     {invoiceInfo.contestTitle}
                   </span>
                   <div className="flex w-full text-purple-700">
-                    <div className="flex w-1/4 justify-start">
+                    <div className="flex w-1/2 justify-start">
                       <div className="flex justify-start items-center">
                         <RiTimeLine />
                       </div>
@@ -330,7 +336,7 @@ const ContestJoinEdit = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="flex w-3/4">
+                    <div className="flex w-1/2">
                       <div className="flex justify-start items-center ml-5">
                         <MdOutlineLocationOn />
                       </div>
@@ -342,22 +348,22 @@ const ContestJoinEdit = () => {
                     </div>
                   </div>
                   <div className="flex w-full text-gray-700">
-                    <div className="flex w-1/4">
+                    <div className="flex w-1/2">
                       <div className="flex justify-start items-center">
                         <MdCreditCard />
                       </div>
                       <div className="flex">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                        <span className="ml-1 text-base font-semi-bold justify-start items-center">
                           {invoiceInfo.contestPriceBasic?.toLocaleString()}
                         </span>
                       </div>
                     </div>
-                    <div className="flex w-3/4 items-center">
+                    <div className="flex w-1/2 items-center">
                       <div className="flex justify-start items-center">
                         <RiCheckDoubleFill />
                       </div>
                       <div className="flex justify-start items-center">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                        <span className="ml-1 text-base font-semi-bold justify-start items-center">
                           {invoiceInfo.contestPriceExtra?.toLocaleString()}
                         </span>
                         <span className="text-xs ml-2">중복출전비용</span>
@@ -371,13 +377,13 @@ const ContestJoinEdit = () => {
                       </div>
                       <div className="flex items-center">
                         <div className="flex flex-col">
-                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
                             {invoiceInfo?.contestBankName}{" "}
                           </span>
-                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
                             {invoiceInfo?.contestAccountNumber}{" "}
                           </span>
-                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
                             {invoiceInfo?.contestAccountOwner}
                           </span>
                         </div>
@@ -387,9 +393,9 @@ const ContestJoinEdit = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex w-1/4 justify-end mr-2">
+                    <div className="flex w-1/2 justify-end items-center mr-2">
                       <button
-                        className="text-xs text-orange-800 p-1 border border-orange-500 bg-orange-400"
+                        className="text-sm text-orange-900 p-1 border border-orange-500 bg-orange-400 h-10"
                         onClick={() =>
                           fileSave(invoiceInfo.contestCollectionFileLink)
                         }
@@ -409,8 +415,8 @@ const ContestJoinEdit = () => {
                       </span>
                     </div>
                     <div className="flex flex-col w-full">
-                      <div className="flex w-full">
-                        <div className="flex w-1/5 items-center">
+                      <div className="flex w-full flex-col sm:flex-row">
+                        <div className="flex w-1/2 sm:w-1/5 items-center">
                           <span>이름 : </span>
                         </div>
                         <div className="flex w-auto px-2">
@@ -434,15 +440,15 @@ const ContestJoinEdit = () => {
                         <span></span>
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>성별 : </span>
                       </div>
                       <div className="flex w-auto px-2">
                         <select
                           name="playerGender"
                           ref={pGenderRef}
-                          value={
+                          selected={
                             invoiceInfo.playerGender === "m" ? "남자" : "여자"
                           }
                           onChange={(e) => {
@@ -450,13 +456,13 @@ const ContestJoinEdit = () => {
                           }}
                           className=" bg-transparent border rounded-lg p-2"
                         >
-                          <option>남자</option>
-                          <option>여자</option>
+                          <option value="m">남자</option>
+                          <option value="f">여자</option>
                         </select>
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>생년월일 : </span>
                       </div>
                       <div className="flex w-auto px-2">
@@ -472,7 +478,10 @@ const ContestJoinEdit = () => {
                             }))
                           }
                           onChange={(e) => {
-                            handleInputs(e);
+                            setInvoiceInfo(() => ({
+                              ...invoiceInfo,
+                              playerBirth: formatDate(e.target.value),
+                            }));
                           }}
                           className={`${
                             playerValidate.playerBirth
@@ -486,16 +495,16 @@ const ContestJoinEdit = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="flex">
-                      {pBirthRef.current?.value.length < 7 && (
+                    {pBirthRef.current?.value.length < 8 && (
+                      <div className="flex">
                         <span className="text-xs ml-2 bg-yellow-200 p-2">
-                          8자리 생년월일을 작성해주세요.
+                          8자리 생년월일을 작성해주세요.(예:2000-01-01)
                         </span>
-                      )}
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
-                        <span>전화번호 : </span>
+                      </div>
+                    )}
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
+                        <span>휴대전화 : </span>
                       </div>
                       <div className="flex w-auto px-2">
                         <input
@@ -510,7 +519,10 @@ const ContestJoinEdit = () => {
                             }))
                           }
                           onChange={(e) => {
-                            handleInputs(e);
+                            setInvoiceInfo(() => ({
+                              ...invoiceInfo,
+                              playerTel: formatPhoneNumber(e.target.value),
+                            }));
                           }}
                           className={`${
                             playerValidate.playerTel
@@ -520,8 +532,15 @@ const ContestJoinEdit = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
+                    {pTelRef.current?.value.replaceAll("-", "").length < 10 && (
+                      <div className="flex">
+                        <span className="text-xs ml-2 bg-yellow-200 p-2">
+                          '010' 포함된 휴대폰번호를 입력해주세요
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>이메일 : </span>
                       </div>
                       <div className="flex w-auto px-2">
@@ -537,8 +556,8 @@ const ContestJoinEdit = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>소속 : </span>
                       </div>
                       <div className="flex w-auto px-2">
@@ -558,8 +577,15 @@ const ContestJoinEdit = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-start">
+                    {pGymRef.current?.value.length <= 0 && (
+                      <div className="flex">
+                        <span className="text-xs ml-2 bg-yellow-200 p-2">
+                          소속이 없다면 무소속으로 작성해주세요.
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>참여동기 : </span>
                       </div>
                       <div className="flex w-auto pl-2 ">
@@ -570,12 +596,13 @@ const ContestJoinEdit = () => {
                           onChange={(e) => {
                             handleInputs(e);
                           }}
+                          placeholder="사회자에게 전달되어 선수소개시 발표됩니다."
                           className="border p-2 outline-none rounded-lg w-60"
                         />
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/3 items-center">
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/3 items-center">
                         <span>무대사진신청 : </span>
                       </div>
                       <div className="flex w-2/3 px-2 justify-start items-center">
@@ -604,6 +631,14 @@ const ContestJoinEdit = () => {
                     <span className="text-sm text-gray-500 font-sans font-semibold">
                       필수항목 : 이름, 성별, 생년월일, 전화번호, 소속
                     </span>
+                    <div className="flex mt-4 w-full h-auto px-2">
+                      <button
+                        className="bg-orange-400 text-white w-full h-10"
+                        onClick={() => handlePlayerValidate()}
+                      >
+                        <span>종목표시</span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex  w-full flex-col bg-white px-2 mt-4">

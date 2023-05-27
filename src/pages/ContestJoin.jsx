@@ -1,39 +1,22 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { Modal } from "@mui/material";
-import {
-  MdCreditCard,
-  MdOutlineAlternateEmail,
-  MdOutlineLocationOn,
-} from "react-icons/md";
-import {
-  RiBankLine,
-  RiCalendarLine,
-  RiCheckDoubleFill,
-  RiTimeLine,
-} from "react-icons/ri";
+import { MdCreditCard, MdOutlineLocationOn } from "react-icons/md";
+import { RiBankLine, RiCheckDoubleFill, RiTimeLine } from "react-icons/ri";
 import { RxCopy } from "react-icons/rx";
-import { BsGenderAmbiguous } from "react-icons/bs";
-import { GoDeviceMobile } from "react-icons/go";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { RotatingLines } from "react-loader-spinner";
 import { saveAs } from "file-saver";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  useFirestoreGetDocument,
-  useFirestoreQuery,
-} from "../hooks/useFirestores";
-import { useEffect } from "react";
-import { PlayerEditContext } from "../context/PlayerContext";
-import { useContext } from "react";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useFirestoreGetDocument } from "../hooks/useFirestores";
 import JoinCupConfirm from "../modals/JoinCupConfirm";
 import dayjs from "dayjs";
-import { AuthContext } from "../context/AuthContext";
-import { useRef } from "react";
 import { UserContext } from "../context/UserContext";
+import Policy3 from "../components/Policy3";
+import { replace } from "formik";
 
 const ContestJoin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +32,7 @@ const ContestJoin = () => {
   const [filteredCategorys, setFilteredCategorys] = useState([]);
   const [grades, setGrades] = useState([]);
   const [invoiceInfo, setInvoiceInfo] = useState({ joins: [] });
-  const [playerInfo, setPlayerInfo] = useState({});
+  const [modalOpen, setModalOpen] = useState(false);
   const [playerValidate, setPlayerValidate] = useState({
     playerName: false,
     playerTel: false,
@@ -88,11 +71,11 @@ const ContestJoin = () => {
   const handleCloseModal = () => {
     setModal(() => false);
   };
-  const handleApply = () => {
+  const handleApply = (e) => {
     const apply = {
       title: "m1",
-      value: !isApply.value,
-      date: dayjs().format("YYYY-MM-DD HH:MM:ss"),
+      value: e.target.checked,
+      date: dayjs(new Date()).format("YYYY-MM-DD HH:MM:ss"),
     };
 
     console.log(apply);
@@ -238,6 +221,7 @@ const ContestJoin = () => {
       contestTitle: noticeInfo.contestTitle,
       contestDate: noticeInfo.contestDate,
       contestLocation: noticeInfo.contestLocation,
+      conntestPromoter: noticeInfo.contestPromoter,
       contestCollectionFileLink: noticeInfo.contestCollectionFileLink,
       contestPriceBasic: noticeInfo.contestPriceBasic,
       contestPriceExtra: noticeInfo.contestPriceExtra,
@@ -271,14 +255,31 @@ const ContestJoin = () => {
     handlePlayerValidate();
   }, [invoiceInfo]);
 
+  useEffect(() => {
+    if (pGenderRef?.current?.value !== undefined) {
+      setInvoiceInfo({
+        ...invoiceInfo,
+        playerGender: pGenderRef.current.value,
+      });
+    }
+  }, [pGenderRef?.current]);
+
   const handleInputs = (e) => {
     const { name, value } = e.target;
+    console.log(name, value);
+    console.log(pGenderRef.current?.value);
 
     if (name === "playerText") {
       e.preventDefault();
-      setInvoiceInfo({ ...invoiceInfo, [name]: value });
+      setInvoiceInfo({
+        ...invoiceInfo,
+        [name]: value,
+      });
     } else {
-      setInvoiceInfo({ ...invoiceInfo, [name]: value.trim() });
+      setInvoiceInfo({
+        ...invoiceInfo,
+        [name]: value.trim(),
+      });
     }
 
     handlePlayerValidate();
@@ -308,7 +309,7 @@ const ContestJoin = () => {
   }
 
   function validatePhoneNumber(phoneNumber) {
-    return phoneNumber && /^\d{3}-\d{3,4}-\d{4}$/.test(phoneNumber);
+    return phoneNumber && /^\d{2,3}-\d{3,4}-\d{3,4}$/.test(phoneNumber);
   }
 
   function validateDate(date) {
@@ -369,6 +370,7 @@ const ContestJoin = () => {
       {!isLoading && noticeInfo.contestTitle && (
         <>
           <BottomMenu />
+
           <div
             className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-24"
             style={{ maxWidth: "420px" }}
@@ -379,7 +381,7 @@ const ContestJoin = () => {
             </Modal>
             <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white">
               <div className="flex flex-col w-full mb-5">
-                <div className="flex w-full h-auto flex-col bg-orange-300 p-4 gap-y-1">
+                <div className="flex w-full h-auto flex-col bg-orange-300 p-4 gap-y-2">
                   <div className="flex">
                     <span className="font-medium z-10">
                       {noticeInfo.contestPromoter}-참가공고
@@ -390,47 +392,47 @@ const ContestJoin = () => {
                     {noticeInfo.contestTitle}
                   </span>
                   <div className="flex w-full text-purple-700">
-                    <div className="flex w-1/4 justify-start">
+                    <div className="flex w-1/2 justify-start">
                       <div className="flex justify-start items-center">
                         <RiTimeLine />
                       </div>
                       <div className="flex">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                        <span className="ml-1 text-base font-semi-bold justify-start items-center">
                           {noticeInfo.contestDate}
                         </span>
                       </div>
                     </div>
-                    <div className="flex w-3/4">
+                    <div className="flex w-1/2">
                       <div className="flex justify-start items-center ml-5">
                         <MdOutlineLocationOn />
                       </div>
                       <div className="flex">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                        <span className="ml-1 text-base font-semi-bold justify-start items-center">
                           {noticeInfo.contestLocation}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex w-full text-gray-700">
-                    <div className="flex w-1/4">
+                    <div className="flex w-1/2">
                       <div className="flex justify-start items-center">
                         <MdCreditCard />
                       </div>
                       <div className="flex">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                        <span className="ml-1 text-base font-semi-bold justify-start items-center">
                           {noticeInfo.contestPriceBasic?.toLocaleString()}
                         </span>
                       </div>
                     </div>
-                    <div className="flex w-3/4 items-center">
+                    <div className="flex w-1/2 items-center">
                       <div className="flex justify-start items-center">
                         <RiCheckDoubleFill />
                       </div>
                       <div className="flex justify-start items-center">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                        <span className="ml-1 text-base font-semi-bold justify-start items-center">
                           {noticeInfo.contestPriceExtra?.toLocaleString()}
                         </span>
-                        <span className="text-xs ml-2">중복출전비용</span>
+                        <span className="text-sm ml-2">중복출전비용</span>
                       </div>
                     </div>
                   </div>
@@ -441,13 +443,13 @@ const ContestJoin = () => {
                       </div>
                       <div className="flex items-center">
                         <div className="flex flex-col">
-                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
                             {invoiceInfo?.contestBankName}{" "}
                           </span>
-                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
                             {invoiceInfo?.contestAccountNumber}{" "}
                           </span>
-                          <span className="ml-1 text-sm font-semi-bold justify-start items-center">
+                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
                             {invoiceInfo?.contestAccountOwner}
                           </span>
                         </div>
@@ -456,9 +458,9 @@ const ContestJoin = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex w-1/4 justify-end mr-2">
+                    <div className="flex w-1/2 justify-end items-center mr-2">
                       <button
-                        className="text-xs text-orange-800 p-1 border border-orange-500 bg-orange-400"
+                        className="text-sm text-orange-900 p-1 border border-orange-500 bg-orange-400 h-10"
                         onClick={() =>
                           fileSave(noticeInfo.contestCollectionFileLink)
                         }
@@ -485,8 +487,8 @@ const ContestJoin = () => {
                       </span>
                     </div>
                     <div className="flex flex-col w-full">
-                      <div className="flex w-full">
-                        <div className="flex w-1/5 items-center">
+                      <div className="flex w-full flex-col sm:flex-row">
+                        <div className="flex w-1/2 sm:w-1/5 items-center">
                           <span>이름 : </span>
                         </div>
                         <div className="flex w-auto px-2">
@@ -510,15 +512,15 @@ const ContestJoin = () => {
                         <span></span>
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>성별 : </span>
                       </div>
                       <div className="flex w-auto px-2">
                         <select
                           name="playerGender"
                           ref={pGenderRef}
-                          value={
+                          selected={
                             invoiceInfo.playerGender === "m" ? "남자" : "여자"
                           }
                           onChange={(e) => {
@@ -526,13 +528,13 @@ const ContestJoin = () => {
                           }}
                           className=" bg-transparent border rounded-lg p-2"
                         >
-                          <option>남자</option>
-                          <option>여자</option>
+                          <option value="m">남자</option>
+                          <option value="f">여자</option>
                         </select>
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>생년월일 : </span>
                       </div>
                       <div className="flex w-auto px-2">
@@ -565,16 +567,16 @@ const ContestJoin = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="flex">
-                      {pBirthRef.current?.value.length < 8 && (
+                    {pBirthRef.current?.value.length < 8 && (
+                      <div className="flex">
                         <span className="text-xs ml-2 bg-yellow-200 p-2">
-                          8자리 생년월일을 작성해주세요.
+                          8자리 생년월일을 작성해주세요.(예:2000-01-01)
                         </span>
-                      )}
-                    </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
-                        <span>전화번호 : </span>
+                      </div>
+                    )}
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
+                        <span>휴대전화 : </span>
                       </div>
                       <div className="flex w-auto px-2">
                         <input
@@ -602,8 +604,15 @@ const ContestJoin = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
+                    {pTelRef.current?.value.replaceAll("-", "").length < 10 && (
+                      <div className="flex">
+                        <span className="text-xs ml-2 bg-yellow-200 p-2">
+                          '010' 포함된 휴대폰번호를 입력해주세요
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>이메일 : </span>
                       </div>
                       <div className="flex w-auto px-2">
@@ -619,8 +628,8 @@ const ContestJoin = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-center">
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>소속 : </span>
                       </div>
                       <div className="flex w-auto px-2">
@@ -640,8 +649,15 @@ const ContestJoin = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/5 items-start">
+                    {pGymRef.current?.value.length <= 0 && (
+                      <div className="flex">
+                        <span className="text-xs ml-2 bg-yellow-200 p-2">
+                          소속이 없다면 무소속으로 작성해주세요.
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/5 items-center">
                         <span>참여동기 : </span>
                       </div>
                       <div className="flex w-auto pl-2 ">
@@ -652,12 +668,13 @@ const ContestJoin = () => {
                           onChange={(e) => {
                             handleInputs(e);
                           }}
+                          placeholder="사회자에게 전달되어 선수소개시 발표됩니다."
                           className="border p-2 outline-none rounded-lg w-60"
                         />
                       </div>
                     </div>
-                    <div className="flex w-full">
-                      <div className="flex w-1/3 items-center">
+                    <div className="flex w-full flex-col sm:flex-row">
+                      <div className="flex w-1/2 sm:w-1/3 items-center">
                         <span>무대사진신청 : </span>
                       </div>
                       <div className="flex w-2/3 px-2 justify-start items-center">
@@ -678,7 +695,7 @@ const ContestJoin = () => {
                   </div>
                 </div>
                 {!isValidate ? (
-                  <div className="flex  w-full flex-col bg-white  mt-4 justify-center items-center">
+                  <div className="flex  w-full flex-col bg-white  mt-4 justify-center items-center gap-y-2 h-auto">
                     <span className="text-sm text-orange-500 font-sans font-semibold">
                       필수 개인정보를 정확하게 입력하시면 종목선택화면이
                       표시됩니다.
@@ -686,6 +703,14 @@ const ContestJoin = () => {
                     <span className="text-sm text-gray-500 font-sans font-semibold">
                       필수항목 : 이름, 성별, 생년월일, 전화번호, 소속
                     </span>
+                    <div className="flex mt-4 w-full h-auto px-2">
+                      <button
+                        className="bg-orange-400 text-white w-full h-10"
+                        onClick={() => handlePlayerValidate()}
+                      >
+                        <span>종목표시</span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex  w-full flex-col bg-white px-2 mt-4">
@@ -799,7 +824,7 @@ const ContestJoin = () => {
                             name="m2Apply"
                             value="m2Apply"
                             className="mr-2"
-                            onChange={() => handleApply()}
+                            onChange={(e) => handleApply(e)}
                           />
                           <span className="text-gray-500 mr-1 text-xs">
                             [필수]
@@ -808,7 +833,13 @@ const ContestJoin = () => {
                             개인정보 수집 이용 동의 및 초상권 사용동의서
                           </span>
                         </label>
-                        <button onClick={() => navigate("/policy3")}>
+                        <button
+                          onClick={() =>
+                            handleOpenModal({
+                              component: <Policy3 />,
+                            })
+                          }
+                        >
                           <span className="font-bold">
                             <FontAwesomeIcon icon={faArrowRight} />
                           </span>

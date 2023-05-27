@@ -26,6 +26,8 @@ import ContestJoinEdit from "./pages/ContestJoinEdit";
 import EditSuccessPage from "./pages/EditSuccessPage";
 import { UserContext } from "./context/UserContext";
 import { RotatingLines } from "react-loader-spinner";
+import JoinCupConfirm from "./modals/JoinCupConfirm";
+import JoinCupEditConfirm from "./modals/JoinCupEditConfirm";
 
 function App() {
   const { currentUserInfo } = useContext(UserContext);
@@ -82,6 +84,8 @@ function App() {
         <Route path="/myprofile" element={<MyProfile />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/policy3" element={<Policy3 />} />
+        <Route path="/joincupconfirm" element={<JoinCupConfirm />} />
+        <Route path="/joincupeditconfirm" element={<JoinCupEditConfirm />} />
       </Routes>
     </BrowserRouter>
   );
