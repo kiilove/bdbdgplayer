@@ -604,7 +604,7 @@ const ContestJoin = () => {
                         />
                       </div>
                     </div>
-                    {pTelRef.current?.value.replaceAll("-", "").length < 10 && (
+                    {pTelRef.current?.value.replaceAll("-", "").length < 9 && (
                       <div className="flex">
                         <span className="text-xs ml-2 bg-yellow-200 p-2">
                           '010' 포함된 휴대폰번호를 입력해주세요

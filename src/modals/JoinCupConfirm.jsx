@@ -144,12 +144,12 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
         className="flex w-full h-full flex-col p-2"
         style={{ maxWidth: "420px" }}
       >
-        <div className="flex w-full flex-col gap-y-1 h-full mt-5 border-2 border-dashed p-5">
-          <div className="flex w-full h-20 justify-center items-center p-5">
-            <span className="text-2xl font-semibold">참가신청내용확인</span>
+        <div className="flex w-full flex-col gap-y-1 h-auto mt-2 border-2 border-dashed">
+          <div className="flex w-full h-auto py-2 justify-center items-center">
+            <span className="text-xl font-semibold">참가신청내용확인</span>
           </div>
-          <div className="flex  w-full h-auto flex-col bg-white px-2 gap-y-2">
-            <div className="flex flex-col w-full p-4 border h-auto gap-y-3">
+          <div className="flex  w-full h-auto flex-col bg-white px-2">
+            <div className="flex flex-col w-full px-4 border h-auto gap-y-1 py-2">
               <div className="flex justify-between">
                 <span className="text-lg font-medium z-10">
                   참가대회정보
@@ -178,8 +178,8 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
               </div>
             </div>
           </div>
-          <div className="flex  w-full h-auto flex-col bg-white px-2 gap-y-2">
-            <div className="flex flex-col w-full p-4 border h-auto gap-y-3">
+          <div className="flex  w-full h-auto flex-col bg-white px-2 ">
+            <div className="flex flex-col w-full px-4 border h-auto gap-y-1 py-2">
               <div className="flex justify-between">
                 <span className="text-lg font-medium z-10">
                   개인정보
@@ -208,8 +208,8 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
               </div>
             </div>
           </div>
-          <div className="flex  w-full h-auto flex-col bg-white px-2 gap-y-2">
-            <div className="flex flex-col w-full p-4 border h-auto gap-y-3">
+          <div className="flex  w-full h-auto flex-col bg-white px-2 mb-2">
+            <div className="flex flex-col w-full px-4 border h-auto gap-y-1 py-2">
               <div className="flex justify-between">
                 <span className="text-lg font-medium z-10">
                   참가신청종목

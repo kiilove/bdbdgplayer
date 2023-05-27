@@ -244,7 +244,7 @@ const ContestJoinEdit = () => {
   };
 
   function validatePhoneNumber(phoneNumber) {
-    return phoneNumber && /^\d{3}-\d{3,4}-\d{4}$/.test(phoneNumber);
+    return phoneNumber && /^\d{2,3}-\d{3,4}-\d{3,4}$/.test(phoneNumber);
   }
 
   function validateDate(date) {
@@ -532,7 +532,7 @@ const ContestJoinEdit = () => {
                         />
                       </div>
                     </div>
-                    {pTelRef.current?.value.replaceAll("-", "").length < 10 && (
+                    {pTelRef.current?.value.replaceAll("-", "").length < 9 && (
                       <div className="flex">
                         <span className="text-xs ml-2 bg-yellow-200 p-2">
                           '010' 포함된 휴대폰번호를 입력해주세요
