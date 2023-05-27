@@ -10,10 +10,11 @@ import { addDoc, collection } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import { useMemo } from "react";
 import { useCallback } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { handleToast } from "../components/HandleToast";
 import { db } from "../firebase";
 import { ThreeDots } from "react-loader-spinner";
+import dayjs from "dayjs";
 
 const RegisterWithEmail = () => {
   const [playerInfo, setPlayerInfo] = useState({});
@@ -26,9 +27,18 @@ const RegisterWithEmail = () => {
   });
   const [gender, setGender] = useState(undefined);
   const [license, setLicense] = useState({
-    m1Apply: { value: false, at: new Date() },
-    m2Apply: { value: false, at: new Date() },
-    s1Apply: { value: false, at: new Date() },
+    m1Apply: {
+      value: false,
+      at: dayjs(new Date()).format("YYYY-MM-DD HH:mm:sss"),
+    },
+    m2Apply: {
+      value: false,
+      at: dayjs(new Date()).format("YYYY-MM-DD HH:mm:sss"),
+    },
+    s1Apply: {
+      value: false,
+      at: dayjs(new Date()).format("YYYY-MM-DD HH:mm:sss"),
+    },
   });
   const [licenseAll, setLicenseAll] = useState(false);
 
@@ -242,9 +252,11 @@ const RegisterWithEmail = () => {
     <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">
       <div className="flex flex-col w-full justify-center items-center">
         <div className="flex w-full flex-col items-center align-top mt-10">
-          <span className="text-3xl text-orange-500 font-extrabold align-middle">
-            BDBDg
-          </span>
+          <Link to="/">
+            <span className="text-3xl text-orange-500 font-extrabold align-middle">
+              BDBDg
+            </span>
+          </Link>
         </div>
         <div
           className="flex justify-center mt-10 flex-col gap-y-3 px-4 w-full"

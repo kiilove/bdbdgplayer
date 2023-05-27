@@ -76,51 +76,6 @@ const Login = () => {
     }
   };
 
-  const playerLogin = async (email, pwd) => {
-    // const auth = getAuth();
-    // await signInWithEmailAndPassword(auth, email.trim(), pwd.trim())
-    //   .then(async (user) => {
-    //     const userInfo = user;
-    //     const profile = await getPlayerProfile(userInfo.user.uid);
-    //     return profile;
-    //     //
-    //   })
-    //   .then((profile) => {
-    //     //console.log(profile);
-    //     //console.log(window.navigator.userAgent);
-    //     dispatch({
-    //       type: "LOGIN",
-    //       payload: { id: profile.id, pUid: profile.playerUid },
-    //     });
-    //     return profile;
-    //   })
-    //   .then((profile) => {
-    //     //console.log(profile);
-    //     editDispatch({
-    //       type: "EDIT",
-    //       payload: {
-    //         pName: profile.pName,
-    //         pEmail: profile.pEmail,
-    //         pTel: profile.pTel || "",
-    //         pPic: profile.pPic || "",
-    //         pNick: profile.pNick || "",
-    //         pGender: profile.gender || "",
-    //         pBirth: profile.pBirth || "",
-    //         pGym: profile.pGym || "",
-    //       },
-    //     });
-    //   })
-    //   .then(() => setIsLoading(false))
-    //   .then(() => navigate("/"))
-    //   .catch((error) => {
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //     console.log(errorCode);
-    //     navigate("/loginerror", { state: errorCode });
-    //     //handleToast({ type: "error", msg: errorMessage });
-    //   });
-  };
-
   const handleInputs = (e) => {
     const { name, value } = e.target;
     setLoginInfo(() => ({ ...loginInfo, [name]: value.trim() }));
@@ -230,12 +185,15 @@ const Login = () => {
         </div>
         <div className="flex justify-center items-center mt-10 flex-col gap-y-3 px-4 ">
           <p className=" text-base font-light">아직 아이디가 없으신가요?</p>
-          <Link to="/register">
-            <span className="text-base font-semibold ml-3">무료 회원가입</span>
-          </Link>
-          <div className="flex justify-center items-center gap-x-5 mt-5">
-            <span className="text-base font-semibold">아이디 찾기</span>
-            <span className="text-base font-semibold">비밀번호 찾기</span>
+          <div className="flex w-full h-10 justify-center items-center gap-x-2">
+            <Link to="/register">
+              <span className="text-base font-semibold">무료 회원가입</span>
+            </Link>
+            <Link to="/resetpassword">
+              <div className="flex justify-center items-center">
+                <span className="text-base text-gray-600">비밀번호 찾기</span>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

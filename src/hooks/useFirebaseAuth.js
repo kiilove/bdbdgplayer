@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 const useFirebaseAuth = () => {
@@ -98,12 +99,24 @@ const useFirebaseAuth = () => {
     }
   };
 
+  const resetPassword = async (email) => {
+    const auth = getAuth();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { success: { message: email + "으로 메일을 발송하였습니다." } };
+    } catch (error) {
+      return { error: { message: error.message } };
+      // Handle error
+    }
+  };
+
   return {
     user,
     isLoading,
     signInWithEmail,
     signUpWithEmail,
     handleSignOut,
+    resetPassword,
   };
 };
 

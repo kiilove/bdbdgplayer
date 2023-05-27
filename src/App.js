@@ -28,6 +28,7 @@ import { UserContext } from "./context/UserContext";
 import { RotatingLines } from "react-loader-spinner";
 import JoinCupConfirm from "./modals/JoinCupConfirm";
 import JoinCupEditConfirm from "./modals/JoinCupEditConfirm";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   const { currentUserInfo } = useContext(UserContext);
@@ -63,6 +64,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/loginerror" element={<LoginError />} />
         <Route path="/register" element={<Register />} />
         <Route path="/registeremail" element={<RegisterWithEmail />} />

@@ -448,16 +448,23 @@ const ContestJoinEdit = () => {
                         <select
                           name="playerGender"
                           ref={pGenderRef}
-                          selected={
-                            invoiceInfo.playerGender === "m" ? "남자" : "여자"
-                          }
                           onChange={(e) => {
                             handleInputs(e);
                           }}
                           className=" bg-transparent border rounded-lg p-2"
                         >
-                          <option value="m">남자</option>
-                          <option value="f">여자</option>
+                          <option
+                            value="m"
+                            selected={invoiceInfo.playerGender === "m"}
+                          >
+                            남자
+                          </option>
+                          <option
+                            value="f"
+                            selected={invoiceInfo.playerGender === "f"}
+                          >
+                            여자
+                          </option>
                         </select>
                       </div>
                     </div>
