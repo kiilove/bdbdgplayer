@@ -289,10 +289,8 @@ const ContestJoin = () => {
     const updatedPlayerValidate = {
       playerName:
         !invoiceInfo.playerName || invoiceInfo.playerName.trim() === "",
-      playerTel:
-        !invoiceInfo.playerTel || !validatePhoneNumber(invoiceInfo.playerTel),
-      playerBirth:
-        !invoiceInfo.playerBirth || !validateDate(invoiceInfo.playerBirth),
+      playerTel: !validatePhoneNumber(invoiceInfo.playerTel),
+      playerBirth: !validateDate(invoiceInfo.playerBirth),
       playerGender: !invoiceInfo.playerGender,
       playerGym: !invoiceInfo.playerGym || invoiceInfo.playerGym.trim() === "",
     };
@@ -528,8 +526,18 @@ const ContestJoin = () => {
                           }}
                           className=" bg-transparent border rounded-lg p-2"
                         >
-                          <option value="m">남자</option>
-                          <option value="f">여자</option>
+                          <option
+                            value="m"
+                            selected={invoiceInfo.playerGender === "m"}
+                          >
+                            남자
+                          </option>
+                          <option
+                            value="f"
+                            selected={invoiceInfo.playerGender === "f"}
+                          >
+                            여자
+                          </option>
                         </select>
                       </div>
                     </div>
@@ -581,7 +589,7 @@ const ContestJoin = () => {
                       <div className="flex w-auto px-2">
                         <input
                           type="text"
-                          value={invoiceInfo.playerTel}
+                          value={formatPhoneNumber(invoiceInfo.playerTel)}
                           name="playerTel"
                           ref={pTelRef}
                           onBlur={(e) =>
@@ -696,11 +704,11 @@ const ContestJoin = () => {
                 </div>
                 {!isValidate ? (
                   <div className="flex  w-full flex-col bg-white  mt-4 justify-center items-center gap-y-2 h-auto">
-                    <span className="text-sm text-orange-500 font-sans font-semibold">
+                    <span className="text-sm text-orange-500">
                       필수 개인정보를 정확하게 입력하시면 종목선택화면이
                       표시됩니다.
                     </span>
-                    <span className="text-sm text-gray-500 font-sans font-semibold">
+                    <span className="text-sm text-gray-500">
                       필수항목 : 이름, 성별, 생년월일, 전화번호, 소속
                     </span>
                     <div className="flex mt-4 w-full h-auto px-2">

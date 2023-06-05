@@ -228,10 +228,8 @@ const ContestJoinEdit = () => {
     const updatedPlayerValidate = {
       playerName:
         !invoiceInfo.playerName || invoiceInfo.playerName.trim() === "",
-      playerTel:
-        !invoiceInfo.playerTel || !validatePhoneNumber(invoiceInfo.playerTel),
-      playerBirth:
-        !invoiceInfo.playerBirth || !validateDate(invoiceInfo.playerBirth),
+      playerTel: !validatePhoneNumber(invoiceInfo.playerTel),
+      playerBirth: !validateDate(invoiceInfo.playerBirth),
       playerGender: !invoiceInfo.playerGender,
       playerGym: !invoiceInfo.playerGym || invoiceInfo.playerGym.trim() === "",
     };
@@ -456,8 +454,18 @@ const ContestJoinEdit = () => {
                           }}
                           className=" bg-transparent border rounded-lg p-2"
                         >
-                          <option value="m">남자</option>
-                          <option value="f">여자</option>
+                          <option
+                            value="m"
+                            selected={invoiceInfo.playerGender === "m"}
+                          >
+                            남자
+                          </option>
+                          <option
+                            value="f"
+                            selected={invoiceInfo.playerGender === "f"}
+                          >
+                            여자
+                          </option>
                         </select>
                       </div>
                     </div>
