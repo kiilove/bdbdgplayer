@@ -97,6 +97,8 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
   const saveJoinCup = async (datas) => {
     const newData = {
       ...datas,
+      invoiceEdited: true,
+      isPriceCheck: false,
       invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
       contestPriceSum: parseInt(handlePrice(invoiceInfo.joins, priceInfo)),
     };
