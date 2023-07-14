@@ -17,6 +17,8 @@ import dayjs from "dayjs";
 import { UserContext } from "../context/UserContext";
 import Policy3 from "../components/Policy3";
 import { replace } from "formik";
+import { BsFillQuestionCircleFill } from "react-icons/bs";
+import ConfirmationModal from "../messageBox/ConfirmationModal";
 
 const ContestJoin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +48,8 @@ const ContestJoin = () => {
     value: false,
     applyDate: "",
   });
+  const [optionOpen, setOptionOpen] = useState(false);
+  const [message, setMessage] = useState({});
   const getNotice = useFirestoreGetDocument("contest_notice");
   const getContests = useFirestoreGetDocument("contests");
   const getCategorys = useFirestoreGetDocument("contest_categorys_list");
@@ -175,6 +179,17 @@ const ContestJoin = () => {
 
     return age;
   }
+
+  const handelOptionOpen = () => {
+    setMessage({
+      body: "무대사진5컷(종목무관): 6만원",
+      body2: "문의:정태천 대표(010-4886-0047)",
+      body3: "우리은행 1002-250-33892 정태천",
+      isButton: true,
+      confirmButtonText: "확인",
+    });
+    setOptionOpen(true);
+  };
   useEffect(() => {
     fetchNotice();
   }, []);
@@ -377,6 +392,12 @@ const ContestJoin = () => {
             <Modal open={modal} onClose={handleCloseModal}>
               <div className="flex w-full">{modalComponent}</div>
             </Modal>
+            <ConfirmationModal
+              isOpen={optionOpen}
+              onConfirm={() => setOptionOpen(false)}
+              onCancel={() => setOptionOpen(false)}
+              message={message}
+            />
             <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white">
               <div className="flex flex-col w-full mb-5">
                 <div className="flex w-full h-auto flex-col bg-orange-300 p-4 gap-y-2">
@@ -665,10 +686,10 @@ const ContestJoin = () => {
                       </div>
                     )}
                     <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/2 sm:w-1/5 items-center">
+                      <div className="flex w-full lg:w-1/2 sm:w-1/5 items-center">
                         <span>참여동기 : </span>
                       </div>
-                      <div className="flex w-auto pl-2 ">
+                      <div className="flex w-full pl-2 ">
                         <textarea
                           value={invoiceInfo.playerText}
                           name="playerText"
@@ -677,7 +698,7 @@ const ContestJoin = () => {
                             handleInputs(e);
                           }}
                           placeholder="사회자에게 전달되어 선수소개시 발표됩니다."
-                          className="border p-2 outline-none rounded-lg w-60"
+                          className="border p-2 outline-none rounded-lg w-full lg:w-60"
                         />
                       </div>
                     </div>
@@ -698,6 +719,12 @@ const ContestJoin = () => {
                           }}
                         />
                         <span className="ml-2">유료서비스</span>
+                        <button
+                          className="bg-blue-500 ml-2 text-white text-sm px-2 py-1 rounded-lg "
+                          onClick={() => handelOptionOpen()}
+                        >
+                          자세한내용
+                        </button>
                       </div>
                     </div>
                   </div>

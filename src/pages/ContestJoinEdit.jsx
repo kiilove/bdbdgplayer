@@ -25,6 +25,8 @@ import { useEffect } from "react";
 import JoinCupEditConfirm from "../modals/JoinCupEditConfirm";
 
 import { useRef } from "react";
+import ConfirmationModal from "../messageBox/ConfirmationModal";
+import { BsFillQuestionCircleFill } from "react-icons/bs";
 
 const ContestJoinEdit = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +48,9 @@ const ContestJoinEdit = () => {
     playerGym: false,
     playerGender: false,
   });
+
+  const [optionOpen, setOptionOpen] = useState(false);
+  const [message, setMessage] = useState({});
 
   const getInvoice = useFirestoreGetDocument("invoices_pool");
   const getContests = useFirestoreGetDocument("contests");
@@ -162,6 +167,17 @@ const ContestJoinEdit = () => {
 
     return age;
   }
+
+  const handelOptionOpen = () => {
+    setMessage({
+      body: "무대사진5컷(종목무관): 6만원",
+      body2: "문의:정태천 대표(010-4886-0047)",
+      body3: "우리은행 1002-250-33892 정태천",
+      isButton: true,
+      confirmButtonText: "확인",
+    });
+    setOptionOpen(true);
+  };
   useEffect(() => {
     fetchInvoice();
   }, []);
@@ -311,6 +327,12 @@ const ContestJoinEdit = () => {
             <Modal open={modal} onClose={handleCloseModal}>
               <div className="flex w-full">{modalComponent}</div>
             </Modal>
+            <ConfirmationModal
+              isOpen={optionOpen}
+              onConfirm={() => setOptionOpen(false)}
+              onCancel={() => setOptionOpen(false)}
+              message={message}
+            />
             <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white">
               <div className="flex flex-col w-full mb-5">
                 <div className="flex w-full h-auto flex-col bg-orange-300 p-4 gap-y-1">
@@ -605,7 +627,7 @@ const ContestJoinEdit = () => {
                             handleInputs(e);
                           }}
                           placeholder="사회자에게 전달되어 선수소개시 발표됩니다."
-                          className="border p-2 outline-none rounded-lg w-60"
+                          className="border p-2 outline-none rounded-lg w-full lg:w-60"
                         />
                       </div>
                     </div>
@@ -626,6 +648,12 @@ const ContestJoinEdit = () => {
                           }}
                         />
                         <span className="ml-2">유료서비스</span>
+                        <button
+                          className="bg-blue-500 ml-2 text-white text-sm px-2 py-1 rounded-lg "
+                          onClick={() => handelOptionOpen()}
+                        >
+                          자세한내용
+                        </button>
                       </div>
                     </div>
                   </div>
