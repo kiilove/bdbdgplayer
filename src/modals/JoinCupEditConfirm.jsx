@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, where } from "firebase/firestore";
 import { replace } from "formik";
 import moment from "moment/moment";
 import React from "react";
@@ -11,6 +11,8 @@ import { db } from "../firebase";
 import { useEffect } from "react";
 import {
   useFirestoreAddData,
+  useFirestoreDeleteData,
+  useFirestoreQuery,
   useFirestoreUpdateData,
 } from "../hooks/useFirestores";
 
@@ -28,8 +30,31 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
   const [isLoading, setIsLoading] = useState(false);
   const addInvoice = useFirestoreAddData("invoices_pool");
   const updateInvoice = useFirestoreUpdateData("invoices_pool");
+  const deleteEntries = useFirestoreDeleteData("contest_entrys_list");
+  const fetchEntriesQuery = useFirestoreQuery();
   const navigate = useNavigate();
 
+  const handleCleanUpEntryList = async (data) => {
+    console.log(data);
+    const condition = [where("playerUid", "==", data.playerUid)];
+    const returnEntries = await fetchEntriesQuery.getDocuments(
+      "contest_entrys_list",
+      condition
+    );
+
+    if (returnEntries?.length > 0) {
+      returnEntries.map(async (entry, eIdx) => {
+        const { id } = entry;
+        try {
+          await deleteEntries
+            .deleteData(id)
+            .then(() => console.log("삭제됨", id));
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    }
+  };
   const handlePrice = (data, priceInfo) => {
     let basePrice = 0;
     let extraPrice = 0;
@@ -101,8 +126,11 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
       isPriceCheck: false,
       invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
       contestPriceSum: parseInt(handlePrice(invoiceInfo.joins, priceInfo)),
+      createBy: "web",
     };
+
     try {
+      handleCleanUpEntryList(datas);
       await updateInvoice
         .updateData(invoiceInfo.id, newData)
         .then(() => setIsLoading(false))

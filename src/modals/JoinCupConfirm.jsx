@@ -114,6 +114,7 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
       isCanceled: false,
       invoiceCreateAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
       contestPriceSum: parseInt(invoicePrice),
+      createBy: "web",
     };
     try {
       await addInvoice
