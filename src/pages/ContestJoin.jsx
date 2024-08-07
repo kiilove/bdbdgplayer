@@ -631,7 +631,7 @@ const ContestJoin = () => {
                           onChange={(e) => {
                             handleInputs(e);
                           }}
-                          className="border p-2 outline-none rounded-lg"
+                          className="border p-2 outline-none rounded-lg w-full"
                         />
                       </div>
                     </div>
@@ -664,10 +664,10 @@ const ContestJoin = () => {
                       </div>
                     )}
                     <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/2 sm:w-1/5 items-center">
+                      <div className="flex w-1/3 sm:w-1/5 items-center">
                         <span>참여동기 : </span>
                       </div>
-                      <div className="flex w-auto pl-2 ">
+                      <div className="flex w-full sm:w-2/3 pl-2">
                         <textarea
                           value={invoiceInfo.playerText}
                           name="playerText"
@@ -676,7 +676,7 @@ const ContestJoin = () => {
                             handleInputs(e);
                           }}
                           placeholder="사회자에게 전달되어 선수소개시 발표됩니다."
-                          className="border p-2 outline-none rounded-lg w-60"
+                          className="border p-2 outline-none rounded-lg w-full"
                         />
                       </div>
                     </div>
