@@ -91,7 +91,10 @@ const Home = () => {
   const getQuery = useFirestoreQuery();
 
   const fetchQuery = async () => {
-    const conditions = [where("playerUid", "==", pInfo.playerUid)];
+    const conditions = [
+      where("playerUid", "==", pInfo.playerUid),
+      where("contestId", "==", "9ac3VI7gm5mVO1RZwOyj"),
+    ];
     try {
       const data = await getQuery.getDocuments("invoices_pool", conditions);
       console.log(data);
@@ -166,7 +169,7 @@ const Home = () => {
           <div className="flex h-full bg-white w-full rounded-lg shadow-sm flex-col ">
             <div className="flex">
               <img
-                src="https://firebasestorage.googleapis.com/v0/b/bdbdgmain.appspot.com/o/images%2Fposter%2Fcompress%2Fbdbdg_1684842361004?alt=media&token=a8a289bd-3450-4d3a-8f2f-ab49289876ec"
+                src="https://firebasestorage.googleapis.com/v0/b/bdbdgmain.appspot.com/o/images%2Fposter%2Fcompress%2Fbdbdg_1718784779766?alt=media&token=a9f6b77e-7c59-436a-870e-c3be56983eb2"
                 className="object-cover w-full h-full rounded-lg "
               />
             </div>
@@ -184,7 +187,7 @@ const Home = () => {
                   <button
                     className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
                     onClick={() => {
-                      navigate("/contestjoin/GVD75Y1hAMFzsqMnRge1");
+                      navigate("/contestjoin/62yG9FrPgecANRjMBKEo");
                     }}
                   >
                     참가신청
