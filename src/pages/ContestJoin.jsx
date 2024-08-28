@@ -184,7 +184,7 @@ const ContestJoin = () => {
     setMessage({
       body: "무대사진5컷(종목무관): 6만원",
       body2: "문의:정태천 대표(010-4886-0047)",
-      body3: "우리은행 1002-250-33892 정태천",
+      body3: "우리은행 1002-250-338923 정태천",
       isButton: true,
       confirmButtonText: "확인",
     });

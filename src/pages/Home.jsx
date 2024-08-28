@@ -173,10 +173,11 @@ const Home = () => {
                 className="object-cover w-full h-full rounded-lg "
               />
             </div>
-            <div className="flex w-full h-10 px-2">
+            <div className="flex w-full h-10 py-2">
               {isJoin && (
                 <button
-                  className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                  className="cursor-not-allowed flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                  disabled
                   onClick={() => navigate(`/contestjoinedit/${invoiceId}`)}
                 >
                   변경신청
@@ -185,16 +186,18 @@ const Home = () => {
               {!isJoin &&
                 (pInfo.playerUid ? (
                   <button
-                    className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                    className="cursor-not-allowed flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                    disabled
                     onClick={() => {
                       navigate("/contestjoin/62yG9FrPgecANRjMBKEo");
                     }}
                   >
-                    참가신청
+                    대회준비중
                   </button>
                 ) : (
                   <button
-                    className="flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                    className=" cursor-not-allowed flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
+                    disabled
                     onClick={() => {
                       setMessage({
                         body: "로그인이 필요합니다.",
@@ -204,7 +207,7 @@ const Home = () => {
                       setMessageOpen(true);
                     }}
                   >
-                    참가신청
+                    대회준비중
                   </button>
                 ))}
             </div>
