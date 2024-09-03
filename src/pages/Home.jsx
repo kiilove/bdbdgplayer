@@ -1,110 +1,71 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { DEFAULT_AVATAR } from "../consts";
-
 import { ResponsiveRadar } from "@nivo/radar";
 import BottomMenu from "../components/BottomMenu";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { PlayerEditContext } from "../context/PlayerContext";
 import { useFirestoreQuery } from "../hooks/useFirestores";
-import { useState } from "react";
 import { where } from "firebase/firestore";
-import { useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
-
-const data = [
-  {
-    point: "신체",
-    내점수: 70,
-    평균: 104,
-  },
-  {
-    point: "예술",
-    내점수: 45,
-    평균: 67,
-  },
-  {
-    point: "독창",
-    내점수: 88,
-    평균: 44,
-  },
-  {
-    point: "규정",
-    내점수: 86,
-    평균: 112,
-  },
-  {
-    point: "의상",
-    내점수: 110,
-    평균: 81,
-  },
-];
-const MyResponsiveRadar = ({ data /* see data tab */ }) => (
-  <ResponsiveRadar
-    data={data}
-    keys={["평균", "내점수"]}
-    indexBy="point"
-    valueFormat=">-.2f"
-    margin={{ top: 70, right: 80, bottom: 40, left: 80 }}
-    borderColor={["#f1f1f1"]}
-    borderWidth={1}
-    gridLabelOffset={36}
-    dotSize={10}
-    dotColor={["#fff"]}
-    dotBorderWidth={1}
-    colors={["#cfcfcf", "#e9ad08"]}
-    motionConfig="wobbly"
-    legends={[
-      {
-        anchor: "top-left",
-        direction: "column",
-        translateX: -50,
-        translateY: -40,
-        itemWidth: 80,
-        itemHeight: 20,
-        itemTextColor: "#999",
-        symbolSize: 12,
-        symbolShape: "circle",
-        effects: [
-          {
-            on: "hover",
-            style: {
-              itemTextColor: "#000",
-            },
-          },
-        ],
-      },
-    ]}
-  />
-);
+import { Button, Card, Spin } from "antd";
+import Meta from "antd/es/card/Meta";
 
 const Home = () => {
   const { currentUserInfo: pInfo } = useContext(UserContext);
-  // const { userInfo } = useContext(AuthContext);
-  // const { pInfo } = useContext(PlayerEditContext);
+  const [selectedContest, setSelectedContest] = useState({});
+  const [activeContests, setActiveContests] = useState([]);
   const [message, setMessage] = useState({});
   const [messageOpen, setMessageOpen] = useState(false);
+  const [noActiveOpen, setNoActiveOpen] = useState(false);
+  const [joinErrorOpen, setJoinErrorOpen] = useState(false);
   const [isJoin, setIsJoin] = useState(false);
-  const [invoiceId, setInvoiceId] = useState("");
+  const [invoiceId, setInvoiceId] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const getContest = useFirestoreQuery();
   const getQuery = useFirestoreQuery();
 
-  const fetchQuery = async () => {
+  const DEFAULT_POSTER =
+    "https://firebasestorage.googleapis.com/v0/b/bdbdgmain.appspot.com/o/images%2F2024-09-03_06-53-49_9248.png?alt=media&token=ac3c2647-9d24-4955-9ec8-eff1ca125c3f";
+
+  const fetchContest = async () => {
+    const condition = [where("contestStatus", "==", "접수중")];
+    try {
+      const contests = await getContest.getDocuments(
+        "contest_notice",
+        condition
+      );
+      if (contests.length === 0) {
+        setNoActiveOpen(true);
+      } else {
+        setActiveContests(contests);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchQuery = async (playerUid, contestId) => {
     const conditions = [
-      where("playerUid", "==", pInfo.playerUid),
-      where("contestId", "==", "9ac3VI7gm5mVO1RZwOyj"),
+      where("playerUid", "==", playerUid),
+      where("contestId", "==", contestId),
     ];
     try {
       const data = await getQuery.getDocuments("invoices_pool", conditions);
-      console.log(data);
-      if (data.length > 0) {
-        setIsJoin(true);
-
-        setInvoiceId(data[0].id);
+      if (data.length > 1) {
+        setJoinErrorOpen(true);
+      } else if (data.length === 1) {
+        setInvoiceId((prevInvoiceId) => [
+          ...prevInvoiceId,
+          { contestId, invoiceId: data[0].id },
+        ]);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -113,159 +74,154 @@ const Home = () => {
     setMessageOpen(false);
   };
 
-  const messageClose = () => {
-    setMessageOpen(false);
-  };
+  const messageClose = () => setMessageOpen(false);
 
   useEffect(() => {
-    if (pInfo.playerUid) {
-      fetchQuery();
+    const loadContent = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // 2초간 로딩
+      await fetchContest();
+    };
+    loadContent();
+  }, []);
+
+  useEffect(() => {
+    if (pInfo?.playerUid && activeContests.length > 0) {
+      activeContests.forEach((item) =>
+        fetchQuery(pInfo.playerUid, item.refContestId)
+      );
     }
-  }, [pInfo?.playerUid]);
-
-  useEffect(() => {
-    console.log(pInfo);
-  }, [pInfo]);
+  }, [pInfo?.playerUid, activeContests]);
 
   return (
-    <div className="flex justify-center items-start align-top bg-slate-100">
-      <BottomMenu />
-      <ConfirmationModal
-        isOpen={messageOpen}
-        onConfirm={redirectLogin}
-        onCancel={messageClose}
-        message={message}
-      />
-      <div
-        className="flex justify-center mt-3 flex-col gap-y-8 px-2 w-full"
-        style={{ maxWidth: "420px" }}
-      >
-        <div className="flex w-full justify-start">
-          <span className="flex text-lg font-extrabold">BDBDg</span>
+    <>
+      {isLoading ? (
+        <div className="w-full h-screen flex justify-center items-center">
+          <Spin />
         </div>
-        {pInfo.playerUid && (
-          <div className="flex w-full justify-between">
-            <div className="flex w-1/2 h-full justify-start flex-col gap-y-3 mt-6">
-              <p className="text-3xl font-light">Hi~</p>
-              <p className="text-2xl font-base">
-                {pInfo.pNick ? pInfo.pNick : pInfo.pName} 님
-              </p>
+      ) : (
+        <div className="flex justify-center items-start bg-slate-100">
+          <ConfirmationModal
+            isOpen={messageOpen}
+            onConfirm={redirectLogin}
+            onCancel={messageClose}
+            message={message}
+          />
+          <ConfirmationModal
+            isOpen={noActiveOpen}
+            onConfirm={() => setNoActiveOpen(false)}
+            onCancel={() => setNoActiveOpen(false)}
+            message={{
+              body: "접수중인 대화가 없습니다.",
+              isButton: true,
+              confirmButtonText: "확인",
+            }}
+          />
+          <ConfirmationModal
+            isOpen={joinErrorOpen}
+            onConfirm={() => setJoinErrorOpen(false)}
+            onCancel={() => setJoinErrorOpen(false)}
+            message={{
+              body: "잘못된 접수현황이 확인되었습니다.",
+              body2: "협회측에 문의해주세요.",
+              isButton: true,
+              confirmButtonText: "확인",
+            }}
+          />
+          <div
+            className="flex justify-center mt-3 flex-col gap-y-8 px-2 w-full"
+            style={{ maxWidth: "420px" }}
+          >
+            <div className="flex w-full justify-center">
+              <span className="text-xl font-extrabold">대회접수</span>
             </div>
-            <div className="flex w-1/2 justify-end">
-              <div className="flex">
-                <img
-                  src={
-                    (pInfo.pPic !== null || undefined || "") &&
-                    (pInfo.pPic || DEFAULT_AVATAR)
-                  }
-                  className="rounded-full w-32 h-32"
-                />
+            {pInfo.playerUid && (
+              <div className="flex w-full justify-between">
+                <div className="flex flex-col gap-y-3 mt-6">
+                  <p className="text-3xl font-light">Hi~</p>
+                  <p className="text-2xl font-base">
+                    {pInfo.pNick || pInfo.pName} 님
+                  </p>
+                </div>
+                <div className="flex">
+                  <img
+                    src={pInfo.pPic || DEFAULT_AVATAR}
+                    className="rounded-full w-32 h-32"
+                    alt="avatar"
+                  />
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            )}
+            <div className="flex flex-col gap-2">
+              {activeContests.length > 0 &&
+                activeContests.map((item) => {
+                  const {
+                    contestPoster,
+                    contestTitle,
+                    contestAssociate,
+                    contestPromoter,
+                    contestDate,
+                    contestLocation,
+                    refContestId,
+                  } = item;
 
-        <div className="flex w-full h-full flex-col">
-          <div className="flex h-full bg-white w-full rounded-lg shadow-sm flex-col ">
-            <div className="flex">
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/bdbdgmain.appspot.com/o/images%2Fposter%2Fcompress%2Fbdbdg_1718784779766?alt=media&token=a9f6b77e-7c59-436a-870e-c3be56983eb2"
-                className="object-cover w-full h-full rounded-lg "
-              />
-            </div>
-            <div className="flex w-full h-10 py-2">
-              {isJoin && (
-                <button
-                  className="cursor-not-allowed flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
-                  disabled
-                  onClick={() => navigate(`/contestjoinedit/${invoiceId}`)}
-                >
-                  변경신청
-                </button>
-              )}
-              {!isJoin &&
-                (pInfo.playerUid ? (
-                  <button
-                    className="cursor-not-allowed flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
-                    disabled
-                    onClick={() => {
-                      navigate("/contestjoin/62yG9FrPgecANRjMBKEo");
-                    }}
-                  >
-                    대회준비중
-                  </button>
-                ) : (
-                  <button
-                    className=" cursor-not-allowed flex w-full bg-orange-500 h-8 rounded-lg shadow justify-center items-center text-white"
-                    disabled
-                    onClick={() => {
-                      setMessage({
-                        body: "로그인이 필요합니다.",
-                        isButton: true,
-                        confirmButtonText: "이동",
-                      });
-                      setMessageOpen(true);
-                    }}
-                  >
-                    대회준비중
-                  </button>
-                ))}
+                  const findInvoice = invoiceId.find(
+                    (f) => f.contestId === refContestId
+                  );
+
+                  const actionButton = pInfo.playerUid ? (
+                    findInvoice?.invoiceId ? (
+                      <div
+                        onClick={() =>
+                          navigate(`/contestjoinedit/${findInvoice.invoiceId}`)
+                        }
+                      >
+                        변경신청
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => navigate(`/contestjoin/${refContestId}`)}
+                      >
+                        접수
+                      </div>
+                    )
+                  ) : (
+                    <div onClick={() => navigate("/login")}>
+                      로그인이 필요합니다.
+                    </div>
+                  );
+
+                  return (
+                    <Card
+                      hoverable
+                      key={refContestId}
+                      cover={
+                        <img
+                          src={contestPoster || DEFAULT_POSTER}
+                          alt="poster"
+                        />
+                      }
+                      actions={[actionButton]}
+                    >
+                      <Meta
+                        title={contestTitle}
+                        description={
+                          <div className="flex flex-col">
+                            <div>대회일자 : {contestDate}</div>
+                            <div>대회장소 : {contestLocation}</div>
+                            <div>
+                              {contestAssociate}/{contestPromoter}
+                            </div>
+                          </div>
+                        }
+                      />
+                    </Card>
+                  );
+                })}
             </div>
           </div>
         </div>
-        <div className="flex w-full h-full flex-col">
-          <div className="flex w-full justify-between h-10 mb-2">
-            <span className="flex h-10 text-lg text-gray-600 items-end">
-              나의 모습 분석
-            </span>
-
-            <span className="flex h-10 text-sm text-gray-600 items-end">
-              상세보기
-            </span>
-          </div>
-          <div className="flex h-80 bg-white w-full rounded-lg shadow-sm flex-col relative">
-            <MyResponsiveRadar data={data} />
-            <div className="flex absolute left-0 top-0 bg-white w-full h-full rounded-lg opacity-70 justify-center items-center">
-              현재 준비중입니다.
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full h-full flex-col">
-          <div className="flex w-full justify-between h-10 mb-2">
-            <span className="flex h-10 text-lg text-gray-600 items-end">
-              나의 대회 사진
-            </span>
-            <span className="flex h-10 text-sm text-gray-600 items-end">
-              더보기
-            </span>
-          </div>
-          <div className="flex h-60 bg-white w-full rounded-lg shadow-sm p-5 mb-20 gap-x-2 overflow-x-auto overflow-y-hidden flex-nowrap relative">
-            <div className="flex absolute left-0 top-0 bg-white w-full h-full rounded-lg opacity-70 justify-center items-center">
-              현재 준비중입니다.
-            </div>
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmsyrN_VtrlXd3FkyugXUBrmKvlowe_nq3aQ&usqp=CAU"
-              className="w-32 h-48 object-cover rounded-lg"
-            />
-
-            <img
-              src="https://mblogthumb-phinf.pstatic.net/20160911_38/wju0504_1473605742521bF9uO_JPEG/2016_yongin_%281903%29_%BB%E7%BA%BB.jpg?type=w2"
-              className="w-32 h-48 object-cover rounded-lg"
-            />
-
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRG_glhcj_QrJsmWWhTsvPw5x4GxKsKSF7Lqg&usqp=CAU"
-              className="w-32 h-48 object-cover rounded-lg"
-            />
-
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtP8XZJETvg0drg8cUGXENNaD9IclYEgSWGQ&usqp=CAU"
-              className="w-32 h-48 object-cover rounded-lg"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

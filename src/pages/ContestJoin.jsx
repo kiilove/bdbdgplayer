@@ -231,13 +231,13 @@ const ContestJoin = () => {
       return;
     }
     const initInvocieInfo = {
-      invoicePoolId: contests.invoicesPoolId,
+      //invoicePoolId: contests.invoicesPoolId || "",
       contestId: contests.id,
       contestTitle: noticeInfo.contestTitle,
       contestDate: noticeInfo.contestDate,
       contestLocation: noticeInfo.contestLocation,
       conntestPromoter: noticeInfo.contestPromoter,
-      contestCollectionFileLink: noticeInfo.contestCollectionFileLink,
+      contestCollectionFileLink: noticeInfo.contestCollectionFileLink || "",
       contestPriceBasic: noticeInfo.contestPriceBasic,
       contestPriceExtra: noticeInfo.contestPriceExtra,
       contestPriceExtraType: noticeInfo.contestPriceExtraType,
