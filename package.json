@@ -1,6 +1,6 @@
 {
   "name": "bdbdgplayer",
-  "version": "0.4.7",
+  "version": "0.5.9",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",

@@ -11,6 +11,7 @@ import { UserContext } from "../context/UserContext";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { Button, Card, Spin } from "antd";
 import Meta from "antd/es/card/Meta";
+import { saveAs } from "file-saver";
 
 const Home = () => {
   const { currentUserInfo: pInfo } = useContext(UserContext);
@@ -92,6 +93,12 @@ const Home = () => {
     }
   }, [pInfo?.playerUid, activeContests]);
 
+  const fileSave = (fileUrl) => {
+    const fileURL = fileUrl;
+
+    saveAs(fileURL, "filename.hwp");
+  };
+
   return (
     <>
       {isLoading ? (
@@ -162,6 +169,8 @@ const Home = () => {
                     contestDate,
                     contestLocation,
                     refContestId,
+                    contestCollectionFileLink,
+                    id,
                   } = item;
 
                   const findInvoice = invoiceId.find(
@@ -178,9 +187,7 @@ const Home = () => {
                         변경신청
                       </div>
                     ) : (
-                      <div
-                        onClick={() => navigate(`/contestjoin/${refContestId}`)}
-                      >
+                      <div onClick={() => navigate(`/contestjoin/${id}`)}>
                         접수
                       </div>
                     )
@@ -200,7 +207,14 @@ const Home = () => {
                           alt="poster"
                         />
                       }
-                      actions={[actionButton]}
+                      actions={[
+                        actionButton,
+                        <div
+                          onClick={() => fileSave(contestCollectionFileLink)}
+                        >
+                          공고문
+                        </div>,
+                      ]}
                     >
                       <Meta
                         title={contestTitle}

@@ -170,9 +170,9 @@ const ContestJoinEdit = () => {
 
   const handelOptionOpen = () => {
     setMessage({
-      body: "무대사진5컷: 6만원",
-      body2: "문의:정태천 대표(010-4886-0047)",
-      body3: "우리은행 1002-250-3383923 정태천",
+      body: "무대사진5장: 5만원 / 개인포징영상: 8만원",
+      body2: "문의:010-9465-5114",
+      body3: "카카오 7979-78-29056(엄소연)",
       isButton: true,
       confirmButtonText: "확인",
     });
@@ -413,7 +413,7 @@ const ContestJoinEdit = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex w-1/2 justify-end items-center mr-2">
+                    {/* <div className="flex w-1/2 justify-end items-center mr-2">
                       <button
                         className="text-sm text-orange-900 p-1 border border-orange-500 bg-orange-400 h-10"
                         onClick={() =>
@@ -422,7 +422,7 @@ const ContestJoinEdit = () => {
                       >
                         공고문내려받기
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
