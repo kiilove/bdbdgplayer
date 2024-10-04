@@ -148,16 +148,19 @@ const ContestJoin = () => {
   };
 
   const fetchCategorysAndGrades = async (categoryListId, gradeListId) => {
-    console.log(categoryListId, gradeListId);
     try {
       const categoryData = await getCategorys.getDocument(categoryListId);
-
-      console.log(categoryData);
       const gradeData = await getGrades.getDocument(gradeListId);
+
       if (categoryData.id && gradeData.id) {
-        setCategorys([...categoryData.categorys]);
-        setFilteredCategorys([...categoryData.categorys]);
-        setGrades([...gradeData.grades]);
+        // 그랑프리가 아닌 카테고리들만 필터링
+        const filteredCategories = categoryData.categorys.filter(
+          (category) => category.contestCategorySection !== "그랑프리"
+        );
+
+        setCategorys([...filteredCategories]); // 필터링된 카테고리 할당
+        setFilteredCategorys([...filteredCategories]); // 필요 시 또 다른 필터링된 배열 할당
+        setGrades([...gradeData.grades]); // 그대로 할당
       } else {
         return;
       }
@@ -165,6 +168,7 @@ const ContestJoin = () => {
       setError(true);
     }
   };
+
   function calculateAge(birthDate) {
     const today = new Date();
     const birth = new Date(birthDate);
@@ -707,7 +711,7 @@ const ContestJoin = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex w-full flex-col sm:flex-row">
+                    {/* <div className="flex w-full flex-col sm:flex-row">
                       <div className="flex w-1/2 sm:w-1/3 items-center">
                         <span>무대사진신청 : </span>
                       </div>
@@ -731,7 +735,7 @@ const ContestJoin = () => {
                           자세한내용
                         </button>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 {!isValidate ? (
