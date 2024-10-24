@@ -754,26 +754,32 @@ const ContestJoinEdit = () => {
                                     onChange={(e) => handleInvoiceInfo(e)}
                                   >
                                     <option>체급선택</option>
-                                    {matchGrades.map((grade, gIdx) => {
-                                      const {
-                                        contestGradeTitle: gTitle,
-                                        contestGradeId: gId,
-                                      } = grade;
+                                    {matchGrades
+                                      .sort(
+                                        (a, b) =>
+                                          a.contestGradeIndex -
+                                          b.contestGradeIndex
+                                      )
+                                      .map((grade, gIdx) => {
+                                        const {
+                                          contestGradeTitle: gTitle,
+                                          contestGradeId: gId,
+                                        } = grade;
 
-                                      return (
-                                        <option
-                                          id={gId}
-                                          value={
-                                            gId + "," + gTitle + "," + cType
-                                          }
-                                          selected={invoiceInfo?.joins.some(
-                                            (i) => i.contestGradeId === gId
-                                          )}
-                                        >
-                                          {gTitle}
-                                        </option>
-                                      );
-                                    })}
+                                        return (
+                                          <option
+                                            id={gId}
+                                            value={
+                                              gId + "," + gTitle + "," + cType
+                                            }
+                                            selected={invoiceInfo?.joins.some(
+                                              (i) => i.contestGradeId === gId
+                                            )}
+                                          >
+                                            {gTitle}
+                                          </option>
+                                        );
+                                      })}
                                   </select>
                                 )}
                               </div>
