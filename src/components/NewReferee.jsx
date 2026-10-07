@@ -38,9 +38,6 @@ export const NewReferee = ({ pSetModal, pSetRefresh }) => {
         })
         .then((uid) => {
           addReferee(uid);
-        })
-        .then(() => {
-          console.log(refPWD);
         });
     }
   };
@@ -63,7 +60,7 @@ export const NewReferee = ({ pSetModal, pSetRefresh }) => {
         .then(() => setBasicInfoEnc({}))
         .then(() => setBasicInfo({}));
     } catch (error) {
-      console.log(error.message);
+      // error handled
     } finally {
       handleToast({ type: "success", msg: "계정정보 저장 완료" });
       pSetRefresh(true);
@@ -75,15 +72,12 @@ export const NewReferee = ({ pSetModal, pSetRefresh }) => {
     e.preventDefault();
     if (e.target.name !== "cupPoster") {
       setBasicInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-      //console.log(Encrypter(e.target.value ));
     }
 
     if (e.target.name === "refTel") {
       const delDash = e.target.value.replace("-", "");
       setBasicInfo((prev) => ({ ...prev, refTel: delDash }));
     }
-
-    console.log(basicInfo);
   };
 
   useEffect(() => {

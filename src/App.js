@@ -29,6 +29,7 @@ import { RotatingLines } from "react-loader-spinner";
 import JoinCupConfirm from "./modals/JoinCupConfirm";
 import JoinCupEditConfirm from "./modals/JoinCupEditConfirm";
 import ResetPassword from "./pages/ResetPassword";
+import Gbbf from "./pages/Gbbf";
 
 function App() {
   const { currentUserInfo } = useContext(UserContext);
@@ -46,12 +47,12 @@ function App() {
   };
 
   const Loading = (
-    <div className="w-full h-full bg-orange-600">
+    <div className="w-full h-full min-h-screen bg-[#0B0B0B] flex items-center justify-center">
       <RotatingLines
         strokeColor="white"
-        strokeWidth="5"
+        strokeWidth="4"
         animationDuration="0.75"
-        width="96"
+        width="64"
         visible={true}
       />
     </div>
@@ -74,6 +75,7 @@ function App() {
         <Route path="/career" element={<Career />} />
         <Route path="/cuplist" element={<CupList />} />
         <Route path="/careerview" element={<CareerView />} />
+        <Route path="/gbbf" element={<Gbbf />} />
         <Route path="/analyzedetail" element={<AnalyzeDetail />} />
         <Route path="/feed" element={<Feed />} />
 

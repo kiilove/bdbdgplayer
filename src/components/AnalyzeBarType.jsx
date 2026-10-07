@@ -36,63 +36,57 @@ const data = [
   },
 ];
 
-const MyResponsiveBar = ({ data /* see data tab */ }) => (
+const MyResponsiveBar = ({ data }) => (
   <ResponsiveBar
     data={data}
-    tooltip={({ id, value }) => {
-      //console.log(id);
-      return (
-        <div className="flex, flex-col">
-          <div className="flex">
-            <span className="text-xs font-semibold">
-              {id}: {value}
-            </span>
-          </div>
-        </div>
-      );
-    }}
+    tooltip={({ id, value }) => (
+      <div className="bg-neutral-900 border border-neutral-700 text-white px-2.5 py-1.5 rounded-lg shadow-xl text-xs font-black">
+        {id}: {value}점
+      </div>
+    )}
     keys={["신체", "예술", "독창", "규정", "의상"]}
     indexBy="player"
-    margin={{ top: 10, right: 10, bottom: 50, left: 0 }}
-    padding={0.2}
+    margin={{ top: 10, right: 10, bottom: 50, left: 30 }}
+    padding={0.25}
     valueScale={{ type: "linear" }}
     indexScale={{ type: "band", round: true }}
-    colors={{ scheme: "blues" }}
+    colors={["#FFFFFF", "#D4D4D4", "#A3A3A3", "#737373", "#525252"]}
     theme={{
-      grid: {
-        line: {
-          stroke: "gray",
-          strokeWidth: 1,
-          strokeDasharray: "1 4",
+      text: {
+        fill: "#A3A3A3",
+        fontSize: 11,
+      },
+      axis: {
+        ticks: {
+          text: {
+            fill: "#A3A3A3",
+            fontSize: 11,
+          },
         },
       },
-    }}
-    borderColor={{
-      from: "color",
-      modifiers: [["darker", 1.6]],
+      grid: {
+        line: {
+          stroke: "#262626",
+          strokeWidth: 1,
+          strokeDasharray: "2 4",
+        },
+      },
     }}
     axisTop={null}
     axisRight={null}
     axisBottom={{
-      tickSize: 5,
-      tickPadding: 5,
+      tickSize: 4,
+      tickPadding: 6,
       tickRotation: 0,
-      legendPosition: "middle",
-      legendOffset: 32,
     }}
     axisLeft={{
-      tickSize: 5,
-      tickPadding: 5,
+      tickSize: 4,
+      tickPadding: 6,
       tickRotation: 0,
-      legendPosition: "middle",
-      legendOffset: -40,
     }}
     labelSkipWidth={12}
     labelSkipHeight={12}
-    labelTextColor={{
-      from: "color",
-      modifiers: [["darker", 1.6]],
-    }}
+    labelTextColor="#000000"
     legends={[
       {
         dataFrom: "keys",
@@ -100,30 +94,24 @@ const MyResponsiveBar = ({ data /* see data tab */ }) => (
         direction: "row",
         justify: false,
         translateX: 0,
-        translateY: 50,
-        itemsSpacing: 20,
+        translateY: 45,
+        itemsSpacing: 10,
         itemWidth: 50,
-        itemHeight: 20,
+        itemHeight: 18,
         itemDirection: "left-to-right",
         itemOpacity: 0.85,
-        symbolSize: 10,
-        effects: [
-          {
-            on: "hover",
-            style: {
-              itemOpacity: 1,
-            },
-          },
-        ],
+        symbolSize: 8,
+        itemTextColor: "#A3A3A3",
       },
     ]}
-    motionConfig="wobbly"
+    motionConfig="gentle"
   />
 );
+
 const AnalyzeBarType = () => {
   return (
-    <div className="flex w-full h-full flex-col bg-white rounded-lg gap-y-3 ">
-      <div className="flex h-64">
+    <div className="w-full h-full flex flex-col bg-[#141414] rounded-2xl">
+      <div className="h-64 w-full">
         <MyResponsiveBar data={data} />
       </div>
     </div>

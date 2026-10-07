@@ -28,89 +28,125 @@ const DrawMenu = ({ setOpen }) => {
   };
 
   return (
-    <div className="flex w-full h-full flex-col">
-      <div className="flex w-full justify-end px-2 h-10">
-        <button onClick={() => setOpen()} className="mr-2 mt-2">
-          <span className="text-gray-500 text-xl">
-            <IoCloseOutline />
-          </span>
+    <div className="flex w-full h-full flex-col bg-[#0C0C0C] text-neutral-100 p-6 border-l border-neutral-800 shadow-2xl">
+      {/* Top Close Bar */}
+      <div className="flex w-full justify-between items-center pb-4 border-b border-neutral-800 mb-6">
+        <span className="text-xs font-black tracking-widest text-white uppercase">
+          BDBDg ATHLETIC
+        </span>
+        <button
+          onClick={() => setOpen()}
+          className="p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-neutral-900 transition cursor-pointer"
+        >
+          <IoCloseOutline className="text-2xl" />
         </button>
       </div>
-      <div className="flex w-full px-1">
-        <div className="flex w-1/3 justify-start items-center align-middle flex-col">
-          <img
-            src={
-              (pInfo.pPic !== null || undefined || "") &&
-              (pInfo.pPic || DEFAULT_AVATAR)
-            }
-            className="rounded-full w-16 h-16"
-          />
-          {pInfo.playerUid && (
-            <button
-              className="bg-orange-400 rounded-md px-2 py-1 flex justify-center items-center mt-2"
-              onClick={() => navigate("/myprofile")}
-            >
-              <span className="text-xs text-white">프로필설정</span>
-            </button>
-          )}
-        </div>
-        <div className="flex w-2/3 justify-start items-start align-middle flex-col">
-          <div className="flex w-full justify-center items-start align-middle flex-col">
-            <div className="flex w-full justify-between">
-              <div className="flex w-1/2 ">
-                <span className="text-base font-semibold align-text-bottom">
-                  {pInfo.pNick ? pInfo.pNick : pInfo.pName}
-                </span>
-              </div>
-              <div className="flex w-1/2 justify-end mr-3">
-                {pInfo.playerUid ? (
-                  <button
-                    className="text-gray-500 text-sm"
-                    onClick={() => handleLogout()}
-                  >
-                    로그아웃
-                  </button>
-                ) : (
-                  <button
-                    className="text-gray-500 text-sm"
-                    onClick={() => handleLogin()}
-                  >
-                    로그인
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="flex w-full h-full justify-start items-start align-top flex-col">
-            <span className="text-base ">{pInfo.pEmail}</span>
+
+      {/* User Info Header */}
+      <div className="flex items-center gap-x-4 bg-neutral-900 border border-neutral-800 rounded-2xl p-4 mb-6 shadow-xl">
+        <img
+          src={
+            pInfo.pPic !== null && pInfo.pPic !== undefined && pInfo.pPic !== ""
+              ? pInfo.pPic
+              : DEFAULT_AVATAR
+          }
+          alt="Profile Avatar"
+          className="rounded-full w-14 h-14 object-cover border-2 border-white shadow-md"
+        />
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="text-base font-black text-white truncate">
+            {pInfo.pNick ? pInfo.pNick : pInfo.pName ? pInfo.pName : "선수 회원"}
+          </span>
+          <span className="text-xs text-neutral-400 truncate mt-0.5">
+            {pInfo.pEmail || "접수 시스템 회원"}
+          </span>
+
+          <div className="flex items-center gap-x-2 mt-2.5">
+            {pInfo.playerUid ? (
+              <>
+                <button
+                  className="px-3.5 py-1 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full shadow-md transition cursor-pointer active:scale-95"
+                  onClick={() => {
+                    setOpen();
+                    navigate("/myprofile");
+                  }}
+                >
+                  내 정보
+                </button>
+                <button
+                  className="px-3.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-xs rounded-full border border-neutral-700 transition cursor-pointer active:scale-95"
+                  onClick={handleLogout}
+                >
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <button
+                className="px-4 py-1.5 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full shadow-lg transition cursor-pointer active:scale-95"
+                onClick={handleLogin}
+              >
+                로그인 / 회원가입
+              </button>
+            )}
           </div>
         </div>
       </div>
-      <div
-        className="flex w-full bg-slate-200 my-5"
-        style={{ height: "1px" }}
-      ></div>
-      {/* <div className="flex w-full px-5 flex-col gap-y-5">
-        <div className="flex w-full h-full justify-between">
-          <div className="flex w-1/2 justify-start px-3">QR인증</div>
-          <div className="flex w-1/2 justify-end">
-            <button
-              className="border border-blue-600 rounded-md px-1 py-1 flex justify-center items-center"
-              onClick={() => (window.location.href = "/qrfull")}
-            >
-              <span className=" text-xs text-blue-800 font-light">
-                크게보기
-              </span>
-            </button>
-          </div>
-        </div>
 
-        <div className="flex w-full justify-center items-center h-full">
-          <div className="flex w-52 h-52 bg-blue-500 rounded-lg p-5 justify-center items-center">
-            <QrGenerator />
-          </div>
-        </div>
-      </div> */}
+      {/* Menu Links */}
+      <div className="flex flex-col gap-y-1.5">
+        <button
+          onClick={() => {
+            setOpen();
+            navigate("/");
+          }}
+          className="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-left text-neutral-300 hover:text-white hover:bg-neutral-900 transition flex items-center justify-between cursor-pointer"
+        >
+          <span>통합 홈 대시보드</span>
+          <span className="text-xs text-neutral-500 font-black">→</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setOpen();
+            navigate("/gbbf");
+          }}
+          className="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-left text-neutral-300 hover:text-white hover:bg-neutral-900 transition flex items-center justify-between cursor-pointer"
+        >
+          <span>경기도보디빌딩협회 대회목록</span>
+          <span className="text-xs text-neutral-500 font-black">→</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setOpen();
+            navigate("/cuplist");
+          }}
+          className="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-left text-neutral-300 hover:text-white hover:bg-neutral-900 transition flex items-center justify-between cursor-pointer"
+        >
+          <span>대회 일정 전체보기</span>
+          <span className="text-xs text-neutral-500 font-black">→</span>
+        </button>
+
+        {pInfo.playerUid && (
+          <button
+            onClick={() => {
+              setOpen();
+              navigate("/myprofile");
+            }}
+            className="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-left text-neutral-300 hover:text-white hover:bg-neutral-900 transition flex items-center justify-between cursor-pointer"
+          >
+            <span>마이페이지 (신청내역 조회)</span>
+            <span className="text-xs text-neutral-500 font-black">→</span>
+          </button>
+        )}
+      </div>
+
+      {/* Footer Branding */}
+      <div className="mt-auto pt-6 border-t border-neutral-900 text-center">
+        <span className="text-[11px] font-black tracking-widest text-neutral-600 uppercase">
+          BDBDg BODYBUILDING PLATFORM
+        </span>
+      </div>
     </div>
   );
 };

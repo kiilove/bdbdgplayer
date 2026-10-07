@@ -1,115 +1,90 @@
+import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import { addDoc, collection } from "firebase/firestore";
-import { replace } from "formik";
-import moment from "moment/moment";
-import React from "react";
-import { useMemo } from "react";
-import { useState } from "react";
+import { where } from "firebase/firestore";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebase";
-import { useEffect } from "react";
 import {
-  useFirestoreAddData,
+  useFirestoreDeleteData,
+  useFirestoreQuery,
   useFirestoreUpdateData,
 } from "../hooks/useFirestores";
-
-const successMessage = (
-  <div className="flex w-full h-full flex-col">
-    <div className="flex w-full h-full justify-center items-center">
-      <span className="text-xl">가입신청이 정상적으로 처리되었습니다.</span>
-    </div>
-  </div>
-);
+import { RiTrophyLine, RiUserLine, RiCheckDoubleLine, RiCloseLine, RiErrorWarningLine } from "react-icons/ri";
 
 const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
   const [invoicePrice, setInvoicePrice] = useState(0);
   const [invoiceInfo, setInvoiceInfo] = useState({ ...propInvoiceInfo });
   const [isLoading, setIsLoading] = useState(false);
-  const addInvoice = useFirestoreAddData("invoices_pool");
   const updateInvoice = useFirestoreUpdateData("invoices_pool");
+  const deleteEntries = useFirestoreDeleteData("contest_entrys_list");
+  const fetchEntriesQuery = useFirestoreQuery();
   const navigate = useNavigate();
+
+  const handleCleanUpEntryList = async (data) => {
+    const condition = [where("playerUid", "==", data.playerUid)];
+    const returnEntries = await fetchEntriesQuery.getDocuments(
+      "contest_entrys_list",
+      condition
+    );
+
+    if (returnEntries?.length > 0) {
+      returnEntries.map(async (entry) => {
+        const { id } = entry;
+        try {
+          await deleteEntries.deleteData(id);
+        } catch (error) {
+          // error handled
+        }
+      });
+    }
+  };
 
   const handlePrice = (data, priceInfo) => {
     let basePrice = 0;
     let extraPrice = 0;
     let totalPrice = 0;
-    const categoryCount = data.length;
+    const categoryCount = data ? data.length : 0;
 
     if (categoryCount <= 1) {
-      switch (data[0].contestCategoryPriceType) {
-        case "기본참가비":
-          totalPrice = parseInt(priceInfo.contestPriceBasic);
-          break;
-        case "타입1":
-          totalPrice = parseInt(priceInfo.contestPriceType1);
-          break;
-        case "타입2":
-          totalPrice = parseInt(priceInfo.contestPriceType2);
-          break;
-        default:
-          break;
+      if (data && data.length > 0) {
+        switch (data[0].contestCategoryPriceType) {
+          case "기본참가비":
+            totalPrice = parseInt(priceInfo.contestPriceBasic || 0);
+            break;
+          case "타입1":
+            totalPrice = parseInt(priceInfo.contestPriceType1 || 0);
+            break;
+          case "타입2":
+            totalPrice = parseInt(priceInfo.contestPriceType2 || 0);
+            break;
+          default:
+            totalPrice = parseInt(priceInfo.contestPriceBasic || 0);
+            break;
+        }
       }
     } else {
       if (priceInfo.contestPriceExtraType === "누적") {
-        extraPrice =
-          parseInt(priceInfo.contestPriceExtra) * (categoryCount - 1);
+        extraPrice = parseInt(priceInfo.contestPriceExtra || 0) * (categoryCount - 1);
       } else if (priceInfo.contestPriceExtraType === "정액") {
-        extraPrice = parseInt(priceInfo.contestPriceExtra);
+        extraPrice = parseInt(priceInfo.contestPriceExtra || 0);
       } else {
         extraPrice = 0;
       }
 
-      const findType1 = data.some(
-        (d) => d.contestCategoryPriceType === "타입1"
-      );
-      const findType2 = data.some(
-        (d) => d.contestCategoryPriceType === "타입2"
-      );
-      const findBasic = data.some(
-        (d) => d.contestCategoryPriceType === "기본참가비"
-      );
+      const findType1 = data.some((d) => d.contestCategoryPriceType === "타입1");
+      const findType2 = data.some((d) => d.contestCategoryPriceType === "타입2");
 
       if (findType1) {
-        basePrice = parseInt(priceInfo.contestPriceType1);
+        basePrice = parseInt(priceInfo.contestPriceType1 || 0);
       } else if (findType2) {
-        basePrice = parseInt(priceInfo.contestPriceType2);
+        basePrice = parseInt(priceInfo.contestPriceType2 || 0);
       } else {
-        basePrice = parseInt(priceInfo.contestPriceBasic);
+        basePrice = parseInt(priceInfo.contestPriceBasic || 0);
       }
 
       totalPrice = basePrice + extraPrice;
     }
 
     return totalPrice;
-  };
-
-  const handleInvoice = () => {
-    setIsLoading(true);
-
-    saveJoinCup(invoiceInfo);
-  };
-
-  useEffect(() => {
-    console.log(invoiceInfo);
-  }, [invoiceInfo]);
-
-  const saveJoinCup = async (datas) => {
-    const newData = {
-      ...datas,
-      invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
-      contestPriceSum: parseInt(handlePrice(invoiceInfo.joins, priceInfo)),
-    };
-    try {
-      await updateInvoice
-        .updateData(invoiceInfo.id, newData)
-        .then(() => setIsLoading(false))
-        .then(() => {
-          navigate("/editsuccesspage", { replace: true });
-        });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const priceInfo = {
@@ -119,145 +94,195 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
     contestPriceType1: invoiceInfo.contestPriceType1,
     contestPriceType2: invoiceInfo.contestPriceType2,
   };
+
   useEffect(() => {
     setInvoicePrice(handlePrice(invoiceInfo.joins, priceInfo));
   }, [invoiceInfo]);
 
+  const handleInvoice = () => {
+    setIsLoading(true);
+    saveJoinCup(invoiceInfo);
+  };
+
+  const saveJoinCup = async (datas) => {
+    const newData = {
+      ...datas,
+      invoiceEdited: true,
+      isPriceCheck: false,
+      invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
+      contestPriceSum: parseInt(handlePrice(invoiceInfo.joins, priceInfo)),
+      createBy: "web",
+    };
+
+    try {
+      handleCleanUpEntryList(datas);
+      await updateInvoice.updateData(invoiceInfo.id, newData);
+      setIsLoading(false);
+      navigate("/editsuccesspage", { replace: true });
+    } catch (error) {
+      console.error("Update Error:", error);
+      setIsLoading(false);
+      alert("신청 정보 수정 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+    }
+  };
+
   return (
-    <div className="flex w-full h-screen flex-col bg-white items-center">
-      <div
-        className="flex w-full h-full flex-col p-2"
-        style={{ maxWidth: "420px" }}
-      >
-        <div className="flex w-full flex-col gap-y-1 h-auto mt-2  border-2 border-dashed">
-          <div className="flex w-full h-auto py-2 justify-center items-center">
-            <span className="text-xl font-semibold">변경내용 확인</span>
+    <div className="w-full max-w-lg mx-auto bg-[#141414] rounded-3xl p-6 sm:p-8 shadow-2xl border border-neutral-800 my-6 max-h-[90vh] overflow-y-auto text-white">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4 mb-5">
+        <div className="flex items-center gap-x-2.5">
+          <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center font-black text-lg">
+            <RiCheckDoubleLine />
           </div>
-          <div className="flex  w-full h-auto flex-col bg-white px-2">
-            <div className="flex flex-col w-full px-4 border h-auto gap-y-1 py-2">
-              <div className="flex justify-between">
-                <span className="text-lg font-medium z-10">
-                  참가대회정보
-                  <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
-                </span>
+          <div>
+            <h2 className="text-lg sm:text-xl font-black text-white">변경내용 확인</h2>
+            <p className="text-xs text-neutral-400 font-medium">수정된 신청 정보를 최종 확인해 주세요</p>
+          </div>
+        </div>
+        <button
+          onClick={() => prevSetModal(false)}
+          className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+        >
+          <RiCloseLine className="text-xl" />
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-y-5">
+        {/* Contest Info Card */}
+        <div className="bg-[#1A1A1A] border border-neutral-800 rounded-2xl p-4.5 flex flex-col gap-y-3">
+          <div className="flex items-center gap-x-2 text-xs font-black text-white border-b border-neutral-800/80 pb-2">
+            <RiTrophyLine className="text-base text-neutral-300" />
+            <span>참가 대회 정보</span>
+          </div>
+          <div className="grid grid-cols-1 gap-y-2 text-xs">
+            <div className="flex justify-between items-start">
+              <span className="text-neutral-400 font-medium whitespace-nowrap mr-2">대회명</span>
+              <span className="text-white font-bold text-right">{invoiceInfo?.contestTitle}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-neutral-400 font-medium">대회일자</span>
+              <span className="text-white font-bold">{invoiceInfo?.contestDate}</span>
+            </div>
+            {invoiceInfo?.contestLocation && (
+              <div className="flex justify-between items-start">
+                <span className="text-neutral-400 font-medium whitespace-nowrap mr-2">대회장소</span>
+                <span className="text-white font-bold text-right">{invoiceInfo?.contestLocation}</span>
               </div>
-              <div className="flex w-full justify-start items-center px-2">
-                <span className="text-sm ">
-                  대회명 : {invoiceInfo?.contestTitle}
-                </span>
-              </div>
-              <div className="flex w-full justify-start items-center px-2">
-                <span className="text-sm ">
-                  대회일자 : {invoiceInfo?.contestDate}
-                </span>
-              </div>
-              <div className="flex w-full justify-start items-center px-2">
-                <span className="text-sm ">
-                  대회장소 : {invoiceInfo?.contestLocation}
-                </span>
-              </div>
-              <div className="flex w-full justify-start items-center px-2">
-                <span className="text-sm ">
-                  참가비 : {invoicePrice?.toLocaleString()} 원
-                </span>
-              </div>
+            )}
+            <div className="flex justify-between items-center pt-2 border-t border-neutral-800/80 mt-1">
+              <span className="text-neutral-300 font-bold">최종 참가비</span>
+              <span className="text-lg font-black text-white">
+                {invoicePrice?.toLocaleString()} 원
+              </span>
             </div>
           </div>
-          <div className="flex  w-full h-auto flex-col bg-white px-2 ">
-            <div className="flex flex-col w-full px-4 border h-auto gap-y-1 py-2">
-              <div className="flex justify-between">
-                <span className="text-lg font-medium z-10">
-                  개인정보
-                  <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
-                </span>
-              </div>
-              <div className="flex w-full justify-start items-center px-2">
-                <span className="text-sm ">
-                  이름 : {invoiceInfo?.playerName}
-                </span>
-              </div>
-              <div className="flex w-full justify-start items-center px-2">
-                <span className="text-sm ">
-                  연락처 : {invoiceInfo?.playerTel}
-                </span>
-              </div>
-              <div className="flex w-full justify-start items-center px-2">
-                <span className="text-sm ">
-                  생년월일 : {invoiceInfo?.playerBirth}
-                </span>
-              </div>
-              <div className="flex w-full justify-start items-center px-2">
-                <span className="text-sm ">
-                  소속 : {invoiceInfo?.playerGym}
-                </span>
-              </div>
+        </div>
+
+        {/* Player Info Card */}
+        <div className="bg-[#1A1A1A] border border-neutral-800 rounded-2xl p-4.5 flex flex-col gap-y-3">
+          <div className="flex items-center gap-x-2 text-xs font-black text-white border-b border-neutral-800/80 pb-2">
+            <RiUserLine className="text-base text-neutral-300" />
+            <span>개인 정보</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-neutral-400 font-medium block mb-0.5">이름</span>
+              <span className="text-white font-bold">{invoiceInfo?.playerName}</span>
+            </div>
+            <div>
+              <span className="text-neutral-400 font-medium block mb-0.5">연락처</span>
+              <span className="text-white font-bold">{invoiceInfo?.playerTel}</span>
+            </div>
+            <div>
+              <span className="text-neutral-400 font-medium block mb-0.5">생년월일</span>
+              <span className="text-white font-bold">{invoiceInfo?.playerBirth}</span>
+            </div>
+            <div>
+              <span className="text-neutral-400 font-medium block mb-0.5">소속</span>
+              <span className="text-white font-bold">{invoiceInfo?.playerGym || "무소속"}</span>
             </div>
           </div>
-          <div className="flex  w-full h-auto flex-col bg-white px-2 mb-2">
-            <div className="flex flex-col w-full px-4 border h-auto gap-y-1 py-2">
-              <div className="flex justify-between">
-                <span className="text-lg font-medium z-10">
-                  참가신청종목
-                  <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
-                </span>
-              </div>
-              {invoiceInfo.joins.length > 0 ? (
-                <div className="flex w-full justify-start flex-col">
-                  {invoiceInfo.joins.map((item, idx) => (
-                    <div className="flex w-full ml-2">
-                      <span className="text-sm mr-1">{idx + 1}.</span>
-                      <span className="text-sm mr-1">
-                        {item.contestCategoryTitle}
-                      </span>
-                      <span className="text-sm">
-                        ({item.contestGradeTitle})
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex w-full justify-start flex-col">
-                  <span className="text-sm ml-2 font-semibold">
-                    참가 신청 종목이 없습니다.
+        </div>
+
+        {/* Joins Info Card */}
+        <div className="bg-[#1A1A1A] border border-neutral-800 rounded-2xl p-4.5 flex flex-col gap-y-3">
+          <div className="flex items-center justify-between border-b border-neutral-800/80 pb-2">
+            <span className="text-xs font-black text-white flex items-center gap-x-1.5">
+              <RiCheckDoubleLine className="text-base text-neutral-300" />
+              참가 신청 종목
+            </span>
+            <span className="text-xs font-bold text-white bg-neutral-800 px-2.5 py-0.5 rounded-full border border-neutral-700">
+              총 {invoiceInfo.joins?.length || 0}개
+            </span>
+          </div>
+
+          {invoiceInfo.joins?.length > 0 ? (
+            <div className="flex flex-col gap-y-2 max-h-48 overflow-y-auto pr-1">
+              {invoiceInfo.joins.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-[#121212] border border-neutral-800 rounded-xl p-3 text-xs"
+                >
+                  <div className="flex items-center gap-x-2">
+                    <span className="w-5 h-5 rounded-full bg-neutral-800 text-neutral-300 text-[10px] font-bold flex items-center justify-center">
+                      {idx + 1}
+                    </span>
+                    <span className="font-bold text-white">{item.contestCategoryTitle}</span>
+                  </div>
+                  <span className="font-bold text-black bg-white px-2 py-0.5 rounded-full text-[11px]">
+                    {item.contestGradeTitle}
                   </span>
                 </div>
-              )}
+              ))}
             </div>
-          </div>
-        </div>
-
-        <div className="flex w-full h-20 justify-center items-center gap-x-3">
-          {!isLoading && (
-            <button
-              className="w-32 h-12 bg-gray-400 rounded-lg shasdow text-white font-semibold"
-              onClick={() => prevSetModal(false)}
-            >
-              돌아가기
-            </button>
-          )}
-
-          {isLoading ? (
-            <button
-              className="w-32 h-12 bg-orange-500 rounded-lg shasdow text-white font-semibold flex justify-center items-center"
-              disabled
-            >
-              <RotatingLines
-                strokeColor="white"
-                strokeWidth="5"
-                animationDuration="0.75"
-                width="20"
-                visible={true}
-              />
-            </button>
           ) : (
-            <button
-              className="w-32 h-12 bg-orange-500 rounded-lg shasdow text-white font-semibold"
-              onClick={() => handleInvoice()}
-            >
-              변경신청
-            </button>
+            <span className="text-xs text-neutral-500 font-medium text-center py-3 block">
+              참가 신청 종목이 없습니다.
+            </span>
           )}
         </div>
+
+        {/* 참가비 유의사항 안내 박스 */}
+        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3.5 flex items-start gap-x-2.5 text-neutral-300 text-[11px] leading-relaxed">
+          <RiErrorWarningLine className="text-neutral-400 text-base flex-shrink-0 mt-0.5" />
+          <span>
+            학생부, 피트니스 챌린지와 보디빌딩 중복 출전의 경우 정확한 참가비용은 경기도보디빌딩협회를 통해 안내 받으시기 바랍니다.
+          </span>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex items-center gap-x-3 mt-6 pt-2">
+        {!isLoading && (
+          <button
+            className="flex-1 py-3.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-sm rounded-full transition cursor-pointer text-center"
+            onClick={() => prevSetModal(false)}
+          >
+            돌아가기
+          </button>
+        )}
+
+        {isLoading ? (
+          <button
+            className="flex-1 py-3.5 bg-white text-black font-black text-sm rounded-full flex justify-center items-center cursor-not-allowed opacity-90"
+            disabled
+          >
+            <RotatingLines
+              strokeColor="black"
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="20"
+              visible={true}
+            />
+          </button>
+        ) : (
+          <button
+            className="flex-1 py-3.5 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full transition shadow-xl cursor-pointer text-center tracking-tight"
+            onClick={() => handleInvoice()}
+          >
+            변경신청
+          </button>
+        )}
       </div>
     </div>
   );

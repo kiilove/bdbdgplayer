@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Banner1 } from "../components/Banners";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 
@@ -55,50 +54,56 @@ const dummyMys = [
 
 const Feed = () => {
   const [tab, setTab] = useState("all");
+
+  const activePhotos = tab === "all" ? dummyFeeds : dummyMys;
+
   return (
-    <div className="flex w-full justify-center ">
+    <div className="min-h-screen bg-[#0B0B0B] text-white flex justify-center pb-28">
       <BottomMenu />
-      <div
-        className="flex w-full h-full justify-center items-start align-top bg-slate-100 flex-col"
-        style={{ maxWidth: "420px" }}
-      >
-        <Header title="포토" banner={<Banner1 />} />
-        <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-3 bg-slate-100">
-          <div className="flex w-full h-12 bg-white">
+      <div className="w-full max-w-lg flex flex-col">
+        <Header title="선수 갤러리 피드" />
+
+        {/* Nike Minimal Horizontal Tabs */}
+        <div className="w-full bg-[#0B0B0B] border-b border-neutral-800 flex sticky top-16 z-20">
+          <button
+            className={`flex-1 py-4 text-center text-xs font-black tracking-widest uppercase transition-all relative ${
+              tab === "all"
+                ? "text-white border-b-2 border-white"
+                : "text-neutral-500 hover:text-neutral-300 border-b-2 border-transparent"
+            }`}
+            onClick={() => setTab("all")}
+          >
+            피드 탐색
+          </button>
+          <button
+            className={`flex-1 py-4 text-center text-xs font-black tracking-widest uppercase transition-all relative ${
+              tab === "my"
+                ? "text-white border-b-2 border-white"
+                : "text-neutral-500 hover:text-neutral-300 border-b-2 border-transparent"
+            }`}
+            onClick={() => setTab("my")}
+          >
+            내 대회사진
+          </button>
+        </div>
+
+        {/* Photo Stream */}
+        <div className="p-4 flex flex-col gap-4">
+          {activePhotos.map((item) => (
             <div
-              className={`flex w-1/2 h-full justify-center items-center ${
-                tab === "all" && "border-b-2 border-orange-500"
-              } hover:cursor-pointer`}
-              onClick={() => setTab((prev) => (prev = "all"))}
+              key={item.id}
+              className="group overflow-hidden rounded-3xl bg-[#141414] border border-neutral-800 shadow-xl transition-all duration-300"
             >
-              피드
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-900">
+                <img
+                  src={item.photourl}
+                  alt={`Feed item ${item.id}`}
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+              </div>
             </div>
-            <div
-              className={`flex w-1/2 h-full  justify-center items-center ${
-                tab === "my" && "border-b-2 border-orange-500"
-              }  hover:cursor-pointer`}
-              onClick={() => setTab((prev) => (prev = "my"))}
-            >
-              내 대회사진
-            </div>
-          </div>
-          {tab === "all"
-            ? dummyFeeds.map((item, idx) => (
-                <div className="flex w-full h-72 bg-white justify-center">
-                  <img
-                    src={item.photourl}
-                    className=" object-cover object-top"
-                  />
-                </div>
-              ))
-            : dummyMys.map((item, idx) => (
-                <div className="flex w-full h-72 bg-white">
-                  <img
-                    src={item.photourl}
-                    className=" object-cover object-top flex justify-center items-center"
-                  />
-                </div>
-              ))}
+          ))}
         </div>
       </div>
     </div>

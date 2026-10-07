@@ -29,11 +29,7 @@ const EditGender = () => {
           setCurrentUserInfo({ ...data });
         }
       })
-      .then(() => setIsLoading(false))
-
-      .then(() => {
-        console.log("업데이트 완료");
-      });
+      .then(() => setIsLoading(false));
   };
 
   const pGymReg = (e) => {
@@ -45,7 +41,7 @@ const EditGender = () => {
 
   return (
     <div
-      className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-32"
+      className="flex w-full h-full justify-center items-start align-top bg-[#0B0B0B] text-white flex-col mb-32"
       style={{ maxWidth: "420px" }}
     >
       <div
@@ -53,7 +49,7 @@ const EditGender = () => {
           !isLoading && "hidden"
         }`}
         style={{
-          backgroundColor: "rgba(123, 124, 129, 0.4)",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
           maxWidth: "420px",
           transform: "translate(-50%, 0%)",
         }}
@@ -62,33 +58,34 @@ const EditGender = () => {
           strokeColor="white"
           strokeWidth="5"
           animationDuration="0.75"
-          width="96"
+          width="64"
           visible={true}
         />
       </div>
-      <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white px-2">
-        <div className="flex flex-col w-full h-full mt-5 mb-5">
-          <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">
-            <div className="flex w-full h-10 bg-white border-b border-gray-500 gap-x-2">
+      <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-[#0B0B0B] px-4">
+        <div className="flex flex-col w-full h-full mt-6 mb-5">
+          <div className="flex w-full h-full flex-col bg-[#141414] border border-neutral-800 rounded-3xl p-6 gap-y-4 shadow-xl">
+            <div className="flex w-full bg-[#1A1A1A] border border-neutral-800 rounded-2xl">
               <select
-                className="w-full outline-none text-sm"
-                onChange={(e) => setPGender((p) => (p = e.target.value))}
+                className="w-full bg-transparent focus:outline-none p-4 text-white text-sm cursor-pointer"
+                value={pGender}
+                onChange={(e) => setPGender(e.target.value)}
               >
-                <option value="m" selected={pGender === "m"}>
+                <option value="m" className="bg-[#1A1A1A] text-white">
                   남자
                 </option>
-                <option value="f" selected={pGender === "f"}>
+                <option value="f" className="bg-[#1A1A1A] text-white">
                   여자
                 </option>
               </select>
             </div>
 
-            <div className="flex w-full py-2 px-2 mt-5">
+            <div className="flex w-full mt-4">
               <button
-                className={`w-full h-9 text-white font-semibold  bg-orange-500`}
+                className="w-full py-3.5 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full shadow-lg transition tracking-tight cursor-pointer"
                 onClick={() => updatePlayer({ ...pInfo, pGender })}
               >
-                저 장
+                저장하기
               </button>
             </div>
           </div>

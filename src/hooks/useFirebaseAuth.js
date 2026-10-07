@@ -101,12 +101,41 @@ const useFirebaseAuth = () => {
 
   const resetPassword = async (email) => {
     const auth = getAuth();
+    auth.languageCode = "ko";
+    if (!email || !email.trim()) {
+      return { success: null, error: { code: "auth/missing-email", message: "이메일 주소를 입력해주세요." } };
+    }
     try {
-      await sendPasswordResetEmail(auth, email);
-      return { success: { message: email + "으로 메일을 발송하였습니다." } };
+      await sendPasswordResetEmail(auth, email.trim());
+      return {
+        success: {
+          message: `${email.trim()}으로 비밀번호 재설정 링크를 발송했습니다.`,
+        },
+        error: null,
+      };
     } catch (error) {
-      return { error: { message: error.message } };
-      // Handle error
+      let errorMessage;
+      switch (error.code) {
+        case "auth/user-not-found":
+          errorMessage = "가입되지 않은 이메일 주소입니다. 이메일을 다시 확인해주세요.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "올바른 이메일 주소 형식이 아닙니다.";
+          break;
+        case "auth/missing-email":
+          errorMessage = "이메일 주소를 입력해주세요.";
+          break;
+        case "auth/too-many-requests":
+          errorMessage = "요청 횟수가 초과되었습니다. 잠시 후 다시 시도해주세요.";
+          break;
+        case "auth/network-request-failed":
+          errorMessage = "네트워크 연결 상태를 확인해주세요.";
+          break;
+        default:
+          errorMessage = error.message || "비밀번호 재설정 메일 발송 중 오류가 발생했습니다.";
+          break;
+      }
+      return { success: null, error: { code: error.code || "error", message: errorMessage } };
     }
   };
 

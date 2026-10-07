@@ -72,10 +72,10 @@ const EditProfile = () => {
     default:
   }
   return (
-    <div className="flex justify-center items-start align-top bg-white">
+    <div className="flex justify-center items-start align-top bg-[#0B0B0B] min-h-screen text-white">
       <BottomMenu />
       <div
-        className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-32"
+        className="flex w-full h-full justify-center items-start align-top bg-[#0B0B0B] flex-col mb-32"
         style={{ maxWidth: "420px" }}
       >
         <Header title={initInfo.headerTitle} />

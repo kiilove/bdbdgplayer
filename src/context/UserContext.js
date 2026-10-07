@@ -62,9 +62,6 @@ export const UserContextProvider = ({ children }) => {
     }
   }, [currentUid]);
 
-  useEffect(() => {
-    console.log(currentUserInfo);
-  }, [currentUserInfo]);
 
   return (
     <UserContext.Provider

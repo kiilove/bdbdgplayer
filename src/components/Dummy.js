@@ -1,313 +1,79 @@
 export const DummyTable = () => (
-  <table className="w-full">
-    <tr className="bg-gray-200 h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-l border-r border-gray-300">
-        <span className="text-xs font-light font-san">심판</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">A</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">B</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">C</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">D</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">E</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">F</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">G</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">H</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">I</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full border-t border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">합계</span>
-      </td>
-    </tr>
-    <tr className="bg-gray-200 h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-l border-r border-gray-300">
-        <span className="text-xs font-light font-san">신체</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">6</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">2</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">12</span>
-      </td>
-    </tr>
-    <tr className="bg-gray-200 h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-l border-r border-gray-300">
-        <span className="text-xs font-light font-san">예술</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">6</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">2</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">12</span>
-      </td>
-    </tr>
-    <tr className="bg-gray-200 h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-l border-r border-gray-300">
-        <span className="text-xs font-light font-san">독창</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">6</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">2</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">12</span>
-      </td>
-    </tr>
-    <tr className="bg-gray-200 h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-l border-r border-gray-300">
-        <span className="text-xs font-light font-san">규정</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">6</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">2</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">12</span>
-      </td>
-    </tr>
-    <tr className="bg-gray-200 h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-l border-r border-gray-300">
-        <span className="text-xs font-light font-san">의상</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">6</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">4</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">5</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">3</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">2</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full bg-white border-b border-r border-gray-300">
-        <span className="text-xs font-light font-san">12</span>
-      </td>
-    </tr>
-  </table>
+  <div className="w-full overflow-x-auto">
+    <table className="w-full text-xs text-neutral-300 border-collapse">
+      <thead>
+        <tr className="bg-neutral-900 border-y border-neutral-800 font-bold text-neutral-400">
+          <th className="py-2.5 px-3 text-center border-r border-neutral-800">심판</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">A</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">B</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">C</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">D</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">E</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">F</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">G</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">H</th>
+          <th className="py-2.5 px-2 text-center border-r border-neutral-800">I</th>
+          <th className="py-2.5 px-3 text-center text-white font-black">합계</th>
+        </tr>
+      </thead>
+      <tbody>
+        {["신체", "예술", "독창", "규정", "의상"].map((cat) => (
+          <tr key={cat} className="border-b border-neutral-800/80 hover:bg-neutral-900/50 transition">
+            <td className="py-2 px-3 text-center font-bold text-white border-r border-neutral-800">{cat}</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">5</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">4</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">5</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">6</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">3</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">4</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">5</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">3</td>
+            <td className="py-2 px-2 text-center border-r border-neutral-800 font-medium">2</td>
+            <td className="py-2 px-3 text-center font-black text-white">12</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 );
 
 export const DummyTable2 = () => (
-  <table className="w-full">
-    <tr className="bg-gray-200 h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">분석항목</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san"></span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">내기록</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">TOP10평균</span>
-      </td>
-    </tr>
-    <tr className="bg-white h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">신체</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <div className="flex w-10 h-4 bg-blue-500 rounded-lg justify-center items-center">
-          <span className="text-white text-xs font-thin">+2</span>
-        </div>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">12</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">10</span>
-      </td>
-    </tr>
-    <tr className="bg-white h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">예술</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <div className="flex w-10 h-4 bg-red-500 rounded-lg justify-center items-center">
-          <span className="text-white text-xs font-thin">-4</span>
-        </div>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">10</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">14</span>
-      </td>
-    </tr>
-    <tr className="bg-white h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">독창</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <div className="flex w-10 h-4 bg-yellow-500 rounded-lg justify-center items-center">
-          <span className="text-white text-xs font-thin">0</span>
-        </div>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">11</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">11</span>
-      </td>
-    </tr>
-    <tr className="bg-white h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">규정</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <div className="flex w-10 h-4 bg-blue-500 rounded-lg justify-center items-center">
-          <span className="text-white text-xs font-thin">+1</span>
-        </div>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">11</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">10</span>
-      </td>
-    </tr>
-    <tr className="bg-white h-7 flex items-center w-full">
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">의상</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <div className="flex w-10 h-4 bg-blue-500 rounded-lg justify-center items-center">
-          <span className="text-white text-xs font-thin">+2</span>
-        </div>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">14</span>
-      </td>
-      <td className="flex justify-center h-full items-center w-full">
-        <span className="text-xs font-light font-san">12</span>
-      </td>
-    </tr>
-  </table>
+  <div className="w-full">
+    <table className="w-full text-xs text-neutral-300">
+      <thead>
+        <tr className="border-b border-neutral-800 font-bold text-neutral-500 pb-2">
+          <th className="py-2 text-left">분석항목</th>
+          <th className="py-2 text-center">편차</th>
+          <th className="py-2 text-center">내 기록</th>
+          <th className="py-2 text-right">TOP10 평균</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-neutral-800/60">
+        {[
+          { label: "신체", diff: "+2", my: "12", top: "10" },
+          { label: "예술", diff: "-4", my: "10", top: "14" },
+          { label: "독창", diff: "0", my: "11", top: "11" },
+          { label: "규정", diff: "+1", my: "11", top: "10" },
+          { label: "의상", diff: "+2", my: "14", top: "12" },
+        ].map((row) => (
+          <tr key={row.label} className="hover:bg-neutral-900/40 transition">
+            <td className="py-3 font-bold text-white">{row.label}</td>
+            <td className="py-3 text-center">
+              <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-tight ${
+                row.diff.startsWith("+") 
+                  ? "bg-white text-black" 
+                  : row.diff.startsWith("-")
+                  ? "bg-neutral-800 text-neutral-300 border border-neutral-700"
+                  : "bg-neutral-900 text-neutral-500"
+              }`}>
+                {row.diff}
+              </span>
+            </td>
+            <td className="py-3 text-center font-black text-white">{row.my}</td>
+            <td className="py-3 text-right font-medium text-neutral-400">{row.top}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 );

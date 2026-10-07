@@ -131,8 +131,6 @@ const CupJoin = () => {
       date: dayjs().format("YYYY-MM-DD HH:MM:ss"),
     };
 
-    console.log(apply);
-
     setIsApply((prev) => (prev = apply));
   };
 
@@ -142,12 +140,8 @@ const CupJoin = () => {
   };
 
   const handlePlayerJoinGames = (e, gameTitle, gameId) => {
-    // e.preventDefault();
     let dummy;
     let dummyIndex;
-    if (e.target.name === "default") {
-      console.log(e.target.value);
-    }
 
     dummy = [...playerJoinGames];
 
@@ -160,12 +154,10 @@ const CupJoin = () => {
             gameTitle,
             gameClass: e.target.value,
           });
-      console.log("dummy", dummy);
       setPlayerJoinGames((prev) => (prev = dummy));
     } else {
       dummyIndex = dummy.findIndex((game) => game.id === gameId);
       dummyIndex !== -1 && dummy.splice(dummyIndex, 1);
-      console.log("dummy", dummy);
       setPlayerJoinGames((prev) => (prev = dummy));
     }
   };
@@ -191,7 +183,6 @@ const CupJoin = () => {
 
   const handleFilterdGamesCategory = (gender, games) => {
     let dummy = [...games];
-    console.log(dummy);
 
     let filterdGamesCategory = [];
 
@@ -215,29 +206,12 @@ const CupJoin = () => {
       joinGames: [...playerJoinGames],
       apply: isApply,
     };
-    console.log(gameInvoice);
     return gameInvoice;
   };
-
-  // useMemo(() => {
-  //   if (cupData) {
-  //     setFilterdGameCategory(
-  //       (prev) =>
-  //         (prev = handleFilterdGamesCategory(
-  //           playerProfile.pGender,
-  //           cupData.gamesCategory
-  //         ))
-  //     );
-  //   }
-  // }, [chkAllItem, playerProfile, cupData.gamesCategory]);
 
   useEffect(() => {
     getDocument("cups", cupId);
   }, []);
-
-  useMemo(() => {
-    console.log(filterdGameCategory);
-  }, [filterdGameCategory]);
 
   useMemo(() => {
     setJoinGameInvoice((prev) => (prev = handleJoinGameInvoice()));

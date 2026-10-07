@@ -3,33 +3,23 @@ import { RxArrowLeft } from "react-icons/rx";
 
 const Header = ({ title, banner, bgColor }) => {
   return (
-    <div className="block top-0 sticky w-full h-full z-20 ">
-      <div className="flex w-full h-full justify-center items-center flex-col">
-        <div
-          className={`flex w-full h-14 justify-center items-center ${
-            bgColor ? bgColor : "bg-white"
-          }`}
+    <div className="sticky top-0 z-30 w-full bg-black/90 backdrop-blur-xl border-b border-neutral-800 text-white shadow-md">
+      <div className="max-w-6xl mx-auto h-16 px-4 flex items-center justify-between relative">
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center gap-x-1.5 text-neutral-300 hover:text-white transition text-xs font-bold cursor-pointer z-10 px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 active:scale-95"
         >
-          <div className="flex h-10 w-10 justify-start items-center ml-2">
-            <button onClick={() => window.history.back()}>
-              <RxArrowLeft className=" text-2xl font-semibold" />
-            </button>
-          </div>
-          <div className="flex h-full w-full justify-start items-center">
-            <p
-              className="text-lg px-2 absolute left-1/2"
-              style={{ transform: "translate(-50%,0%)" }}
-            >
-              {title}
-            </p>
-          </div>
+          <RxArrowLeft className="text-base" />
+          <span>이전</span>
+        </button>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <h1 className="text-base sm:text-lg font-black tracking-tight text-white uppercase">
+            {title}
+          </h1>
         </div>
-
-        {/* 배너시작 */}
-        {banner}
-
-        {/* 배터종료 */}
+        <div className="w-16"></div>
       </div>
+      {banner}
     </div>
   );
 };

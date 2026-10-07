@@ -1,184 +1,94 @@
 import React, { useState } from "react";
-import { Banner2 } from "../components/Banners";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
-import { FaMedal, FaLaughBeam, FaSadCry, FaFlushed } from "react-icons/fa";
+import { RiTrophyLine, RiFlashlightLine, RiHeartPulseLine, RiStarLine, RiShieldStarLine, RiShirtLine } from "react-icons/ri";
 import AnalyzeLineType from "../components/AnalyzeLineType";
-import AnalyzeMariType from "../components/AnalyzeMariType";
 import AnalyzeBarType from "../components/AnalyzeBarType";
+
+const metrics = [
+  { id: "1", title: "순위", score: "1위", icon: RiTrophyLine },
+  { id: "2", title: "신체", score: "11점", icon: RiHeartPulseLine },
+  { id: "3", title: "예술", score: "10점", icon: RiStarLine },
+  { id: "4", title: "독창", score: "10점", icon: RiFlashlightLine },
+  { id: "5", title: "규정", score: "16점", icon: RiShieldStarLine },
+  { id: "6", title: "의상", score: "12점", icon: RiShirtLine },
+];
 
 const AnalyzeDetail = () => {
   const [selectMenu, setSelectMenu] = useState("1");
+
   return (
-    <div className="flex w-full justify-center">
+    <div className="min-h-screen bg-[#0B0B0B] text-white flex justify-center pb-28">
       <BottomMenu />
-      <div
-        className="flex w-full h-full justify-center items-start align-top bg-slate-100 flex-col"
-        style={{ maxWidth: "420px" }}
-      >
-        <Header title="나의 모습 상세분석" banner={<Banner2 />} />
-        <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-3">
-          <div className="flex w-full h-full justify-start align-top flex-wrap box-border">
-            <div className="flex w-full h-full justify-center items-start bg-white pt-2">
-              <div
-                className={`flex w-1/3 h-24 flex-col justify-center items-center ${
-                  selectMenu === "1" ? "bg-orange-300" : "bg-white"
-                }`}
-                onClick={() => setSelectMenu((prev) => (prev = "1"))}
-              >
-                <div className="flex h-1/3 items-center">
-                  <span className="text-xs font-medium">순위</span>
-                </div>
-                <div className="flex w-full justify-center h-1/3">
-                  <div className="flex items-end">
-                    <span className="text-2xl font-semibold align-text-bottom">
-                      1<span className="text-xs font-medium ml-1">위</span>
-                    </span>
-                  </div>
-                </div>
-                <div className="flex h-1/3 items-center">
-                  <span className="font-medium text-yellow-400">
-                    <FaMedal />
+      <div className="w-full max-w-lg flex flex-col">
+        <Header title="선수 역량 상세분석" />
+
+        {/* 6 Category Selection Grid */}
+        <div className="p-4 sm:p-6 pb-2">
+          <div className="grid grid-cols-3 gap-2.5">
+            {metrics.map((item) => {
+              const Icon = item.icon;
+              const isSelected = selectMenu === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectMenu(item.id)}
+                  className={`flex flex-col items-center justify-center p-3.5 rounded-2xl transition-all duration-200 cursor-pointer border ${
+                    isSelected
+                      ? "bg-white text-black border-white shadow-xl scale-[1.02]"
+                      : "bg-[#141414] hover:bg-[#1A1A1A] text-neutral-400 border-neutral-800"
+                  }`}
+                >
+                  <Icon className={`text-xl mb-1 ${isSelected ? "text-black" : "text-neutral-400"}`} />
+                  <span className={`text-[11px] font-black uppercase tracking-wider ${isSelected ? "text-black" : "text-neutral-400"}`}>
+                    {item.title}
                   </span>
-                </div>
-              </div>
-              <div
-                className={`flex w-1/3 h-24 flex-col justify-center items-center ${
-                  selectMenu === "2" ? "bg-orange-300" : "bg-white"
-                }`}
-                onClick={() => setSelectMenu((prev) => (prev = "2"))}
-              >
-                <div className="flex h-1/3 items-center">
-                  <span className="text-xs font-medium">신체</span>
-                </div>
-                <div className="flex w-full justify-center h-1/3">
-                  <div className="flex items-end">
-                    <span className="text-2xl font-semibold align-text-bottom">
-                      11<span className="text-xs font-medium ml-1">점</span>
-                    </span>
-                  </div>
-                </div>
-                <div className="flex h-1/3 items-center">
-                  <span className="font-medium text-red-400">
-                    <FaSadCry />
+                  <span className={`text-lg font-black tracking-tight mt-0.5 ${isSelected ? "text-black" : "text-white"}`}>
+                    {item.score}
                   </span>
-                </div>
-              </div>
-              <div
-                className={`flex w-1/3 h-24 flex-col justify-center items-center ${
-                  selectMenu === "3" ? "bg-orange-300" : "bg-white"
-                }`}
-                onClick={() => setSelectMenu((prev) => (prev = "3"))}
-              >
-                <div className="flex h-1/3 items-center">
-                  <span className="text-xs font-medium">예술</span>
-                </div>
-                <div className="flex w-full justify-center h-1/3">
-                  <div className="flex items-end">
-                    <span className="text-2xl font-semibold align-text-bottom">
-                      10<span className="text-xs font-medium ml-1">점</span>
-                    </span>
-                  </div>
-                </div>
-                <div className="flex h-1/3 items-center">
-                  <span className="font-medium text-blue-400">
-                    <FaLaughBeam />
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex w-full h-full justify-center items-start bg-white">
-              <div
-                className={`flex w-1/3 h-24 flex-col justify-center items-center ${
-                  selectMenu === "4" ? "bg-orange-300" : "bg-white"
-                }`}
-                onClick={() => setSelectMenu((prev) => (prev = "4"))}
-              >
-                <div className="flex h-1/3 items-center">
-                  <span className="text-xs font-medium">독창</span>
-                </div>
-                <div className="flex w-full justify-center h-1/3">
-                  <div className="flex items-end">
-                    <span className="text-2xl font-semibold align-text-bottom">
-                      10<span className="text-xs font-medium ml-1">점</span>
-                    </span>
-                  </div>
-                </div>
-                <div className="flex h-1/3 items-center">
-                  <span className="font-medium text-slate-400">
-                    <FaFlushed />
-                  </span>
-                </div>
-              </div>
-              <div
-                className={`flex w-1/3 h-24 flex-col justify-center items-center ${
-                  selectMenu === "5" ? "bg-orange-300" : "bg-white"
-                }`}
-                onClick={() => setSelectMenu((prev) => (prev = "5"))}
-              >
-                <div className="flex h-1/3 items-center">
-                  <span className="text-xs font-medium">규정</span>
-                </div>
-                <div className="flex w-full justify-center h-1/3">
-                  <div className="flex items-end">
-                    <span className="text-2xl font-semibold align-text-bottom">
-                      16<span className="text-xs font-medium ml-1">점</span>
-                    </span>
-                  </div>
-                </div>
-                <div className="flex h-1/3 items-center">
-                  <span className="font-medium text-red-400">
-                    <FaSadCry />
-                  </span>
-                </div>
-              </div>
-              <div
-                className={`flex w-1/3 h-24 flex-col justify-center items-center ${
-                  selectMenu === "6" ? "bg-orange-300" : "bg-white"
-                }`}
-                onClick={() => setSelectMenu((prev) => (prev = "6"))}
-              >
-                <div className="flex h-1/3 items-center">
-                  <span className="text-xs font-medium">의상</span>
-                </div>
-                <div className="flex w-full justify-center h-1/3">
-                  <div className="flex items-end">
-                    <span className="text-2xl font-semibold align-text-bottom">
-                      12<span className="text-xs font-medium ml-1">점</span>
-                    </span>
-                  </div>
-                </div>
-                <div className="flex h-1/3 items-center">
-                  <span className="font-medium text-slate-400">
-                    <FaFlushed />
-                  </span>
-                </div>
-              </div>
-            </div>
+                </button>
+              );
+            })}
           </div>
-          {/* 중간 메뉴 끝 */}
-          {/* 개별 그래프 시작 */}
-          <div className="flex w-full h-full justify-start align-top flex-wrap box-border px-2 rounded-lg mb-32">
-            <div className="flex w-full h-full flex-col bg-white rounded-lg ">
-              <div className="flex w-full h-14 justify-center items-center border-b border-gray-200">
-                <span className="flex h-full text-lg text-gray-600 align-middle items-center">
-                  순위
+        </div>
+
+        {/* Charts Container */}
+        <div className="p-4 sm:p-6 pt-2 flex flex-col gap-4">
+          {/* Trend Chart */}
+          <div className="bg-[#141414] border border-neutral-800 rounded-3xl p-5 shadow-xl flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-800 mb-2">
+              <div>
+                <span className="text-[10px] font-black uppercase text-neutral-400 tracking-wider block">
+                  Performance Trend
                 </span>
+                <h3 className="text-base font-black text-white tracking-tight">
+                  대회별 순위 추이
+                </h3>
               </div>
-              <div className="flex w-full px-3">
-                <AnalyzeLineType />
-              </div>
-              <div className="flex w-full px-3 mb-3">
-                <span className="text-sm text-gray-600">
-                  최근경기 Top3와의 비교
-                </span>
-              </div>
-              <div className="flex w-full px-3 mb-3">
-                <AnalyzeBarType />
-              </div>
+              <span className="text-xs font-black bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full text-neutral-300">
+                최근 7개 대회
+              </span>
             </div>
+            <AnalyzeLineType />
           </div>
-          {/* 개별 그래프 끝 */}
+
+          {/* Benchmark Chart */}
+          <div className="bg-[#141414] border border-neutral-800 rounded-3xl p-5 shadow-xl flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-800 mb-2">
+              <div>
+                <span className="text-[10px] font-black uppercase text-neutral-400 tracking-wider block">
+                  Benchmark Analytics
+                </span>
+                <h3 className="text-base font-black text-white tracking-tight">
+                  최근 경기 Top3 비교
+                </h3>
+              </div>
+              <span className="text-xs font-black bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full text-neutral-300">
+                심사 부문별
+              </span>
+            </div>
+            <AnalyzeBarType />
+          </div>
         </div>
       </div>
     </div>

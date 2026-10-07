@@ -18,7 +18,6 @@ const useFirestore = () => {
   const navigate = useNavigate();
 
   const getDocument = async (collectionName, collectionId) => {
-    console.log(collectionId);
     try {
       const docSnapshot = await getDoc(doc(db, collectionName, collectionId));
       if (docSnapshot.exists()) {

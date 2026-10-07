@@ -40,9 +40,7 @@ const EditPic = ({}) => {
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
+          // upload progress
         },
         (error) => {
           console.error(error);
@@ -74,14 +72,11 @@ const EditPic = ({}) => {
   };
 
   const updatePlayerPic = async (data) => {
-    console.log(data);
     await setDoc(
       doc(db, "players_pool", pInfo.id),
       { ...data },
       { merge: true }
-    ).then(() => {
-      console.log("업데이트 완료");
-    });
+    );
   };
 
   useMemo(() => {
@@ -90,7 +85,6 @@ const EditPic = ({}) => {
     }
   }, [downloadURLs]);
   useMemo(() => {
-    console.log(playerInfo);
     if (playerInfo.pPic !== ("" || undefined || null)) {
       updatePlayerPic(playerInfo);
       setCurrentUserInfo({ ...playerInfo });
@@ -99,25 +93,29 @@ const EditPic = ({}) => {
 
   return (
     <div
-      className="flex w-full h-full justify-center items-start align-top bg-slate-100 flex-col mb-32"
+      className="flex w-full h-full justify-center items-start align-top bg-[#0B0B0B] text-white flex-col mb-32"
       style={{ maxWidth: "420px" }}
     >
-      <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white px-2">
-        <div className="flex flex-col w-full mt-5 mb-5">
-          <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">
-            <label htmlFor="playerPic">
-              <div className="flex h-full w-full justify-center items-center">
-                <img
-                  src={
-                    (pInfo.pPic !== null || undefined || "") &&
-                    (pInfo.pPic || DEFAULT_AVATAR)
-                  }
-                  className="rounded-3xl w-32 h-32"
-                />
+      <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-[#0B0B0B] px-4">
+        <div className="flex flex-col w-full mt-6 mb-5">
+          <div className="flex w-full h-full flex-col bg-[#141414] border border-neutral-800 rounded-3xl p-8 gap-y-4 shadow-xl items-center justify-center text-center">
+            <label htmlFor="playerPic" className="cursor-pointer flex flex-col items-center">
+              <div className="relative">
+                <div className="w-36 h-36 rounded-full overflow-hidden border-2 border-neutral-700 shadow-2xl">
+                  <img
+                    src={
+                      (pInfo.pPic !== null || undefined || "") &&
+                      (pInfo.pPic || DEFAULT_AVATAR)
+                    }
+                    className="w-full h-full object-cover"
+                    alt="Player Profile"
+                  />
+                </div>
+                <div className="w-10 h-10 rounded-full absolute bottom-1 right-1 bg-white text-black shadow-xl flex justify-center items-center hover:scale-105 transition">
+                  <BsFillCameraFill className="text-base text-black" />
+                </div>
               </div>
-              <div className="flex w-7 h-7 rounded-xl relative -top-6 left-56 bg-white shadow-md border justify-center items-center">
-                <BsFillCameraFill className="text-gray-600" />
-              </div>
+
               <input
                 name="playerPic"
                 id="playerPic"
@@ -126,6 +124,15 @@ const EditPic = ({}) => {
                 className="hidden"
                 onChange={(e) => handleFileSelect(e)}
               />
+
+              <div className="mt-5">
+                <span className="text-xs font-black px-4 py-2 rounded-full bg-white text-black hover:bg-neutral-200 transition shadow-lg inline-block">
+                  사진 변경하기
+                </span>
+                <p className="text-[11px] text-neutral-500 mt-2 font-medium">
+                  JPG, PNG 이미지를 업로드할 수 있습니다.
+                </p>
+              </div>
             </label>
           </div>
         </div>

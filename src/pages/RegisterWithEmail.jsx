@@ -68,12 +68,33 @@ const RegisterWithEmail = () => {
 
   const navigate = useNavigate();
 
+  function formatPhoneNumber(phoneNumber) {
+    if (!phoneNumber) return "";
+    const cleaned = String(phoneNumber).replace(/[^0-9]/g, "").slice(0, 11);
+
+    if (cleaned.startsWith("02")) {
+      if (cleaned.length <= 2) return cleaned;
+      if (cleaned.length <= 5) return `${cleaned.slice(0, 2)}-${cleaned.slice(2)}`;
+      if (cleaned.length <= 9) return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 5)}-${cleaned.slice(5)}`;
+      return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 6)}-${cleaned.slice(6, 10)}`;
+    } else {
+      if (cleaned.length <= 3) return cleaned;
+      if (cleaned.length <= 7) return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
+      if (cleaned.length <= 10) return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+      return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7, 11)}`;
+    }
+  }
+
   const handleInputs = () => {
+    const formattedTel = formatPhoneNumber(pTelRef.current?.value || "");
+    if (pTelRef.current && pTelRef.current.value !== formattedTel) {
+      pTelRef.current.value = formattedTel;
+    }
     setInputs((prev) => ({
       ...prev,
       pName: pNameRef.current.value.trim(),
       pEmail: pEmailRef.current.value.trim(),
-      pTel: pTelRef.current.value.trim(),
+      pTel: formattedTel,
       //pGym: pGymRef.current.value.trim(),
     }));
   };
@@ -140,14 +161,13 @@ const RegisterWithEmail = () => {
         setChkEmail(true);
       }
     } catch (error) {
-      console.log(error);
+      // error handled
     }
   };
 
   const addAuth = async () => {
     setIsLoading(true);
     const auth = getAuth();
-    //console.log(pEmailRef.current.value, pwdRef.current.value);
     await createUserWithEmailAndPassword(
       auth,
       pEmailRef.current.value.trim(),
@@ -163,14 +183,12 @@ const RegisterWithEmail = () => {
   };
   const addPlayer = async (uid) => {
     try {
-      console.log(playerInfo);
       await addDoc(collection(db, "players_pool"), {
         ...playerInfo,
         playerUid: uid,
       });
     } catch (error) {
-      console.log(error);
-      console.log(error.message);
+      // error handled
     } finally {
       setIsLoading(false);
     }
@@ -239,7 +257,6 @@ const RegisterWithEmail = () => {
     );
     !validatesChk && setPlayerInfo(() => ({ ...inputs, gender, license }));
     setIsValidates(!validatesChk);
-    console.log(playerInfo);
   }, [validates]);
 
   useEffect(() => {
@@ -249,120 +266,123 @@ const RegisterWithEmail = () => {
   }, []);
 
   return (
-    <div className="flex w-full h-screen justify-center items-start align-top bg-slate-100">
-      <div className="flex flex-col w-full justify-center items-center">
-        <div className="flex w-full flex-col items-center align-top mt-10">
-          <Link to="/">
-            <span className="text-3xl text-orange-500 font-extrabold align-middle">
-              BDBDg
+    <div className="flex w-full min-h-screen justify-center items-center bg-[#0B0B0B] text-white py-12 px-4 font-sans antialiased">
+      <div className="flex flex-col w-full max-w-md items-center">
+        <div className="flex w-full justify-center flex-col items-center gap-y-2 mb-8 text-center">
+          <Link to="/" className="inline-block mb-3">
+            <span className="text-3xl font-black text-white tracking-tighter uppercase">
+              BDBDG
             </span>
           </Link>
+          <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 tracking-wider uppercase">
+            Create Account
+          </span>
+          <h1 className="text-2xl font-black text-white tracking-tight mt-2">
+            회원가입
+          </h1>
+          <p className="text-xs text-neutral-400 font-medium">
+            선수 등록 및 대회 참가를 위한 계정을 생성합니다.
+          </p>
         </div>
-        <div
-          className="flex justify-center mt-10 flex-col gap-y-3 px-4 w-full"
-          style={{ maxWidth: "400px" }}
-        >
-          <div className="flex justify-start">
-            <p className="text-gray-800">약간의 정보가 필요해요.</p>
-          </div>
-          <div className="flex justify-center">
+
+        <div className="w-full bg-[#141414] border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-y-4">
+          <div>
+            <label className="block text-xs font-bold text-neutral-400 mb-1.5">이름</label>
             <input
               type="text"
-              className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
+              className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 text-white placeholder-neutral-600 px-4 text-sm focus:border-white focus:outline-none transition"
               name="pName"
               ref={pNameRef}
               onChange={() => handleInputs()}
-              placeholder="실명(별명은 마이페이지에서)"
+              placeholder="실명 입력"
             />
           </div>
-          <div className="flex justify-center w-full gap-x-2 flex-col">
-            <div className="flex justify-center w-full gap-x-2 ">
-              <div className="flex w-3/4">
-                <input
-                  type="text"
-                  className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
-                  name="pEmail"
-                  ref={pEmailRef}
-                  onChange={() => handleInputs()}
-                  placeholder="이메일"
-                />
-              </div>
-              <div className="flex w-1/4 py-1">
-                <button
-                  className="bg-orange-500 w-24 rounded-md text-gray-100"
-                  onClick={() => handleChkEmail()}
-                >
-                  중복확인
-                </button>
-              </div>
+
+          <div className="flex flex-col gap-y-1.5">
+            <label className="block text-xs font-bold text-neutral-400">이메일</label>
+            <div className="flex w-full gap-x-2">
+              <input
+                type="email"
+                className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 text-white placeholder-neutral-600 px-4 text-sm focus:border-white focus:outline-none transition"
+                name="pEmail"
+                ref={pEmailRef}
+                onChange={() => handleInputs()}
+                placeholder="name@example.com"
+              />
+              <button
+                type="button"
+                className="bg-white hover:bg-neutral-200 text-black px-4 rounded-2xl text-xs font-black whitespace-nowrap cursor-pointer transition"
+                onClick={() => handleChkEmail()}
+              >
+                중복확인
+              </button>
             </div>
             {alertMessage.email.code === "exist" && (
-              <div className="flex justify-start mt-3">
-                <span className="text-xs ml-2 bg-yellow-200 p-2">
-                  {alertMessage.email.message}
-                </span>
-              </div>
+              <span className="text-xs text-rose-400 bg-rose-950/40 border border-rose-800/60 p-2 rounded-xl mt-1">
+                {alertMessage.email.message}
+              </span>
             )}
           </div>
-          <div className="flex justify-center">
+
+          <div>
+            <label className="block text-xs font-bold text-neutral-400 mb-1.5">연락처</label>
             <input
               type="text"
-              className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
+              className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 text-white placeholder-neutral-600 px-4 text-sm focus:border-white focus:outline-none transition"
               name="pTel"
               ref={pTelRef}
               onChange={() => handleInputs()}
-              placeholder="연락처"
+              placeholder="010-0000-0000"
             />
           </div>
 
-          <div className="flex justify-center">
+          <div>
+            <label className="block text-xs font-bold text-neutral-400 mb-1.5">비밀번호</label>
             <input
               type="password"
-              className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
+              className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 text-white placeholder-neutral-600 px-4 text-sm focus:border-white focus:outline-none transition"
               name="pPWD"
               ref={pwdRef}
               onChange={() => validatePwd()}
-              placeholder="비밀번호"
+              placeholder="6자리 이상 비밀번호"
             />
-          </div>
-          {alertMessage.pwd.code === "short" && (
-            <div className="flex justify-start">
-              <span className="text-xs ml-2 bg-yellow-200 p-2">
+            {alertMessage.pwd.code === "short" && (
+              <span className="text-xs text-rose-400 bg-rose-950/40 border border-rose-800/60 p-2 rounded-xl mt-1 block">
                 {alertMessage.pwd.message}
               </span>
-            </div>
-          )}
+            )}
+          </div>
 
-          <div className="flex justify-center">
+          <div>
+            <label className="block text-xs font-bold text-neutral-400 mb-1.5">비밀번호 확인</label>
             <input
               type="password"
-              className={
-                !pwdValidate
-                  ? "w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
-                  : "w-full h-12 rounded-md focus:ring-0 focus:outline-red-600 border-red-600 border-2 px-5 font-light"
-              }
+              className={`w-full h-12 rounded-2xl bg-[#1A1A1A] border px-4 text-sm focus:outline-none transition ${
+                pwdValidate
+                  ? "border-rose-500 text-white"
+                  : "border-neutral-800 text-white placeholder-neutral-600 focus:border-white"
+              }`}
               name="pwdVal"
               ref={rePwdRef}
               onChange={() => validatePwd()}
-              placeholder="비밀번호확인"
+              placeholder="비밀번호 다시 입력"
             />
-          </div>
-          {alertMessage.pwd.code === "wrong" && (
-            <div className="flex justify-start">
-              <span className="text-xs ml-2 bg-yellow-200 p-2">
+            {alertMessage.pwd.code === "wrong" && (
+              <span className="text-xs text-rose-400 bg-rose-950/40 border border-rose-800/60 p-2 rounded-xl mt-1 block">
                 {alertMessage.pwd.message}
               </span>
-            </div>
-          )}
+            )}
+          </div>
 
-          <div className="flex justify-start">
+          <div>
+            <label className="block text-xs font-bold text-neutral-400 mb-1.5">성별</label>
             <select
-              className="w-24 h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light bg-white"
+              className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 px-4 text-white text-sm focus:border-white focus:outline-none cursor-pointer"
               name="pGender"
               onChange={(e) => setGender((prev) => (prev = e.target.value))}
             >
               <option disabled selected>
-                성별
+                성별 선택
               </option>
               <option value="m" selected={playerInfo.pGender === "m"}>
                 남자
@@ -372,48 +392,34 @@ const RegisterWithEmail = () => {
               </option>
             </select>
           </div>
-          {/* <div className="flex justify-center">
-            <input
-              type="text"
-              className="w-full h-12 rounded-md focus:ring-0 focus:outline-orange-400 border border-gray-300 px-5 font-light"
-              name="pGym"
-              ref={pGymRef}
-              onChange={() => handleInputs()}
-              placeholder="소속클럽(체육관)"
-            />
-          </div> */}
-        </div>
-        <div
-          className="flex justify-center mt-10 flex-col gap-y-5 px-4 w-full"
-          style={{ maxWidth: "400px" }}
-        >
-          <span>약관동의</span>
-          <div className="flex w-full flex-col gap-y-3">
-            <div className="flex flex-col w-full">
-              <label className="flex justify-start items-center align-middle text-base">
+
+          {/* Terms Section */}
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex flex-col gap-y-3 mt-2 text-xs">
+            <div className="flex flex-col border-b border-neutral-800 pb-3">
+              <label className="flex items-center gap-x-2 font-black text-white cursor-pointer">
                 <input
                   type="checkbox"
                   name="allApply"
                   value="allApply"
-                  className="mr-2"
+                  className="w-4 h-4 accent-white rounded cursor-pointer"
                   onClick={() => setLicenseAll(!licenseAll)}
                   onChange={() => handleLicenseAll()}
                   checked={licenseAll}
                 />
-                전체동의
+                전체 동의
               </label>
-              <span className="text-gray-500 text-xs font-light ml-5">
-                필수동의 항목 및 콘텐츠/이벤트 정보 수신(선택)에 전체
-                동의합니다.
+              <span className="text-neutral-500 text-[11px] ml-6 mt-0.5">
+                필수동의 항목 및 이벤트 정보 수신에 전체 동의합니다.
               </span>
             </div>
-            <div className="flex w-full justify-between">
-              <label className="flex justify-start items-center align-middle">
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-x-2 text-neutral-300 cursor-pointer">
                 <input
                   type="checkbox"
                   name="m1Apply"
                   value="m1Apply"
-                  className="mr-2"
+                  className="w-4 h-4 accent-white rounded cursor-pointer"
                   checked={license.m1Apply.value}
                   onClick={(e) =>
                     setLicense({
@@ -422,21 +428,18 @@ const RegisterWithEmail = () => {
                     })
                   }
                 />
-                <span className="text-gray-500 mr-1">[필수]</span>이용약관
+                <span className="font-bold text-white">[필수]</span> 이용약관 동의
               </label>
-              <button>
-                <span className="font-bold">
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </span>
-              </button>
+              <FontAwesomeIcon icon={faArrowRight} className="text-neutral-600 text-xs" />
             </div>
-            <div className="flex w-full justify-between">
-              <label className="flex justify-start items-center align-middle">
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-x-2 text-neutral-300 cursor-pointer">
                 <input
                   type="checkbox"
                   name="m2Apply"
                   value="m2Apply"
-                  className="mr-2"
+                  className="w-4 h-4 accent-white rounded cursor-pointer"
                   checked={license.m2Apply.value}
                   onClick={(e) =>
                     setLicense({
@@ -445,22 +448,18 @@ const RegisterWithEmail = () => {
                     })
                   }
                 />
-                <span className="text-gray-500 mr-1">[필수]</span>
-                개인정보 수집 및 이용 동의
+                <span className="font-bold text-white">[필수]</span> 개인정보 수집 및 이용 동의
               </label>
-              <button>
-                <span className="font-bold">
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </span>
-              </button>
+              <FontAwesomeIcon icon={faArrowRight} className="text-neutral-600 text-xs" />
             </div>
-            <div className="flex w-full justify-between">
-              <label className="flex justify-start items-center align-middle">
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-x-2 text-neutral-300 cursor-pointer">
                 <input
                   type="checkbox"
                   name="s1Apply"
                   value="s1Apply"
-                  className="mr-2"
+                  className="w-4 h-4 accent-white rounded cursor-pointer"
                   checked={license.s1Apply.value}
                   onClick={(e) =>
                     setLicense({
@@ -472,55 +471,49 @@ const RegisterWithEmail = () => {
                     })
                   }
                 />
-                <span className="text-gray-500 mr-1">[선택]</span>신규
-                콘텐츠/이벤트 알림받기
+                <span className="font-bold text-neutral-400">[선택]</span> 신규 콘텐츠/이벤트 알림받기
               </label>
-              <button>
-                <span className="font-bold">
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </span>
-              </button>
+              <FontAwesomeIcon icon={faArrowRight} className="text-neutral-600 text-xs" />
             </div>
           </div>
+
+          {/* Action Button */}
           {isValidates ? (
             isLoading ? (
-              <button className="w-full h-12 bg-orange-400 rounded-md border-gray-300 border mt-5">
-                <span className="flex w-full h-full text-white text-base justify-center items-center">
-                  <ThreeDots
-                    height="40"
-                    width="40"
-                    radius="9"
-                    color="#fff"
-                    ariaLabel="three-dots-loading"
-                    wrapperStyle={{}}
-                    wrapperClassName=""
-                    visible={true}
-                  />
-                </span>
+              <button className="w-full py-4 bg-white text-black font-black text-sm rounded-full flex justify-center items-center opacity-90 cursor-not-allowed mt-2">
+                <ThreeDots
+                  height="20"
+                  width="40"
+                  radius="9"
+                  color="#000"
+                  ariaLabel="three-dots-loading"
+                  visible={true}
+                />
               </button>
             ) : (
               <button
-                className="w-full h-12 bg-orange-400 rounded-md border-gray-300 border mt-5"
+                className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full shadow-xl transition cursor-pointer text-center tracking-tight mt-2"
                 onClick={() => addAuth()}
               >
-                <span className=" text-base font-medium text-white">
-                  회원가입
-                </span>
+                회원가입 완료
               </button>
             )
           ) : (
-            <button className="w-full h-12 bg-gray-400 rounded-md border-gray-300 border mt-5 disabled cursor-not-allowed">
-              {chkEmail ? (
-                <span className=" text-base font-medium text-white">
-                  회원가입
-                </span>
-              ) : (
-                <span className=" text-base font-medium text-white">
-                  이메일중복확인필요
-                </span>
-              )}
+            <button className="w-full py-4 bg-neutral-900 border border-neutral-800 text-neutral-600 font-bold text-xs rounded-full cursor-not-allowed text-center mt-2">
+              {chkEmail ? "필수 항목을 모두 입력해 주세요" : "이메일 중복확인이 필요합니다"}
             </button>
           )}
+        </div>
+
+        <div className="flex justify-center items-center mt-8 text-center">
+          <p className="text-xs text-neutral-400 font-medium">
+            이미 계정이 있으신가요?
+            <Link to="/login">
+              <span className="text-white font-bold ml-2 underline underline-offset-4 hover:text-neutral-300">
+                로그인하기
+              </span>
+            </Link>
+          </p>
         </div>
       </div>
     </div>

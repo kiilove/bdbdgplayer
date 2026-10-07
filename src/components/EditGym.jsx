@@ -31,11 +31,7 @@ const EditGym = () => {
           setCurrentUserInfo({ ...data });
         }
       })
-      .then(() => setIsLoading(false))
-
-      .then(() => {
-        console.log("업데이트 완료");
-      });
+      .then(() => setIsLoading(false));
   };
 
   const pGymReg = () => {
@@ -47,7 +43,7 @@ const EditGym = () => {
 
   return (
     <div
-      className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-32"
+      className="flex w-full h-full justify-center items-start align-top bg-[#0B0B0B] text-white flex-col mb-32"
       style={{ maxWidth: "420px" }}
     >
       <div
@@ -55,7 +51,7 @@ const EditGym = () => {
           !isLoading && "hidden"
         }`}
         style={{
-          backgroundColor: "rgba(123, 124, 129, 0.4)",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
           maxWidth: "420px",
           transform: "translate(-50%, 0%)",
         }}
@@ -64,14 +60,14 @@ const EditGym = () => {
           strokeColor="white"
           strokeWidth="5"
           animationDuration="0.75"
-          width="96"
+          width="64"
           visible={true}
         />
       </div>
-      <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white px-2">
-        <div className="flex flex-col w-full h-full mt-5 mb-5">
-          <div className="flex w-full h-full flex-col bg-white p-4 gap-y-1">
-            <div className="flex w-full h-10 bg-white border-b border-gray-500">
+      <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-[#0B0B0B] px-4">
+        <div className="flex flex-col w-full h-full mt-6 mb-5">
+          <div className="flex w-full h-full flex-col bg-[#141414] border border-neutral-800 rounded-3xl p-6 gap-y-4 shadow-xl">
+            <div className="flex w-full bg-[#1A1A1A] border border-neutral-800 rounded-2xl">
               <input
                 type="text"
                 name="pGym"
@@ -80,25 +76,26 @@ const EditGym = () => {
                 onChange={() => pGymReg()}
                 maxLength="30"
                 ref={pGymRef}
-                placeholder={pInfo.pGym || "소속클럽(체육관)이름을 적어주세요"}
-                className=" bg-transparent focus:ring-0 outline-none w-full p-3"
+                placeholder={pInfo.pGym || "소속클럽(체육관) 이름을 적어주세요"}
+                className="bg-transparent focus:outline-none w-full p-4 text-white text-sm placeholder-neutral-600"
               />
             </div>
-            <div className="flex w-full py-2">
-              <ui className="text-xs text-gray-500">
-                <li className="h-6">
-                  <span className="text-sm">30자까지 허용됩니다.</span>
-                </li>
-              </ui>
+            <div className="flex w-full py-1">
+              <ul className="text-xs text-neutral-400 space-y-1">
+                <li>• 소속이 없을 경우 '무소속'으로 입력해 주세요.</li>
+                <li>• 30자까지 입력 가능합니다.</li>
+              </ul>
             </div>
-            <div className="flex w-full py-2 px-2 mt-5">
+            <div className="flex w-full mt-4">
               <button
-                className={`w-full h-9 text-white font-semibold ${
-                  gymValidate ? "bg-orange-500" : "bg-gray-400"
+                className={`w-full py-3.5 rounded-full font-black text-sm transition tracking-tight ${
+                  gymValidate
+                    ? "bg-white hover:bg-neutral-200 text-black cursor-pointer shadow-lg"
+                    : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
                 }`}
                 onClick={() => updatePlayer({ ...pInfo, pGym })}
               >
-                저 장
+                저장하기
               </button>
             </div>
           </div>

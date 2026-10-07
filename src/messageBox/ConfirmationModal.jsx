@@ -9,35 +9,37 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message }) => {
   const handleCancelClick = () => {
     onCancel();
   };
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       handleCancelClick();
     }
   };
+
   return (
     <div>
-      <Modal open={isOpen} onClose={handleCancelClick}>
+      <Modal open={isOpen} onClose={handleCancelClick} className="backdrop-blur-sm bg-black/60">
         <div
-          className="flex flex-col w-96 bg-white justify-center items-center absolute top-1/2 left-1/2 gap-y-2 rounded-lg border p-8"
+          className="flex flex-col w-[90%] max-w-sm bg-[#141414] border border-neutral-800 justify-center items-center absolute top-1/2 left-1/2 rounded-3xl p-6 sm:p-8 shadow-2xl focus:outline-none"
           style={{
             transform: "translate(-50%, -50%)",
           }}
           onKeyDown={handleKeyDown}
         >
-          <div className="flex flex-col gap-y-2 text-black items-center">
-            <h2 className="font-semibold">{message.body}</h2>
+          <div className="flex flex-col gap-y-2 text-white items-center text-center">
+            <h2 className="text-base sm:text-lg font-black tracking-tight text-white">{message.body}</h2>
             {message.body2 && (
-              <h2 className="font-semibold">{message.body2}</h2>
+              <p className="text-xs sm:text-sm font-medium text-neutral-400">{message.body2}</p>
             )}
             {message.body3 && (
-              <h2 className="font-semibold">{message.body3}</h2>
+              <p className="text-xs text-neutral-500">{message.body3}</p>
             )}
           </div>
           {message.isButton === true && (
-            <div className="flex justify-center gap-x-5 mt-5">
+            <div className="flex justify-center gap-x-3 mt-6 w-full">
               {message.cancelButtonText && (
                 <button
-                  className="bg-gray-200 hover:bg-gray-300 rounded py-2 px-4 mr-4 text-sm"
+                  className="flex-1 py-3 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 rounded-full text-xs font-bold text-neutral-300 hover:text-white uppercase tracking-wider transition cursor-pointer"
                   onClick={handleCancelClick}
                 >
                   {message.cancelButtonText}
@@ -45,7 +47,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message }) => {
               )}
               {message.confirmButtonText && (
                 <button
-                  className="bg-red-500 hover:bg-red-600 text-white rounded py-1 px-4 text-sm"
+                  className="flex-1 py-3 bg-white hover:bg-neutral-200 rounded-full text-xs font-black text-black uppercase tracking-wider transition active:scale-[0.98] shadow-lg cursor-pointer"
                   onClick={handleConfirmClick}
                 >
                   {message.confirmButtonText}

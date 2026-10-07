@@ -1,30 +1,19 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { Modal } from "@mui/material";
-import {
-  MdCreditCard,
-  MdOutlineAlternateEmail,
-  MdOutlineLocationOn,
-} from "react-icons/md";
-import {
-  RiBankLine,
-  RiCalendarLine,
-  RiCheckDoubleFill,
-  RiTimeLine,
-} from "react-icons/ri";
-import { RxCopy } from "react-icons/rx";
-
 import { RotatingLines } from "react-loader-spinner";
 import { saveAs } from "file-saver";
-import { useParams } from "react-router-dom";
+import { MdCreditCard, MdOutlineLocationOn } from "react-icons/md";
+import { RiBankLine, RiCheckDoubleFill, RiTimeLine, RiErrorWarningLine } from "react-icons/ri";
+import { RxCopy } from "react-icons/rx";
 import { useFirestoreGetDocument } from "../hooks/useFirestores";
-import { useEffect } from "react";
-
 import JoinCupEditConfirm from "../modals/JoinCupEditConfirm";
-
-import { useRef } from "react";
+import ConfirmationModal from "../messageBox/ConfirmationModal";
+import { formatBirthDate, formatPhoneNumber, calculateAge } from "../utils/formatUtils";
+import { BsFillQuestionCircleFill } from "react-icons/bs";
+import dayjs from "dayjs";
 
 const ContestJoinEdit = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +23,8 @@ const ContestJoinEdit = () => {
   const [modal, setModal] = useState(false);
   const [modalComponent, setModalComponent] = useState("");
   const [chkAllItem, setChkAllItem] = useState(true);
-  const [isValidate, setIsValidate] = useState(false);
+  const [isValidate, setIsValidate] = useState(true);
+  const [isConfirmedInfo, setIsConfirmedInfo] = useState(false);
   const [categorys, setCategorys] = useState([]);
   const [filteredCategorys, setFilteredCategorys] = useState([]);
   const [grades, setGrades] = useState([]);
@@ -46,6 +36,9 @@ const ContestJoinEdit = () => {
     playerGym: false,
     playerGender: false,
   });
+
+  const [optionOpen, setOptionOpen] = useState(false);
+  const [message, setMessage] = useState({});
 
   const getInvoice = useFirestoreGetDocument("invoices_pool");
   const getContests = useFirestoreGetDocument("contests");
@@ -72,15 +65,19 @@ const ContestJoinEdit = () => {
 
   const handleInvoiceInfo = (e) => {
     const { name, id, value } = e.target;
+    if (!value || value === "체급선택") {
+      const dummy = (invoiceInfo.joins || []).filter(
+        (category) => category.contestCategoryId !== id
+      );
+      setInvoiceInfo((prev) => ({ ...prev, joins: dummy }));
+      return;
+    }
+
     const splitValue = value.split(",");
     const gradeId = splitValue[0];
     const gradeTitle = splitValue[1];
-    const categoryPriceType = splitValue[2];
-    let dummy = [...invoiceInfo.joins];
-    let newInvoiceInfo = { ...invoiceInfo };
-    const findCategory = dummy.some(
-      (category) => category.contestCategoryId === id
-    );
+    const categoryPriceType = splitValue[2] || "";
+    let dummy = [...(invoiceInfo.joins || [])];
     const findIndex = dummy.findIndex(
       (category) => category.contestCategoryId === id
     );
@@ -93,15 +90,13 @@ const ContestJoinEdit = () => {
       contestGradeTitle: gradeTitle,
     };
 
-    if (gradeId === "체급선택") {
-      dummy.splice(findIndex, 1);
-    } else if (!findCategory) {
+    if (findIndex === -1) {
       dummy.push({ ...newValue });
     } else {
       dummy.splice(findIndex, 1, { ...newValue });
     }
 
-    setInvoiceInfo({ ...newInvoiceInfo, joins: [...dummy] });
+    setInvoiceInfo((prev) => ({ ...prev, joins: dummy }));
   };
 
   const fetchCategorysAndGrades = async (categoryListId, gradeListId) => {
@@ -131,7 +126,11 @@ const ContestJoinEdit = () => {
         return;
       }
 
-      setInvoiceInfo({ ...data });
+      setInvoiceInfo({
+        ...data,
+        playerTel: formatPhoneNumber(data.playerTel || ""),
+        playerBirth: formatBirthDate(data.playerBirth || ""),
+      });
 
       const contest = await getContests.getDocument(data.contestId);
       if (!contest.contestNoticeId) {
@@ -140,7 +139,7 @@ const ContestJoinEdit = () => {
         setContests({ ...contest });
       }
     } catch (error) {
-      console.log(error);
+      // error handled silently
     } finally {
       setIsLoading(false);
     }
@@ -162,6 +161,17 @@ const ContestJoinEdit = () => {
 
     return age;
   }
+
+  const handelOptionOpen = () => {
+    setMessage({
+      body: "무대사진5컷: 6만원",
+      body2: "문의:정태천 대표(010-4886-0047)",
+      body3: "우리은행 1002-250-338392 정태천",
+      isButton: true,
+      confirmButtonText: "확인",
+    });
+    setOptionOpen(true);
+  };
   useEffect(() => {
     fetchInvoice();
   }, []);
@@ -193,10 +203,6 @@ const ContestJoinEdit = () => {
     }
   }, [chkAllItem, invoiceInfo.playerGender, invoiceInfo.playerBirth]);
 
-  useEffect(() => {
-    console.log(invoiceInfo);
-  }, [invoiceInfo]);
-
   const fileSave = (fileUrl) => {
     const fileURL = fileUrl;
 
@@ -209,18 +215,21 @@ const ContestJoinEdit = () => {
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
-    if (name === "playerText") {
-      e.preventDefault();
-      setInvoiceInfo({
-        ...invoiceInfo,
-        [name]: value,
-      });
-    } else {
-      setInvoiceInfo({
-        ...invoiceInfo,
-        [name]: value.trim(),
-      });
+    let formattedValue = value;
+
+    if (name === "playerBirth") {
+      formattedValue = formatBirthDate(value);
+    } else if (name === "playerTel") {
+      formattedValue = formatPhoneNumber(value);
+    } else if (name !== "playerText") {
+      formattedValue = value;
     }
+
+    setInvoiceInfo((prev) => ({
+      ...prev,
+      [name]: formattedValue,
+    }));
+
     handlePlayerValidate();
   };
 
@@ -228,10 +237,8 @@ const ContestJoinEdit = () => {
     const updatedPlayerValidate = {
       playerName:
         !invoiceInfo.playerName || invoiceInfo.playerName.trim() === "",
-      playerTel:
-        !invoiceInfo.playerTel || !validatePhoneNumber(invoiceInfo.playerTel),
-      playerBirth:
-        !invoiceInfo.playerBirth || !validateDate(invoiceInfo.playerBirth),
+      playerTel: !validatePhoneNumber(invoiceInfo.playerTel),
+      playerBirth: !validateDate(invoiceInfo.playerBirth),
       playerGender: !invoiceInfo.playerGender,
       playerGym: !invoiceInfo.playerGym || invoiceInfo.playerGym.trim() === "",
     };
@@ -241,10 +248,42 @@ const ContestJoinEdit = () => {
       (u) => u === true
     );
     setIsValidate(!validate);
+    return !validate;
+  };
+
+  const handlePlayerValidateButtonClick = () => {
+    if (!invoiceInfo.playerName || invoiceInfo.playerName.trim() === "") {
+      alert("선수 이름을 입력해 주세요.");
+      pNameRef.current?.focus();
+      return;
+    }
+    if (!validateDate(invoiceInfo.playerBirth)) {
+      alert("생년월일을 올바른 형식(YYYY-MM-DD)으로 입력해 주세요. (예: 1995-05-20)");
+      pBirthRef.current?.focus();
+      return;
+    }
+    if (!validatePhoneNumber(invoiceInfo.playerTel)) {
+      alert("연락처를 올바른 형식(010-0000-0000)으로 입력해 주세요.");
+      pTelRef.current?.focus();
+      return;
+    }
+    if (!invoiceInfo.playerGym || invoiceInfo.playerGym.trim() === "") {
+      alert("소속 (체육관 / 팀명 또는 무소속)을 입력해 주세요.");
+      pGymRef.current?.focus();
+      return;
+    }
+
+    const isValid = handlePlayerValidate();
+    if (isValid) {
+      setIsConfirmedInfo(true);
+    }
   };
 
   function validatePhoneNumber(phoneNumber) {
-    return phoneNumber && /^\d{2,3}-\d{3,4}-\d{3,4}$/.test(phoneNumber);
+    if (!phoneNumber) return false;
+    const cleaned = String(phoneNumber).replace(/[^0-9]/g, "");
+    if (cleaned.length < 9 || cleaned.length > 11) return false;
+    return /^\d{2,3}-\d{3,4}-\d{4}$/.test(formatPhoneNumber(phoneNumber));
   }
 
   function validateDate(date) {
@@ -252,51 +291,40 @@ const ContestJoinEdit = () => {
   }
 
   function formatPhoneNumber(phoneNumber) {
-    if (!phoneNumber) {
-      return;
+    if (!phoneNumber) return "";
+    const cleaned = String(phoneNumber).replace(/[^0-9]/g, "").slice(0, 11);
+
+    if (cleaned.startsWith("02")) {
+      if (cleaned.length <= 2) return cleaned;
+      if (cleaned.length <= 5) return `${cleaned.slice(0, 2)}-${cleaned.slice(2)}`;
+      if (cleaned.length <= 9) return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 5)}-${cleaned.slice(5)}`;
+      return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 6)}-${cleaned.slice(6, 10)}`;
+    } else {
+      if (cleaned.length <= 3) return cleaned;
+      if (cleaned.length <= 7) return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
+      if (cleaned.length <= 10) return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+      return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7, 11)}`;
     }
-    const trimmedNumber = phoneNumber.replace(/-/g, ""); // 기존의 '-' 제거
-    const match = trimmedNumber.match(/^(\d{2,3})(\d{0,4})(\d{0,4})$/); // 숫자 그룹으로 분리
-
-    if (!match) {
-      return phoneNumber; // 형식에 맞지 않는 경우 그대로 반환
-    }
-
-    const formattedNumber = match.slice(1).filter(Boolean).join("-"); // '-' 추가하여 조합
-
-    return formattedNumber;
   }
 
   function formatDate(date) {
-    if (!date) {
-      return;
-    }
-    const sanitizedDate = date.replace(/[^\d.-]/g, ""); // `.`과 `,`을 제외한 다른 문자 제거
-
-    const match = sanitizedDate.match(/^(\d{0,4})(\d{0,2})(\d{0,2})$/); // 숫자 그룹으로 분리
-
-    if (!match) return date; // 형식에 맞지 않는 경우 그대로 반환
-
-    const formattedDate = match.slice(1).filter(Boolean).join("-"); // '-' 추가하여 조합
+    if (!date) return "";
+    const sanitizedDate = date.replace(/[^\d.-]/g, "");
+    const match = sanitizedDate.match(/^(\d{0,4})(\d{0,2})(\d{0,2})$/);
+    if (!match) return date;
+    const formattedDate = match.slice(1).filter(Boolean).join("-");
     return formattedDate;
   }
 
   return (
-    <div className="flex justify-center items-start align-top bg-white">
+    <div className="min-h-screen bg-[#0B0B0B] text-white font-sans antialiased pb-28">
       {isLoading && (
-        <div
-          className={`absolute top-0 left-1/2 w-full h-full border-0 px-10 py-3 outline-none flex flex-col z-50 justify-center items-center`}
-          style={{
-            backgroundColor: "rgba(123, 124, 129, 0.4)",
-            maxWidth: "420px",
-            transform: "translate(-50%, 0%)",
-          }}
-        >
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="white"
-            strokeWidth="5"
+            strokeColor="#ffffff"
+            strokeWidth="4"
             animationDuration="0.75"
-            width="96"
+            width="64"
             visible={true}
           />
         </div>
@@ -305,389 +333,247 @@ const ContestJoinEdit = () => {
       {!isLoading && (
         <>
           <BottomMenu />
-          <div
-            className="flex w-full h-full justify-center items-start align-top bg-white flex-col mb-24"
-            style={{ maxWidth: "420px" }}
-          >
-            <Header title="참가신청변경" />
-            <Modal open={modal} onClose={handleCloseModal}>
-              <div className="flex w-full">{modalComponent}</div>
-            </Modal>
-            <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-white">
-              <div className="flex flex-col w-full mb-5">
-                <div className="flex w-full h-auto flex-col bg-orange-300 p-4 gap-y-1">
-                  <div className="flex">
-                    <span className="font-medium z-10">
-                      {invoiceInfo.contestPromoter}-참가공고
-                      <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
-                    </span>
-                  </div>
-                  <span className="text-xl font-normal font-san">
-                    {invoiceInfo.contestTitle}
+          <Header title="참가신청 수정" />
+          <Modal open={modal} onClose={handleCloseModal}>
+            <div className="flex w-full justify-center items-center">{modalComponent}</div>
+          </Modal>
+          <ConfirmationModal
+            isOpen={optionOpen}
+            onConfirm={() => setOptionOpen(false)}
+            onCancel={() => setOptionOpen(false)}
+            message={message}
+          />
+
+          <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
+            {/* Top Contest Header Banner Card */}
+            <div className="bg-[#141414] border border-neutral-800 rounded-3xl p-6 md:p-8 shadow-2xl mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div className="flex flex-col gap-y-2">
+                <div className="flex items-center gap-x-2">
+                  <span className="text-xs font-black px-3 py-1 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 uppercase tracking-wider">
+                    {contests.contestPromoter || "보디빌딩협회"}
                   </span>
-                  <div className="flex w-full text-purple-700">
-                    <div className="flex w-1/2 justify-start">
-                      <div className="flex justify-start items-center">
-                        <RiTimeLine />
-                      </div>
-                      <div className="flex">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          {invoiceInfo.contestDate}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex w-1/2">
-                      <div className="flex justify-start items-center ml-5">
-                        <MdOutlineLocationOn />
-                      </div>
-                      <div className="flex">
-                        <span className="ml-1 text-sm font-semi-bold justify-start items-center">
-                          {invoiceInfo.contestLocation}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex w-full text-gray-700">
-                    <div className="flex w-1/2">
-                      <div className="flex justify-start items-center">
-                        <MdCreditCard />
-                      </div>
-                      <div className="flex">
-                        <span className="ml-1 text-base font-semi-bold justify-start items-center">
-                          {invoiceInfo.contestPriceBasic?.toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex w-1/2 items-center">
-                      <div className="flex justify-start items-center">
-                        <RiCheckDoubleFill />
-                      </div>
-                      <div className="flex justify-start items-center">
-                        <span className="ml-1 text-base font-semi-bold justify-start items-center">
-                          {invoiceInfo.contestPriceExtra?.toLocaleString()}
-                        </span>
-                        <span className="text-xs ml-2">중복출전비용</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex w-full text-gray-700 ">
-                    <div className="flex w-3/4">
-                      <div className="flex justify-start items-start mt-1">
-                        <RiBankLine />
-                      </div>
-                      <div className="flex items-center">
-                        <div className="flex flex-col">
-                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
-                            {invoiceInfo?.contestBankName}{" "}
-                          </span>
-                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
-                            {invoiceInfo?.contestAccountNumber}{" "}
-                          </span>
-                          <span className="ml-1 text-base font-semi-bold justify-start items-center">
-                            {invoiceInfo?.contestAccountOwner}
-                          </span>
-                        </div>
-
-                        <button className="ml-1">
-                          <RxCopy />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="flex w-1/2 justify-end items-center mr-2">
-                      <button
-                        className="text-sm text-orange-900 p-1 border border-orange-500 bg-orange-400 h-10"
-                        onClick={() =>
-                          fileSave(invoiceInfo.contestCollectionFileLink)
-                        }
-                      >
-                        공고문내려받기
-                      </button>
-                    </div>
-                  </div>
+                  <span className="text-xs font-semibold text-neutral-500">참가신청 수정</span>
                 </div>
+                <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-tight">
+                  {invoiceInfo.contestTitle || contests.contestTitle}
+                </h1>
+                <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-neutral-400 mt-2">
+                  <span className="flex items-center gap-x-1.5 font-medium">
+                    <RiTimeLine className="text-white text-base" />
+                    {invoiceInfo.contestDate ? dayjs(invoiceInfo.contestDate).format("YYYY년 MM월 DD일") : ""}
+                  </span>
+                  {invoiceInfo.contestLocation && (
+                    <span className="flex items-center gap-x-1.5 font-medium">
+                      <MdOutlineLocationOn className="text-white text-base" />
+                      {invoiceInfo.contestLocation}
+                    </span>
+                  )}
+                  {invoiceInfo.contestPriceBasic && (
+                    <span className="flex items-center gap-x-1.5 font-medium">
+                      <MdCreditCard className="text-white text-base" />
+                      기본 {invoiceInfo.contestPriceBasic?.toLocaleString()}원
+                    </span>
+                  )}
+                  {invoiceInfo.contestBankName && (
+                    <span className="flex items-center gap-x-1.5 font-medium text-neutral-300">
+                      <RiBankLine className="text-white text-base" />
+                      {invoiceInfo.contestBankName} {invoiceInfo.contestAccountNumber} ({invoiceInfo.contestAccountOwner})
+                    </span>
+                  )}
+                </div>
+              </div>
 
-                <div className="flex  w-full h-auto flex-col bg-white px-2 gap-y-2">
-                  <div className="flex flex-col w-full p-4 border h-auto gap-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-lg font-medium z-10">
-                        개인정보
-                        <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
-                      </span>
+              {contests.contestCollectionFileLink && (
+                <a
+                  href={contests.contestCollectionFileLink}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-3 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full shadow-lg transition flex items-center justify-center gap-2 cursor-pointer w-full md:w-auto text-center"
+                >
+                  모집 요강 다운로드
+                </a>
+              )}
+            </div>
+
+            {/* Main 2-Column Responsive Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Left Column: Form Steps (8 Cols on PC) */}
+              <div className="lg:col-span-8 flex flex-col gap-y-8">
+                {/* Step 1: Personal Info */}
+                <div className="bg-[#141414] border border-neutral-800 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col gap-y-6">
+                  <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
+                    <h2 className="text-lg md:text-xl font-black text-white flex items-center gap-x-2.5">
+                      <span className="w-7 h-7 rounded-full bg-white text-black text-xs flex items-center justify-center font-black">1</span>
+                      선수 정보 수정
+                    </h2>
+                    <span className="text-xs text-neutral-500 font-medium">* 필수정보 항목</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-400 mb-1.5">선수 이름</label>
+                      <input
+                        type="text"
+                        value={invoiceInfo.playerName || ""}
+                        name="playerName"
+                        ref={pNameRef}
+                        onChange={handleInputs}
+                        disabled={isConfirmedInfo}
+                        className={`w-full px-4 py-3 border rounded-2xl text-sm font-medium transition ${
+                          isConfirmedInfo
+                            ? "bg-neutral-900 text-neutral-500 cursor-not-allowed border-neutral-800"
+                            : playerValidate.playerName
+                            ? "bg-[#1A1A1A] border-rose-500 text-white focus:outline-none"
+                            : "bg-[#1A1A1A] border-neutral-800 text-white placeholder-neutral-600 focus:outline-none focus:border-white"
+                        }`}
+                        placeholder="이름 입력"
+                      />
                     </div>
-                    <div className="flex flex-col w-full">
-                      <div className="flex w-full flex-col sm:flex-row">
-                        <div className="flex w-1/2 sm:w-1/5 items-center">
-                          <span>이름 : </span>
-                        </div>
-                        <div className="flex w-auto px-2">
-                          <input
-                            type="text"
-                            value={invoiceInfo.playerName}
-                            name="playerName"
-                            ref={pNameRef}
-                            onChange={(e) => {
-                              handleInputs(e);
-                            }}
-                            className={`${
-                              playerValidate.playerName
-                                ? "border-2 p-2 outline-none border-red-400 rounded-lg w-full"
-                                : "border p-2 outline-none rounded-lg w-full"
-                            }`}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex">
-                        <span></span>
-                      </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-400 mb-1.5">성별</label>
+                      <select
+                        name="playerGender"
+                        ref={pGenderRef}
+                        onChange={handleInputs}
+                        value={invoiceInfo.playerGender || "m"}
+                        disabled={isConfirmedInfo}
+                        className={`w-full px-4 py-3 border rounded-2xl text-sm font-medium transition ${
+                          isConfirmedInfo
+                            ? "bg-neutral-900 text-neutral-500 cursor-not-allowed border-neutral-800"
+                            : "bg-[#1A1A1A] text-white border-neutral-800 focus:outline-none focus:border-white cursor-pointer"
+                        }`}
+                      >
+                        <option value="m">남자</option>
+                        <option value="f">여자</option>
+                      </select>
                     </div>
-                    <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/2 sm:w-1/5 items-center">
-                        <span>성별 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <select
-                          name="playerGender"
-                          ref={pGenderRef}
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className=" bg-transparent border rounded-lg p-2"
-                        >
-                          <option
-                            value="m"
-                            selected={invoiceInfo.playerGender === "m"}
-                          >
-                            남자
-                          </option>
-                          <option
-                            value="f"
-                            selected={invoiceInfo.playerGender === "f"}
-                          >
-                            여자
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/2 sm:w-1/5 items-center">
-                        <span>생년월일 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
+
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-400 mb-1.5">생년월일 (YYYY-MM-DD)</label>
+                      <div className="flex items-center gap-x-2">
                         <input
                           type="text"
-                          value={invoiceInfo.playerBirth}
+                          value={invoiceInfo.playerBirth || ""}
                           name="playerBirth"
                           ref={pBirthRef}
-                          onBlur={(e) =>
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              playerBirth: formatDate(e.target.value),
-                            }))
-                          }
-                          onChange={(e) => {
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              playerBirth: formatDate(e.target.value),
-                            }));
-                          }}
-                          className={`${
-                            playerValidate.playerBirth
-                              ? "border-2 p-2 outline-none border-red-400 rounded-lg w-40"
-                              : "border p-2 outline-none rounded-lg w-40"
+                          onChange={handleInputs}
+                          disabled={isConfirmedInfo}
+                          className={`w-full px-4 py-3 border rounded-2xl text-sm font-medium transition ${
+                            isConfirmedInfo
+                              ? "bg-neutral-900 text-neutral-500 cursor-not-allowed border-neutral-800"
+                              : playerValidate.playerBirth
+                              ? "bg-[#1A1A1A] border-rose-500 text-white focus:outline-none"
+                              : "bg-[#1A1A1A] border-neutral-800 text-white placeholder-neutral-600 focus:outline-none focus:border-white"
                           }`}
+                          placeholder="YYYY-MM-DD (예: 1995-05-20)"
                         />
-                        <span className="flex justify-start items-center ml-2 text-sm">
-                          {Number.isInteger(playerAge) &&
-                            "만 " + playerAge + "세"}
+                        <span className="text-xs font-black text-neutral-300 whitespace-nowrap bg-neutral-900 px-3 py-3 rounded-2xl border border-neutral-800">
+                          {playerAge || 0}세
                         </span>
                       </div>
                     </div>
-                    {pBirthRef.current?.value.length < 8 && (
-                      <div className="flex">
-                        <span className="text-xs ml-2 bg-yellow-200 p-2">
-                          8자리 생년월일을 작성해주세요.(예:2000-01-01)
+
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-400 mb-1.5">연락처</label>
+                      <input
+                        type="text"
+                        value={invoiceInfo.playerTel || ""}
+                        name="playerTel"
+                        ref={pTelRef}
+                        onChange={handleInputs}
+                        disabled={isConfirmedInfo}
+                        className={`w-full px-4 py-3 border rounded-2xl text-sm font-medium transition ${
+                          isConfirmedInfo
+                            ? "bg-neutral-900 text-neutral-500 cursor-not-allowed border-neutral-800"
+                            : playerValidate.playerTel
+                            ? "bg-[#1A1A1A] border-rose-500 text-white focus:outline-none"
+                            : "bg-[#1A1A1A] border-neutral-800 text-white placeholder-neutral-600 focus:outline-none focus:border-white"
+                        }`}
+                        placeholder="010-0000-0000"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold text-neutral-400 mb-1.5">소속 (체육관 / 소속팀)</label>
+                      <input
+                        type="text"
+                        value={invoiceInfo.playerGym || ""}
+                        name="playerGym"
+                        ref={pGymRef}
+                        onChange={handleInputs}
+                        disabled={isConfirmedInfo}
+                        className={`w-full px-4 py-3 border rounded-2xl text-sm font-medium transition ${
+                          isConfirmedInfo
+                            ? "bg-neutral-900 text-neutral-500 cursor-not-allowed border-neutral-800"
+                            : playerValidate.playerGym
+                            ? "bg-[#1A1A1A] border-rose-500 text-white focus:outline-none"
+                            : "bg-[#1A1A1A] border-neutral-800 text-white placeholder-neutral-600 focus:outline-none focus:border-white"
+                        }`}
+                        placeholder="소속 헬스장 또는 무소속"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-neutral-800/80 flex items-center justify-between">
+                    {isConfirmedInfo ? (
+                      <>
+                        <span className="text-xs font-bold text-emerald-400 bg-emerald-950/40 px-3.5 py-2 rounded-full border border-emerald-800/60 flex items-center gap-x-1.5">
+                          <RiCheckDoubleFill className="text-base" />
+                          선수 정보 검증 & 입력 잠금 완료
                         </span>
-                      </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsConfirmedInfo(false)}
+                          className="px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-xs rounded-full border border-neutral-700 transition cursor-pointer"
+                        >
+                          정보 다시 수정하기
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-xs text-neutral-500 font-medium">
+                          * 입력 정보 확인 후 아래 버튼을 클릭하면 종목 변경 단계로 이동합니다.
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handlePlayerValidateButtonClick}
+                          className="px-6 py-3 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full transition shadow-lg cursor-pointer flex items-center gap-x-2"
+                        >
+                          <span>선수 정보 확인 및 잠금</span>
+                          <span className="text-xs text-neutral-500 font-bold">→ Step 2</span>
+                        </button>
+                      </>
                     )}
-                    <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/2 sm:w-1/5 items-center">
-                        <span>휴대전화 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <input
-                          type="text"
-                          value={invoiceInfo.playerTel}
-                          name="playerTel"
-                          ref={pTelRef}
-                          onBlur={(e) =>
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              playerTel: formatPhoneNumber(e.target.value),
-                            }))
-                          }
-                          onChange={(e) => {
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              playerTel: formatPhoneNumber(e.target.value),
-                            }));
-                          }}
-                          className={`${
-                            playerValidate.playerTel
-                              ? "border-2 p-2 outline-none border-red-400 rounded-lg w-full"
-                              : "border p-2 outline-none rounded-lg w-full"
-                          }`}
-                        />
-                      </div>
-                    </div>
-                    {pTelRef.current?.value.replaceAll("-", "").length < 9 && (
-                      <div className="flex">
-                        <span className="text-xs ml-2 bg-yellow-200 p-2">
-                          '010' 포함된 휴대폰번호를 입력해주세요
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/2 sm:w-1/5 items-center">
-                        <span>이메일 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <input
-                          type="text"
-                          value={invoiceInfo.playerEmail}
-                          name="playerEmail"
-                          ref={pEmailRef}
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className="border p-2 outline-none rounded-lg w-full"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/2 sm:w-1/5 items-center">
-                        <span>소속 : </span>
-                      </div>
-                      <div className="flex w-auto px-2">
-                        <input
-                          type="text"
-                          value={invoiceInfo.playerGym}
-                          name="playerGym"
-                          ref={pGymRef}
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          className={`${
-                            playerValidate.playerGym
-                              ? "border-2 p-2 outline-none border-red-400 rounded-lg w-full"
-                              : "border p-2 outline-none rounded-lg w-full"
-                          }`}
-                        />
-                      </div>
-                    </div>
-                    {pGymRef.current?.value.length <= 0 && (
-                      <div className="flex">
-                        <span className="text-xs ml-2 bg-yellow-200 p-2">
-                          소속이 없다면 무소속으로 작성해주세요.
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/3 sm:w-1/5 items-center">
-                        <span>참여동기 : </span>
-                      </div>
-                      <div className="flex w-full sm:w-2/3 pl-2">
-                        <textarea
-                          value={invoiceInfo.playerText}
-                          name="playerText"
-                          ref={pTextRef}
-                          onChange={(e) => {
-                            handleInputs(e);
-                          }}
-                          placeholder="사회자에게 전달되어 선수소개시 발표됩니다."
-                          className="border p-2 outline-none rounded-lg w-full"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex w-full flex-col sm:flex-row">
-                      <div className="flex w-1/2 sm:w-1/3 items-center">
-                        <span>무대사진신청 : </span>
-                      </div>
-                      <div className="flex w-2/3 px-2 justify-start items-center">
-                        <input
-                          type="checkbox"
-                          checked={invoiceInfo.playerService}
-                          name="playerService"
-                          onChange={(e) => {
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              playerService: e.target.checked,
-                            }));
-                          }}
-                        />
-                        <span className="ml-2">유료서비스</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
-                {!isValidate ? (
-                  <div className="flex  w-full flex-col bg-white px-2 mt-4 justify-center items-center">
-                    <span className="text-sm text-orange-500 font-sans font-semibold">
-                      필수 개인정보를 정확하게 입력하시면 종목선택화면이
-                      표시됩니다.
-                    </span>
-                    <span className="text-sm text-gray-500 font-sans font-semibold">
-                      필수항목 : 이름, 성별, 생년월일, 전화번호, 소속
-                    </span>
-                    <div className="flex mt-4 w-full h-auto px-2">
-                      <button
-                        className="bg-orange-400 text-white w-full h-10"
-                        onClick={() => handlePlayerValidate()}
-                      >
-                        <span>종목표시</span>
-                      </button>
+
+                {/* Step 2: Category & Grade Selection */}
+                {isValidate && (
+                  <div className="bg-[#141414] border border-neutral-800 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col gap-y-6">
+                    <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
+                      <h2 className="text-lg md:text-xl font-black text-white flex items-center gap-x-2.5">
+                        <span className="w-7 h-7 rounded-full bg-white text-black text-xs flex items-center justify-center font-black">2</span>
+                        참가 종목 및 체급 변경
+                      </h2>
+                      <span className="text-xs text-neutral-400 font-bold bg-neutral-800 px-3 py-1 rounded-full border border-neutral-700">종목 중복 가능 (각 종목당 1개 체급 선택)</span>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex  w-full flex-col bg-white px-2 mt-4">
-                    <div className="flex flex-col w-full p-4 border">
-                      <div className="flex justify-between">
-                        <span className="text-lg font-medium z-10">
-                          참가종목선택
-                          <div className="flex bg-amber-500 h-3 relative -top-3 -z-10"></div>
+
+                    {/* 참가비 유의사항 안내 박스 */}
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex items-start gap-x-3 text-neutral-300 text-xs leading-relaxed">
+                      <RiErrorWarningLine className="text-neutral-400 text-lg flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold text-white block mb-0.5">참가비용 관련 유의사항</span>
+                        <span>
+                          학생부, 피트니스 챌린지와 보디빌딩 중복 출전의 경우 정확한 참가비용은 경기도보디빌딩협회를 통해 안내 받으시기 바랍니다.
                         </span>
                       </div>
-                      <span className="text-sm font-light">
-                        상향지원 가능하지만 하향지원은 불가능합니다.
-                      </span>
-                      <span className="text-sm font-light">
-                        신중한 선택 부탁드립니다.
-                      </span>
-                      <div className="flex w-full justify-around mt-2">
-                        <button
-                          className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"
-                          onClick={() => setChkAllItem(!chkAllItem)}
-                        >
-                          {chkAllItem === true
-                            ? "최적종목표시"
-                            : "전체종목표시"}
-                        </button>
-                        <button
-                          className="bg-white border-orange-500 border rounded-md px-2 py-1 flex justify-center items-center mt-2  text-sm w-36 font-light"
-                          onClick={() =>
-                            setInvoiceInfo(() => ({
-                              ...invoiceInfo,
-                              joins: [],
-                            }))
-                          }
-                        >
-                          {" "}
-                          선택초기화
-                        </button>
-                      </div>
                     </div>
-                    <div className="flex w-full items-start justify-between mt-4 mb-8 flex-wrap gap-2">
-                      {filteredCategorys?.length > 0 &&
-                        filteredCategorys.map((category, cIdex) => {
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {filteredCategorys.length > 0 &&
+                        filteredCategorys.map((category) => {
                           const {
                             contestCategoryTitle: cTitle,
                             contestCategoryId: cId,
@@ -696,86 +582,137 @@ const ContestJoinEdit = () => {
                           const matchGrades = grades.filter(
                             (grade) => grade.refCategoryId === cId
                           );
-                          //console.log(matchGrades);
+
+                          const selectedJoinInThisCat = invoiceInfo?.joins.find(
+                            (join) => join.contestCategoryId === cId
+                          );
+
+                          const badgeText = (() => {
+                            if (cType === "type1" && contests.contestPriceType1) {
+                              return `+${contests.contestPriceType1.toLocaleString()}원`;
+                            }
+                            if (cType === "type2" && contests.contestPriceType2) {
+                              return `+${contests.contestPriceType2.toLocaleString()}원`;
+                            }
+                            return null;
+                          })();
 
                           return (
                             <div
-                              className={`${
-                                invoiceInfo?.joins.some(
-                                  (join) => join.contestCategoryId === cId
-                                )
-                                  ? "flex w-full h-14 border px-2 items-center justify-center bg-orange-300"
-                                  : "flex w-full h-14 border px-2 items-center justify-center"
+                              key={cId}
+                              className={`p-4 rounded-2xl border transition flex flex-col justify-between gap-y-3 ${
+                                selectedJoinInThisCat
+                                  ? "bg-[#1E1E1E] border-white shadow-lg shadow-white/5"
+                                  : "bg-[#181818] border-neutral-800 hover:border-neutral-700"
                               }`}
                             >
-                              <div className="flex h-10 justify-start items-center w-2/3">
-                                <span className="text-sm">{cTitle}</span>
-                              </div>
-                              <div className="flex h-10 justify-start items-center w-1/3">
-                                {matchGrades?.length > 0 && (
-                                  <select
-                                    id={cId}
-                                    name={cTitle}
-                                    className="text-sm bg-transparent outline-none"
-                                    onChange={(e) => handleInvoiceInfo(e)}
-                                  >
-                                    <option>체급선택</option>
-                                    {matchGrades.map((grade, gIdx) => {
-                                      const {
-                                        contestGradeTitle: gTitle,
-                                        contestGradeId: gId,
-                                      } = grade;
-
-                                      return (
-                                        <option
-                                          id={gId}
-                                          value={
-                                            gId + "," + gTitle + "," + cType
-                                          }
-                                          selected={invoiceInfo?.joins.some(
-                                            (i) => i.contestGradeId === gId
-                                          )}
-                                        >
-                                          {gTitle}
-                                        </option>
-                                      );
-                                    })}
-                                  </select>
+                              {/* Uniform Header: min-h-[36px] ensures consistent height across cards */}
+                              <div className="flex items-center justify-between min-h-[36px] gap-x-2">
+                                <span className="text-sm font-black text-white tracking-tight break-keep">
+                                  {cTitle}
+                                </span>
+                                {badgeText && (
+                                  <span className="shrink-0 text-[10px] font-bold text-neutral-300 bg-neutral-800 px-2.5 py-0.5 rounded-full border border-neutral-700">
+                                    {badgeText}
+                                  </span>
                                 )}
                               </div>
+
+                              {/* Select dropdown: exactly like ContestJoin.jsx */}
+                              {matchGrades?.length > 0 && (
+                                <select
+                                  id={cId}
+                                  name={cTitle}
+                                  value={
+                                    selectedJoinInThisCat
+                                      ? `${selectedJoinInThisCat.contestGradeId},${selectedJoinInThisCat.contestGradeTitle},${cType || ""}`
+                                      : ""
+                                  }
+                                  className="w-full px-3 py-2.5 bg-[#121212] border border-neutral-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-white cursor-pointer"
+                                  onChange={(e) => handleInvoiceInfo(e)}
+                                >
+                                  <option value="">체급을 선택해 주세요 (미참가)</option>
+                                  {matchGrades.map((grade) => {
+                                    const {
+                                      contestGradeTitle: gTitle,
+                                      contestGradeId: gId,
+                                    } = grade;
+
+                                    return (
+                                      <option
+                                        key={gId}
+                                        value={`${gId},${gTitle},${cType || ""}`}
+                                      >
+                                        {gTitle}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                              )}
                             </div>
                           );
                         })}
                     </div>
                   </div>
                 )}
+              </div>
 
-                <div className="flex w-full h-full mt-4">
-                  <div className="flex w-full justify-center items px-2">
-                    {invoiceInfo.joins.length > 0 && isValidate && (
-                      <button
-                        className="flex w-full bg-orange-500 h-14 rounded-lg shadow justify-center items-center"
-                        onClick={() =>
-                          handleOpenModal({
-                            component: (
-                              <JoinCupEditConfirm
-                                propInvoiceInfo={invoiceInfo}
-                                prevSetModal={setModal}
-                              />
-                            ),
-                          })
-                        }
-                      >
-                        <span className="font-bold text-white text-lg">
-                          변경신청
-                        </span>
-                      </button>
-                    )}
+              {/* Right Column: Sticky Summary & Action Card (4 Cols on PC) */}
+              <div className="lg:col-span-4">
+                <div className="sticky top-20 bg-[#141414] border border-neutral-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-y-6">
+                  <h3 className="text-base font-black text-white border-b border-neutral-800/80 pb-3 flex items-center justify-between">
+                    <span>선택 종목 변경 내역</span>
+                    <span className="text-xs font-bold text-white bg-neutral-800 px-2.5 py-0.5 rounded-full border border-neutral-700">
+                      총 {invoiceInfo.joins?.length || 0}개 선택
+                    </span>
+                  </h3>
+
+                  {invoiceInfo.joins?.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center text-xs text-neutral-500 font-medium">
+                      변경하실 참가 종목을 선택해 주세요.
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-y-2.5 max-h-60 overflow-y-auto pr-1">
+                      {invoiceInfo.joins?.map((join, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between bg-[#1A1A1A] border border-neutral-800 rounded-xl p-3 text-xs"
+                        >
+                          <span className="font-bold text-white">{join.contestCategoryTitle}</span>
+                          <span className="font-bold text-black bg-white px-2 py-0.5 rounded-full">
+                            {join.contestGradeTitle}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="pt-4 border-t border-neutral-800/80 flex flex-col gap-y-3">
+                    <button
+                      onClick={() =>
+                        handleOpenModal({
+                          component: (
+                            <JoinCupEditConfirm
+                              propInvoiceInfo={invoiceInfo}
+                              prevSetModal={setModal}
+                            />
+                          ),
+                        })
+                      }
+                      disabled={!invoiceInfo.joins || invoiceInfo.joins.length === 0}
+                      className={`w-full py-4 rounded-full font-black text-sm transition shadow-xl cursor-pointer ${
+                        invoiceInfo.joins?.length > 0
+                          ? "bg-white hover:bg-neutral-200 text-black tracking-tight"
+                          : "bg-neutral-900 border border-neutral-800 text-neutral-600 cursor-not-allowed"
+                      }`}
+                    >
+                      신청 정보 수정 완료
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </main>
         </>
       )}
     </div>

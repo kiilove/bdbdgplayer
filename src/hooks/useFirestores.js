@@ -114,7 +114,9 @@ export function useFirestoreAddData(collectionName) {
       setData(addedData);
       return addedData;
     } catch (error) {
+      console.error("Firestore Add Error:", error);
       setError(error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -129,8 +131,6 @@ export function useFirestoreUpdateData(collectionName) {
   const [error, setError] = useState(null);
 
   const updateData = async (id, newData, callback) => {
-    console.log(id);
-    console.log(newData);
     try {
       setLoading(true);
       await updateDoc(doc(db, collectionName, id), newData);
@@ -140,10 +140,10 @@ export function useFirestoreUpdateData(collectionName) {
       callback && callback();
       return updatedData;
     } catch (error) {
-      console.error(error);
+      console.error("Firestore Update Error:", error);
       setError(error);
       setLoading(false);
-      return null;
+      throw error;
     }
   };
 
