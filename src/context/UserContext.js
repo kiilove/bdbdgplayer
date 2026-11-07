@@ -65,6 +65,7 @@ export const UserContextProvider = ({ children }) => {
       setLoginToken();
       fetchUserInfo(currentUid);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUid]);
 
   return (

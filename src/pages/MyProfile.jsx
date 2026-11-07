@@ -56,6 +56,7 @@ const MyProfile = () => {
       }
     };
     fetchUserInvoices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pInfo?.playerUid, pInfo?.pUid]);
 
   const handleFileSelect = async (e) => {

@@ -1,38 +1,39 @@
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export const handleToast = ({ type, msg }) => {
+export const handleToast = (typeOrObj, msgArg) => {
+  const type =
+    typeof typeOrObj === "object" && typeOrObj !== null
+      ? typeOrObj.type
+      : typeOrObj;
+  const msg =
+    typeof typeOrObj === "object" && typeOrObj !== null
+      ? typeOrObj.msg
+      : msgArg;
+
+  if (!msg) return;
+
+  const options = {
+    position: toast.POSITION.BOTTOM_LEFT,
+    delay: 200,
+    autoClose: 2000,
+  };
+
   switch (type) {
     case "success":
-      toast.success(msg, {
-        position: toast.POSITION.BOTTOM_LEFT,
-        delay: 1000,
-        autoClose: 2000,
-      });
+      toast.success(msg, options);
       break;
     case "info":
-      toast.info(msg, {
-        position: toast.POSITION.BOTTOM_LEFT,
-        delay: 1000,
-        autoClose: 2000,
-      });
+      toast.info(msg, options);
       break;
     case "warn":
-      toast.warn(msg, {
-        position: toast.POSITION.BOTTOM_LEFT,
-        delay: 1000,
-        autoClose: 2000,
-      });
+      toast.warn(msg, options);
       break;
     case "error":
-      toast.error(msg, {
-        position: toast.POSITION.BOTTOM_LEFT,
-        delay: 1000,
-        autoClose: 2000,
-      });
+      toast.error(msg, options);
       break;
-
     default:
+      toast(msg, options);
       break;
   }
 };

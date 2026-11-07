@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Modal } from "@mui/material";
 import { RotatingLines } from "react-loader-spinner";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import Policy3 from "../components/Policy3";
+import AppDrawer from "../components/common/AppDrawer";
 import ContestHeaderBanner from "../components/contest/ContestHeaderBanner";
 import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
-import ConfirmationModal from "../messageBox/ConfirmationModal";
 import JoinCupConfirm from "../modals/JoinCupConfirm";
 import { UserContext } from "../context/UserContext";
 import { useFirestoreGetDocument } from "../hooks/useFirestores";
@@ -25,20 +24,19 @@ const ContestJoin = () => {
   const [noticeInfo, setNoticeInfo] = useState({});
   const [contests, setContests] = useState({});
   const [error, setError] = useState(false);
-  const [modal, setModal] = useState(false);
-  const [modalComponent, setModalComponent] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerComponent, setDrawerComponent] = useState(null);
   const [isApply, setIsApply] = useState({
     title: "m1",
     value: false,
     applyDate: "",
   });
-  const [optionOpen, setOptionOpen] = useState(false);
-  const [message, setMessage] = useState({});
 
   const getNotice = useFirestoreGetDocument("contest_notice");
   const getContests = useFirestoreGetDocument("contests");
   const { currentUserInfo: pInfo } = useContext(UserContext);
   const params = useParams();
+  const navigate = useNavigate();
 
   const {
     invoiceInfo,
@@ -59,13 +57,13 @@ const ContestJoin = () => {
     handlePlayerValidateButtonClick,
   } = useContestForm({ initialIsValidate: false });
 
-  const handleOpenModal = ({ component }) => {
-    setModal(true);
-    setModalComponent(component);
+  const handleOpenDrawer = ({ component }) => {
+    setDrawerComponent(component);
+    setDrawerOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setModal(false);
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false);
   };
 
   const handleApply = (e) => {
@@ -76,29 +74,29 @@ const ContestJoin = () => {
     });
   };
 
-  const fetchNotice = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getNotice.getDocument(params.contestId);
-      if (!data?.refContestId) {
-        setError(true);
-        return;
-      }
-      setNoticeInfo({ ...data });
-      const contest = await getContests.getDocument(data.refContestId);
-      if (contest?.contestNoticeId) {
-        setContests({ ...contest });
-      }
-    } catch (err) {
-      setError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchNotice = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getNotice.getDocument(params.contestId);
+        if (!data?.refContestId) {
+          setError(true);
+          return;
+        }
+        setNoticeInfo({ ...data });
+        const contest = await getContests.getDocument(data.refContestId);
+        if (contest?.contestNoticeId) {
+          setContests({ ...contest });
+        }
+      } catch (err) {
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchNotice();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.contestId]);
 
   useEffect(() => {
     fetchCategorysAndGrades(
@@ -106,6 +104,7 @@ const ContestJoin = () => {
       contests.contestGradesListId,
       () => setError(true)
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contests]);
 
   useEffect(() => {
@@ -147,44 +146,50 @@ const ContestJoin = () => {
       joins: [],
     };
     setInvoiceInfo(initInvoiceInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noticeInfo, contests, pInfo]);
 
   return (
-    <div className="flex justify-center items-start align-top bg-[#0B0B0B]">
+    <div className="flex justify-center items-start align-top bg-[#0B0B0B] min-h-screen">
       {isLoading && (
-        <div
-          className="absolute top-0 left-1/2 w-full h-full border-0 px-10 py-3 outline-none flex flex-col z-50 justify-center items-center"
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            maxWidth: "420px",
-            transform: "translate(-50%, 0%)",
-          }}
-        >
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
             strokeColor="white"
             strokeWidth="5"
             animationDuration="0.75"
-            width="96"
+            width="64"
             visible={true}
           />
         </div>
       )}
 
-      {!isLoading && noticeInfo.contestTitle && (
+      {!isLoading && error && (
+        <div className="min-h-screen bg-[#0B0B0B] text-white w-full flex flex-col items-center justify-center p-6 text-center gap-4">
+          <p className="text-sm text-neutral-400 font-bold">
+            대회 정보를 불러올 수 없거나 종료된 공고입니다.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="px-6 py-3 bg-white text-black font-black text-xs rounded-full cursor-pointer"
+          >
+            홈으로 돌아가기
+          </button>
+        </div>
+      )}
+
+      {!isLoading && !error && noticeInfo.contestTitle && (
         <div className="min-h-screen bg-[#0B0B0B] text-white w-full pb-28 font-sans antialiased">
           <BottomMenu />
           <Header title="대회 참가신청" />
-          <Modal open={modal} onClose={handleCloseModal}>
-            <div className="flex w-full justify-center items-center">
-              {modalComponent}
-            </div>
-          </Modal>
-          <ConfirmationModal
-            isOpen={optionOpen}
-            onConfirm={() => setOptionOpen(false)}
-            onCancel={() => setOptionOpen(false)}
-            message={message}
-          />
+          <AppDrawer
+            open={drawerOpen}
+            onClose={handleCloseDrawer}
+            anchor="right"
+            size="md"
+          >
+            {drawerComponent}
+          </AppDrawer>
 
           <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-10">
             <ContestHeaderBanner
@@ -251,9 +256,9 @@ const ContestJoin = () => {
                         <button
                           type="button"
                           onClick={() =>
-                            handleOpenModal({
+                            handleOpenDrawer({
                               component: (
-                                <Policy3 onClose={() => setModal(false)} />
+                                <Policy3 onClose={handleCloseDrawer} />
                               ),
                             })
                           }
@@ -331,13 +336,14 @@ const ContestJoin = () => {
                   isApply.value &&
                   isValidate ? (
                     <button
+                      type="button"
                       className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full shadow-xl transition cursor-pointer text-center tracking-tight"
                       onClick={() =>
-                        handleOpenModal({
+                        handleOpenDrawer({
                           component: (
                             <JoinCupConfirm
                               propInvoiceInfo={invoiceInfo}
-                              prevSetModal={setModal}
+                              prevSetModal={setDrawerOpen}
                             />
                           ),
                         })
@@ -347,6 +353,7 @@ const ContestJoin = () => {
                     </button>
                   ) : (
                     <button
+                      type="button"
                       className="w-full py-4 bg-neutral-900 border border-neutral-800 text-neutral-600 font-bold text-xs rounded-full cursor-not-allowed text-center"
                       disabled
                     >

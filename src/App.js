@@ -2,15 +2,10 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
 import RequireAuth from "./components/auth/RequireAuth";
-import AnalyzeDetail from "./pages/AnalyzeDetail";
-import Career from "./pages/Career";
-import CareerView from "./pages/CareerView";
 import CupList from "./pages/CupList";
 import EditProfile from "./pages/EditProfile";
-import Feed from "./pages/Feed";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import LoginError from "./pages/LoginError";
 import MyProfile from "./pages/MyProfile";
 import Register from "./pages/Register";
 import RegisterSuccess from "./pages/RegisterSuccess";
@@ -32,18 +27,13 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
-        <Route path="/loginerror" element={<LoginError />} />
         <Route path="/register" element={<Register />} />
         <Route path="/registeremail" element={<RegisterWithEmail />} />
         <Route path="/regsuccess" element={<RegisterSuccess />} />
         <Route path="/successpage" element={<SuccessPage />} />
         <Route path="/editsuccesspage" element={<EditSuccessPage />} />
-        <Route path="/career" element={<Career />} />
         <Route path="/cuplist" element={<CupList />} />
-        <Route path="/careerview" element={<CareerView />} />
         <Route path="/gbbf" element={<Gbbf />} />
-        <Route path="/analyzedetail" element={<AnalyzeDetail />} />
-        <Route path="/feed" element={<Feed />} />
 
         <Route
           path="/contestjoinedit/:invoiceId"

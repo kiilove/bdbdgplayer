@@ -6,9 +6,8 @@ import {
   RxDotsHorizontal,
 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
-import Drawer from "react-modern-drawer";
+import AppDrawer from "./common/AppDrawer";
 import DrawMenu from "./DrawMenu";
-import "react-modern-drawer/dist/index.css";
 
 const BottomMenu = () => {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
@@ -75,7 +74,8 @@ const BottomMenu = () => {
           </Link>
 
           <button
-            onClick={() => handleDrawer()}
+            type="button"
+            onClick={handleDrawer}
             className="flex flex-col items-center justify-center w-16 h-full text-neutral-500 hover:text-neutral-200 font-semibold transition-all duration-150 cursor-pointer"
           >
             <RxDotsHorizontal className="text-xl" />
@@ -84,15 +84,14 @@ const BottomMenu = () => {
         </div>
       </div>
 
-      <Drawer
+      <AppDrawer
         open={isOpenDrawer}
         onClose={handleDrawer}
-        direction="right"
-        size={320}
-        style={{ zIndex: 9999 }}
+        anchor="right"
+        size="sm"
       >
         <DrawMenu setOpen={handleDrawer} />
-      </Drawer>
+      </AppDrawer>
     </>
   );
 };

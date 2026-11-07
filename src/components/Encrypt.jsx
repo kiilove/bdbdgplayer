@@ -1,19 +1,20 @@
 import CryptoJS from "crypto-js";
 
+const DEFAULT_SECRET = "bdbdg-player-default-secret-key";
+
 export const Encrypt = (plaintext) => {
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-
-  const ciphertext = CryptoJS.AES.encrypt(plaintext, secretKey).toString();
-
-  return ciphertext;
+  if (!plaintext) return "";
+  const secretKey = process.env.REACT_APP_SECRET_KEY || DEFAULT_SECRET;
+  return CryptoJS.AES.encrypt(String(plaintext), secretKey).toString();
 };
 
 export const Decrypt = (ciphertext) => {
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-
-  const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
-
-  const plaintext = bytes.toString(CryptoJS.enc.Utf8);
-
-  return plaintext;
+  if (!ciphertext) return "";
+  try {
+    const secretKey = process.env.REACT_APP_SECRET_KEY || DEFAULT_SECRET;
+    const bytes = CryptoJS.AES.decrypt(String(ciphertext), secretKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch {
+    return "";
+  }
 };

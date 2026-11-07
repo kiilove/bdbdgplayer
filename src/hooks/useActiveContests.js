@@ -54,6 +54,7 @@ export const useActiveContests = () => {
 
   useEffect(() => {
     fetchContests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export const useActiveContests = () => {
     } else {
       setInvoices({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pInfo?.playerUid]);
 
   return {

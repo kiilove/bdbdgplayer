@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { ThreeDots } from "react-loader-spinner";
 import dayjs from "dayjs";
+import Policy3 from "../components/Policy3";
+import AppDrawer from "../components/common/AppDrawer";
 import { db } from "../firebase";
 import {
   formatPhoneNumber,
@@ -21,6 +23,7 @@ const RegisterWithEmail = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [chkEmail, setChkEmail] = useState(false);
+  const [policyDrawerOpen, setPolicyDrawerOpen] = useState(false);
 
   const [form, setForm] = useState({
     pName: "",
@@ -197,6 +200,15 @@ const RegisterWithEmail = () => {
 
   return (
     <div className="flex w-full min-h-screen justify-center items-center bg-[#0B0B0B] text-white py-12 px-4 font-sans antialiased">
+      <AppDrawer
+        open={policyDrawerOpen}
+        onClose={() => setPolicyDrawerOpen(false)}
+        anchor="right"
+        size="md"
+      >
+        <Policy3 onClose={() => setPolicyDrawerOpen(false)} />
+      </AppDrawer>
+
       <div className="flex flex-col w-full max-w-md items-center">
         <div className="flex w-full justify-center flex-col items-center gap-y-2 mb-8 text-center">
           <Link to="/" className="inline-block mb-3">
@@ -369,10 +381,13 @@ const RegisterWithEmail = () => {
                 />
                 <span className="font-bold text-white">[필수]</span> 이용약관 동의
               </label>
-              <FontAwesomeIcon
-                icon={faArrowRight}
-                className="text-neutral-600 text-xs"
-              />
+              <button
+                type="button"
+                onClick={() => setPolicyDrawerOpen(true)}
+                className="text-neutral-400 hover:text-white transition cursor-pointer p-1"
+              >
+                <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
+              </button>
             </div>
 
             <div className="flex items-center justify-between">
@@ -388,10 +403,13 @@ const RegisterWithEmail = () => {
                 />
                 <span className="font-bold text-white">[필수]</span> 개인정보 수집 및 이용 동의
               </label>
-              <FontAwesomeIcon
-                icon={faArrowRight}
-                className="text-neutral-600 text-xs"
-              />
+              <button
+                type="button"
+                onClick={() => setPolicyDrawerOpen(true)}
+                className="text-neutral-400 hover:text-white transition cursor-pointer p-1"
+              >
+                <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
+              </button>
             </div>
 
             <div className="flex items-center justify-between">
@@ -407,17 +425,23 @@ const RegisterWithEmail = () => {
                 />
                 <span className="font-bold text-neutral-400">[선택]</span> 신규 콘텐츠/이벤트 알림받기
               </label>
-              <FontAwesomeIcon
-                icon={faArrowRight}
-                className="text-neutral-600 text-xs"
-              />
+              <button
+                type="button"
+                onClick={() => setPolicyDrawerOpen(true)}
+                className="text-neutral-400 hover:text-white transition cursor-pointer p-1"
+              >
+                <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
+              </button>
             </div>
           </div>
 
           {/* Action Button */}
           {isFormValid ? (
             isLoading ? (
-              <button className="w-full py-4 bg-white text-black font-black text-sm rounded-full flex justify-center items-center opacity-90 cursor-not-allowed mt-2">
+              <button
+                type="button"
+                className="w-full py-4 bg-white text-black font-black text-sm rounded-full flex justify-center items-center opacity-90 cursor-not-allowed mt-2"
+              >
                 <ThreeDots
                   height="20"
                   width="40"
@@ -429,6 +453,7 @@ const RegisterWithEmail = () => {
               </button>
             ) : (
               <button
+                type="button"
                 className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full shadow-xl transition cursor-pointer text-center tracking-tight mt-2"
                 onClick={handleRegister}
               >
@@ -437,6 +462,7 @@ const RegisterWithEmail = () => {
             )
           ) : (
             <button
+              type="button"
               disabled
               className="w-full py-4 bg-neutral-900 border border-neutral-800 text-neutral-600 font-bold text-xs rounded-full cursor-not-allowed text-center mt-2"
             >

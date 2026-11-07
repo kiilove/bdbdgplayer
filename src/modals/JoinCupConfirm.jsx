@@ -22,6 +22,7 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
 
   useEffect(() => {
     setInvoicePrice(calculateContestPrice(invoiceInfo.joins, priceInfo));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoiceInfo]);
 
   const handleInvoice = async () => {

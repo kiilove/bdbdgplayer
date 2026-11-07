@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Modal } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import { RiPrinterLine } from "react-icons/ri";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
+import AppDrawer from "../components/common/AppDrawer";
 import ContestHeaderBanner from "../components/contest/ContestHeaderBanner";
 import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
-import ConfirmationModal from "../messageBox/ConfirmationModal";
 import JoinCupEditConfirm from "../modals/JoinCupEditConfirm";
 import InvoicePrintModal from "../modals/InvoicePrintModal";
 import { useFirestoreGetDocument } from "../hooks/useFirestores";
@@ -24,16 +23,15 @@ const ContestJoinEdit = () => {
   const [contests, setContests] = useState({});
   const [noticeInfo, setNoticeInfo] = useState({});
   const [error, setError] = useState(false);
-  const [modal, setModal] = useState(false);
-  const [modalComponent, setModalComponent] = useState("");
-  const [optionOpen, setOptionOpen] = useState(false);
-  const [printModalOpen, setPrintModalOpen] = useState(false);
-  const [message, setMessage] = useState({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerComponent, setDrawerComponent] = useState(null);
+  const [printDrawerOpen, setPrintDrawerOpen] = useState(false);
 
   const getInvoice = useFirestoreGetDocument("invoices_pool");
   const getContests = useFirestoreGetDocument("contests");
   const getNotice = useFirestoreGetDocument("contest_notice");
   const params = useParams();
+  const navigate = useNavigate();
 
   const {
     invoiceInfo,
@@ -54,48 +52,48 @@ const ContestJoinEdit = () => {
     handlePlayerValidateButtonClick,
   } = useContestForm({ initialIsValidate: true });
 
-  const handleOpenModal = ({ component }) => {
-    setModal(true);
-    setModalComponent(component);
+  const handleOpenDrawer = ({ component }) => {
+    setDrawerComponent(component);
+    setDrawerOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setModal(false);
-  };
-
-  const fetchInvoice = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getInvoice.getDocument(params.invoiceId);
-      if (!data?.id) {
-        setError(true);
-        return;
-      }
-
-      setInvoiceInfo({
-        ...data,
-        playerTel: formatPhoneNumber(data.playerTel || ""),
-        playerBirth: formatBirthDate(data.playerBirth || ""),
-      });
-
-      const contest = await getContests.getDocument(data.contestId);
-      if (contest?.contestNoticeId) {
-        setContests({ ...contest });
-        const notice = await getNotice.getDocument(contest.contestNoticeId);
-        if (notice?.id) {
-          setNoticeInfo({ ...notice });
-        }
-      }
-    } catch (err) {
-      setError(true);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false);
   };
 
   useEffect(() => {
+    const fetchInvoice = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getInvoice.getDocument(params.invoiceId);
+        if (!data?.id) {
+          setError(true);
+          return;
+        }
+
+        setInvoiceInfo({
+          ...data,
+          playerTel: formatPhoneNumber(data.playerTel || ""),
+          playerBirth: formatBirthDate(data.playerBirth || ""),
+        });
+
+        const contest = await getContests.getDocument(data.contestId);
+        if (contest?.contestNoticeId) {
+          setContests({ ...contest });
+          const notice = await getNotice.getDocument(contest.contestNoticeId);
+          if (notice?.id) {
+            setNoticeInfo({ ...notice });
+          }
+        }
+      } catch (err) {
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchInvoice();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.invoiceId]);
 
   useEffect(() => {
     fetchCategorysAndGrades(
@@ -103,6 +101,7 @@ const ContestJoinEdit = () => {
       contests.contestGradesListId,
       () => setError(true)
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contests]);
 
   const priceSource = noticeInfo?.contestPriceBasic ? noticeInfo : invoiceInfo;
@@ -129,21 +128,33 @@ const ContestJoinEdit = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && error && (
+        <div className="min-h-screen bg-[#0B0B0B] text-white w-full flex flex-col items-center justify-center p-6 text-center gap-4">
+          <p className="text-sm text-neutral-400 font-bold">
+            신청 내역을 불러올 수 없거나 존재하지 않는 문서입니다.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/myprofile")}
+            className="px-6 py-3 bg-white text-black font-black text-xs rounded-full cursor-pointer"
+          >
+            내 신청내역으로 돌아가기
+          </button>
+        </div>
+      )}
+
+      {!isLoading && !error && (
         <>
           <BottomMenu />
           <Header title="참가신청 수정" />
-          <Modal open={modal} onClose={handleCloseModal}>
-            <div className="flex w-full justify-center items-center">
-              {modalComponent}
-            </div>
-          </Modal>
-          <ConfirmationModal
-            isOpen={optionOpen}
-            onConfirm={() => setOptionOpen(false)}
-            onCancel={() => setOptionOpen(false)}
-            message={message}
-          />
+          <AppDrawer
+            open={drawerOpen}
+            onClose={handleCloseDrawer}
+            anchor="right"
+            size="md"
+          >
+            {drawerComponent}
+          </AppDrawer>
 
           <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
             <ContestHeaderBanner
@@ -163,7 +174,7 @@ const ContestJoinEdit = () => {
                   : null
               }
               collectionFileLink={contests.contestCollectionFileLink}
-              onOpenPrintModal={() => setPrintModalOpen(true)}
+              onOpenPrintModal={() => setPrintDrawerOpen(true)}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -247,12 +258,13 @@ const ContestJoinEdit = () => {
 
                   <div className="pt-4 border-t border-neutral-800/80 flex flex-col gap-y-3">
                     <button
+                      type="button"
                       onClick={() =>
-                        handleOpenModal({
+                        handleOpenDrawer({
                           component: (
                             <JoinCupEditConfirm
                               propInvoiceInfo={invoiceInfo}
-                              prevSetModal={setModal}
+                              prevSetModal={setDrawerOpen}
                             />
                           ),
                         })
@@ -270,7 +282,7 @@ const ContestJoinEdit = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setPrintModalOpen(true)}
+                      onClick={() => setPrintDrawerOpen(true)}
                       className="w-full py-3.5 bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 font-bold text-xs rounded-full transition flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <RiPrinterLine className="text-base" />
@@ -281,12 +293,12 @@ const ContestJoinEdit = () => {
               </div>
             </div>
           </main>
-          {printModalOpen && (
+          {printDrawerOpen && (
             <InvoicePrintModal
               invoiceInfo={invoiceInfo}
               contestInfo={contests}
               noticeInfo={noticeInfo}
-              onClose={() => setPrintModalOpen(false)}
+              onClose={() => setPrintDrawerOpen(false)}
             />
           )}
         </>

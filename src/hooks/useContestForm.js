@@ -94,6 +94,7 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
 
   useEffect(() => {
     handlePlayerValidate(invoiceInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoiceInfo]);
 
   const handleInputs = (e) => {
