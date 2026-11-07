@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useFirestoreGetDocument } from "./useFirestores";
+import { handleToast } from "../components/HandleToast";
 import {
   formatBirthDate,
   formatPhoneNumber,
@@ -16,7 +17,8 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
   const [chkAllItem, setChkAllItem] = useState(true);
   const [playerAge, setPlayerAge] = useState();
   const [isValidate, setIsValidate] = useState(initialIsValidate);
-  const [isConfirmedInfo, setIsConfirmedInfo] = useState(false);
+  const [isConfirmedInfo, setIsConfirmedInfo] = useState(initialIsValidate);
+  const [hasAttemptedValidate, setHasAttemptedValidate] = useState(false);
   const [playerValidate, setPlayerValidate] = useState({
     playerName: false,
     playerTel: false,
@@ -74,28 +76,23 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
     }
   }, [categorys, chkAllItem, invoiceInfo.playerGender, invoiceInfo.playerBirth]);
 
-  const handlePlayerValidate = (targetInfo = invoiceInfo) => {
-    const updatedPlayerValidate = {
-      playerName:
-        !targetInfo.playerName || targetInfo.playerName.trim() === "",
-      playerTel: !validatePhoneNumber(targetInfo.playerTel),
-      playerBirth: !validateDate(targetInfo.playerBirth),
-      playerGender: !targetInfo.playerGender,
-      playerGym: !targetInfo.playerGym || targetInfo.playerGym.trim() === "",
-    };
-
-    setPlayerValidate(updatedPlayerValidate);
-    const hasInvalid = Object.values(updatedPlayerValidate).some(
-      (u) => u === true
-    );
-    setIsValidate(!hasInvalid);
-    return !hasInvalid;
-  };
+  const computeFieldErrors = (targetInfo = invoiceInfo) => ({
+    playerName: !targetInfo.playerName || targetInfo.playerName.trim() === "",
+    playerTel: !validatePhoneNumber(targetInfo.playerTel),
+    playerBirth: !validateDate(targetInfo.playerBirth),
+    playerGender: !targetInfo.playerGender,
+    playerGym: !targetInfo.playerGym || targetInfo.playerGym.trim() === "",
+  });
 
   useEffect(() => {
-    handlePlayerValidate(invoiceInfo);
+    const errors = computeFieldErrors(invoiceInfo);
+    const hasInvalid = Object.values(errors).some((u) => u === true);
+    setIsValidate(!hasInvalid);
+    if (hasAttemptedValidate) {
+      setPlayerValidate(errors);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [invoiceInfo]);
+  }, [invoiceInfo, hasAttemptedValidate]);
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
@@ -150,33 +147,36 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
   };
 
   const handlePlayerValidateButtonClick = () => {
-    if (!invoiceInfo.playerName || invoiceInfo.playerName.trim() === "") {
-      alert("선수 이름을 입력해 주세요.");
+    setHasAttemptedValidate(true);
+    const errors = computeFieldErrors(invoiceInfo);
+    setPlayerValidate(errors);
+
+    if (errors.playerName) {
+      handleToast("warn", "선수 이름을 입력해 주세요.");
       pNameRef.current?.focus();
       return;
     }
-    if (!validateDate(invoiceInfo.playerBirth)) {
-      alert(
-        "생년월일을 올바른 형식(YYYY-MM-DD)으로 입력해 주세요. (예: 1995-05-20)"
+    if (errors.playerBirth) {
+      handleToast(
+        "warn",
+        "생년월일을 올바른 형식(YYYY-MM-DD)으로 입력해 주세요."
       );
       pBirthRef.current?.focus();
       return;
     }
-    if (!validatePhoneNumber(invoiceInfo.playerTel)) {
-      alert("연락처를 올바른 형식(010-0000-0000)으로 입력해 주세요.");
+    if (errors.playerTel) {
+      handleToast("warn", "휴대폰 번호를 올바른 형식으로 입력해 주세요.");
       pTelRef.current?.focus();
       return;
     }
-    if (!invoiceInfo.playerGym || invoiceInfo.playerGym.trim() === "") {
-      alert("소속 (체육관 / 팀명 또는 무소속)을 입력해 주세요.");
+    if (errors.playerGym) {
+      handleToast("warn", "소속 체육관/팀명(또는 무소속)을 입력해 주세요.");
       pGymRef.current?.focus();
       return;
     }
 
-    const isValid = handlePlayerValidate(invoiceInfo);
-    if (isValid) {
-      setIsConfirmedInfo(true);
-    }
+    setIsValidate(true);
+    setIsConfirmedInfo(true);
   };
 
   return {
@@ -207,4 +207,3 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
     handlePlayerValidateButtonClick,
   };
 };
-
