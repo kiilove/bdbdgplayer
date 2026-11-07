@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
+import RequireAuth from "./components/auth/RequireAuth";
 import AnalyzeDetail from "./pages/AnalyzeDetail";
 import Career from "./pages/Career";
 import CareerView from "./pages/CareerView";
@@ -48,12 +49,37 @@ function App() {
 
         <Route
           path="/contestjoinedit/:invoiceId"
-          element={<ContestJoinEdit />}
+          element={
+            <RequireAuth>
+              <ContestJoinEdit />
+            </RequireAuth>
+          }
         />
-        <Route path="/contestjoin/:contestId" element={<ContestJoin />} />
+        <Route
+          path="/contestjoin/:contestId"
+          element={
+            <RequireAuth>
+              <ContestJoin />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/myprofile"
+          element={
+            <RequireAuth>
+              <MyProfile />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/editprofile"
+          element={
+            <RequireAuth>
+              <EditProfile />
+            </RequireAuth>
+          }
+        />
 
-        <Route path="/myprofile" element={<MyProfile />} />
-        <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/policy3" element={<Policy3 />} />
         <Route path="/joincupconfirm" element={<JoinCupConfirm />} />
         <Route path="/joincupeditconfirm" element={<JoinCupEditConfirm />} />

@@ -2,13 +2,10 @@ import React, { createContext, useEffect, useState } from "react";
 import { Decrypt, Encrypt } from "../components/Encrypt";
 import { useFirestoreQuery } from "../hooks/useFirestores";
 import { where } from "@firebase/firestore";
-import ConfirmationModal from "../messageBox/ConfirmationModal";
 
 export const UserContext = createContext();
 
 export const UserContextProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [messageOpen, setMessageOpen] = useState(false);
   const [currentUid, setCurrentUid] = useState("");
   const [currentUserInfo, setCurrentUserInfo] = useState({});
   const getQuery = useFirestoreQuery();
@@ -30,8 +27,8 @@ export const UserContextProvider = ({ children }) => {
     const condition = [where("playerUid", "==", uid)];
     const data = await getQuery.getDocuments("players_pool", condition);
 
-    if (!data) {
-      setCurrentUserInfo({ ...currentUserInfo });
+    if (!data || data.length === 0) {
+      setCurrentUserInfo((prev) => ({ ...prev }));
       return;
     }
     setCurrentUserInfo({ ...data[0] });
@@ -40,17 +37,25 @@ export const UserContextProvider = ({ children }) => {
   useEffect(() => {
     const storedValue = localStorage.getItem("globalValue");
     if (storedValue) {
-      const { value, token } = JSON.parse(storedValue);
+      try {
+        const { value, token } = JSON.parse(storedValue);
 
-      const decryptValue = Decrypt(value);
-      const decryptedToken = Decrypt(token);
+        const decryptValue = Decrypt(value);
+        const decryptedToken = Decrypt(token);
 
-      const expirationTimestamp = parseInt(decryptedToken, 10);
+        const expirationTimestamp = parseInt(decryptedToken, 10);
 
-      if (expirationTimestamp <= new Date().getTime()) {
+        if (
+          !decryptValue ||
+          Number.isNaN(expirationTimestamp) ||
+          expirationTimestamp <= new Date().getTime()
+        ) {
+          localStorage.removeItem("globalValue");
+        } else {
+          setCurrentUid(decryptValue);
+        }
+      } catch (err) {
         localStorage.removeItem("globalValue");
-      } else {
-        setCurrentUid(decryptValue);
       }
     }
   }, []);
@@ -61,7 +66,6 @@ export const UserContextProvider = ({ children }) => {
       fetchUserInfo(currentUid);
     }
   }, [currentUid]);
-
 
   return (
     <UserContext.Provider
