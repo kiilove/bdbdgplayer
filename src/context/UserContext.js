@@ -1,76 +1,91 @@
-import React, { createContext, useEffect, useState } from "react";
-import { where } from "firebase/firestore";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import { Decrypt, Encrypt } from "../components/Encrypt";
-import { useFirestoreQuery } from "../hooks/useFirestores";
+import { fetchPlayerByUid } from "../services/playerService";
 
 export const UserContext = createContext();
 
+const STORAGE_KEY = "globalValue";
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+const saveEncryptedSession = (uid) => {
+  const expirationTimestamp = Date.now() + SESSION_TTL_MS;
+  const encryptedCurrentId = Encrypt(uid);
+  const encryptedToken = Encrypt(String(expirationTimestamp));
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({ value: encryptedCurrentId, token: encryptedToken })
+  );
+};
+
+const readEncryptedSessionUid = () => {
+  const storedValue = localStorage.getItem(STORAGE_KEY);
+  if (!storedValue) return "";
+
+  try {
+    const { value, token } = JSON.parse(storedValue);
+    const decryptedUid = Decrypt(value);
+    const decryptedToken = Decrypt(token);
+    const expirationTimestamp = parseInt(decryptedToken, 10);
+
+    if (
+      !decryptedUid ||
+      Number.isNaN(expirationTimestamp) ||
+      expirationTimestamp <= Date.now()
+    ) {
+      localStorage.removeItem(STORAGE_KEY);
+      return "";
+    }
+    return decryptedUid;
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return "";
+  }
+};
+
 export const UserContextProvider = ({ children }) => {
-  const [currentUid, setCurrentUid] = useState("");
+  const [currentUid, setCurrentUid] = useState(() => readEncryptedSessionUid());
   const [currentUserInfo, setCurrentUserInfo] = useState({});
-  const getQuery = useFirestoreQuery();
 
-  const setLoginToken = () => {
-    const currentTimestamp = new Date().getTime();
-    const expirationTimestamp = currentTimestamp + 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-
-    const encryptedCurrentId = Encrypt(currentUid);
-    const encryptedToken = Encrypt(expirationTimestamp?.toString());
-
-    localStorage.setItem(
-      "globalValue",
-      JSON.stringify({ value: encryptedCurrentId, token: encryptedToken })
-    );
-  };
-
-  const fetchUserInfo = async (uid) => {
-    const condition = [where("playerUid", "==", uid)];
-    const data = await getQuery.getDocuments("players_pool", condition);
-
-    if (!data || data.length === 0) {
-      setCurrentUserInfo((prev) => ({ ...prev }));
-      return;
-    }
-    setCurrentUserInfo({ ...data[0] });
-  };
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem("globalValue");
-    if (storedValue) {
-      try {
-        const { value, token } = JSON.parse(storedValue);
-
-        const decryptValue = Decrypt(value);
-        const decryptedToken = Decrypt(token);
-
-        const expirationTimestamp = parseInt(decryptedToken, 10);
-
-        if (
-          !decryptValue ||
-          Number.isNaN(expirationTimestamp) ||
-          expirationTimestamp <= new Date().getTime()
-        ) {
-          localStorage.removeItem("globalValue");
-        } else {
-          setCurrentUid(decryptValue);
-        }
-      } catch (err) {
-        localStorage.removeItem("globalValue");
-      }
-    }
+  const clearUserSession = useCallback(() => {
+    setCurrentUid("");
+    setCurrentUserInfo({});
+    localStorage.removeItem(STORAGE_KEY);
   }, []);
 
   useEffect(() => {
-    if (currentUid) {
-      setLoginToken();
-      fetchUserInfo(currentUid);
+    let isMounted = true;
+
+    if (!currentUid) {
+      return undefined;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    saveEncryptedSession(currentUid);
+
+    fetchPlayerByUid(currentUid)
+      .then((playerDoc) => {
+        if (isMounted && playerDoc) {
+          setCurrentUserInfo({ ...playerDoc });
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load player profile:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [currentUid]);
 
   return (
     <UserContext.Provider
-      value={{ currentUid, setCurrentUid, currentUserInfo, setCurrentUserInfo }}
+      value={{
+        currentUid,
+        setCurrentUid,
+        currentUserInfo,
+        setCurrentUserInfo,
+        clearUserSession,
+      }}
     >
       {children}
     </UserContext.Provider>

@@ -10,26 +10,18 @@ import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
 import JoinCupEditConfirm from "../modals/JoinCupEditConfirm";
 import InvoicePrintModal from "../modals/InvoicePrintModal";
-import { useFirestoreGetDocument } from "../hooks/useFirestores";
 import { useContestForm } from "../hooks/useContestForm";
-import {
-  formatBirthDate,
-  formatPhoneNumber,
-  calculateContestPrice,
-} from "../utils/formatUtils";
+import { fetchInvoiceEditBundle } from "../services/contestService";
+import { calculateContestPrice } from "../utils/formatUtils";
 
 const ContestJoinEdit = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [contests, setContests] = useState({});
   const [noticeInfo, setNoticeInfo] = useState({});
   const [error, setError] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerComponent, setDrawerComponent] = useState(null);
+  const [confirmDrawerOpen, setConfirmDrawerOpen] = useState(false);
   const [printDrawerOpen, setPrintDrawerOpen] = useState(false);
 
-  const getInvoice = useFirestoreGetDocument("invoices_pool");
-  const getContests = useFirestoreGetDocument("contests");
-  const getNotice = useFirestoreGetDocument("contest_notice");
   const params = useParams();
   const navigate = useNavigate();
 
@@ -46,63 +38,47 @@ const ContestJoinEdit = () => {
     isConfirmedInfo,
     setIsConfirmedInfo,
     refs,
-    fetchCategorysAndGrades,
+    setCategoriesAndGrades,
     handleInputs,
     handleInvoiceInfo,
     handlePlayerValidateButtonClick,
   } = useContestForm({ initialIsValidate: true });
 
-  const handleOpenDrawer = ({ component }) => {
-    setDrawerComponent(component);
-    setDrawerOpen(true);
-  };
-
-  const handleCloseDrawer = () => {
-    setDrawerOpen(false);
-  };
-
   useEffect(() => {
-    const fetchInvoice = async () => {
+    let isMounted = true;
+
+    const loadEditBundle = async () => {
       setIsLoading(true);
+      setError(false);
       try {
-        const data = await getInvoice.getDocument(params.invoiceId);
-        if (!data?.id) {
+        const {
+          invoice,
+          contest,
+          notice,
+          categories,
+          grades: gradeList,
+        } = await fetchInvoiceEditBundle(params.invoiceId);
+        if (!isMounted) return;
+        setInvoiceInfo(invoice);
+        setContests(contest);
+        setNoticeInfo(notice);
+        setCategoriesAndGrades(categories, gradeList);
+      } catch {
+        if (isMounted) {
           setError(true);
-          return;
         }
-
-        setInvoiceInfo({
-          ...data,
-          playerTel: formatPhoneNumber(data.playerTel || ""),
-          playerBirth: formatBirthDate(data.playerBirth || ""),
-        });
-
-        const contest = await getContests.getDocument(data.contestId);
-        if (contest?.contestNoticeId) {
-          setContests({ ...contest });
-          const notice = await getNotice.getDocument(contest.contestNoticeId);
-          if (notice?.id) {
-            setNoticeInfo({ ...notice });
-          }
-        }
-      } catch (err) {
-        setError(true);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
-    fetchInvoice();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.invoiceId]);
 
-  useEffect(() => {
-    fetchCategorysAndGrades(
-      contests.contestCategorysListId,
-      contests.contestGradesListId,
-      () => setError(true)
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contests]);
+    loadEditBundle();
+    return () => {
+      isMounted = false;
+    };
+  }, [params.invoiceId, setInvoiceInfo, setCategoriesAndGrades]);
 
   const priceSource = noticeInfo?.contestPriceBasic ? noticeInfo : invoiceInfo;
   const associateName =
@@ -147,8 +123,16 @@ const ContestJoinEdit = () => {
         <>
           <BottomMenu />
           <Header title="참가신청 내역 및 수정" />
-          <AppDrawer open={drawerOpen} onClose={handleCloseDrawer} size="md">
-            {drawerComponent}
+
+          <AppDrawer
+            open={confirmDrawerOpen}
+            onClose={() => setConfirmDrawerOpen(false)}
+            size="md"
+          >
+            <JoinCupEditConfirm
+              propInvoiceInfo={invoiceInfo}
+              prevSetModal={setConfirmDrawerOpen}
+            />
           </AppDrawer>
 
           <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
@@ -254,16 +238,7 @@ const ContestJoinEdit = () => {
                   <div className="pt-3 border-t border-neutral-100 flex flex-col gap-y-2.5">
                     <button
                       type="button"
-                      onClick={() =>
-                        handleOpenDrawer({
-                          component: (
-                            <JoinCupEditConfirm
-                              propInvoiceInfo={invoiceInfo}
-                              prevSetModal={setDrawerOpen}
-                            />
-                          ),
-                        })
-                      }
+                      onClick={() => setConfirmDrawerOpen(true)}
                       disabled={
                         !invoiceInfo.joins || invoiceInfo.joins.length === 0
                       }

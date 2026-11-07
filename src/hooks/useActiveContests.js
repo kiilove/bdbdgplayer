@@ -1,7 +1,9 @@
 import { useState, useEffect, useContext } from "react";
-import { where } from "firebase/firestore";
-import { useFirestoreQuery } from "./useFirestores";
 import { UserContext } from "../context/UserContext";
+import {
+  fetchActiveContests,
+  fetchUserActiveInvoiceMap,
+} from "../services/contestService";
 
 export const useActiveContests = () => {
   const { currentUserInfo: pInfo } = useContext(UserContext);
@@ -9,61 +11,56 @@ export const useActiveContests = () => {
   const [invoices, setInvoices] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const getQuery = useFirestoreQuery();
-
-  const fetchContests = async () => {
-    setIsLoading(true);
-    const conditions = [where("contestStatus", "==", "접수중")];
-    try {
-      const data = await getQuery.getDocuments(
-        "contest_notice",
-        conditions,
-        "contestDate"
-      );
-      setContests(data && data.length > 0 ? data : []);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchUserInvoices = async (playerUid) => {
-    if (!playerUid) {
-      setInvoices({});
-      return;
-    }
-    const conditions = [where("playerUid", "==", playerUid)];
-    try {
-      const data = await getQuery.getDocuments("invoices_pool", conditions);
-      if (data && data.length > 0) {
-        const invMap = {};
-        data.forEach((inv) => {
-          if (!inv.isCanceled && inv.contestId) {
-            invMap[inv.contestId] = inv.id;
-          }
-        });
-        setInvoices(invMap);
-      } else {
-        setInvoices({});
-      }
-    } catch (err) {
-      // Non-blocking invoice lookup error
-    }
-  };
 
   useEffect(() => {
-    fetchContests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let isMounted = true;
+
+    const loadContests = async () => {
+      setIsLoading(true);
+      try {
+        const list = await fetchActiveContests();
+        if (isMounted) {
+          setContests(list);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadContests();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
-    if (pInfo?.playerUid) {
-      fetchUserInvoices(pInfo.playerUid);
-    } else {
+    let isMounted = true;
+    const playerUid = pInfo?.playerUid;
+
+    if (!playerUid) {
       setInvoices({});
+      return undefined;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    fetchUserActiveInvoiceMap(playerUid)
+      .then((invMap) => {
+        if (isMounted) {
+          setInvoices(invMap);
+        }
+      })
+      .catch(() => {
+        // Non-blocking invoice lookup error
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [pInfo?.playerUid]);
 
   return {
@@ -74,4 +71,3 @@ export const useActiveContests = () => {
     playerInfo: pInfo,
   };
 };
-

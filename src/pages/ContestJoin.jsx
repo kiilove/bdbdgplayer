@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
@@ -11,29 +11,26 @@ import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
 import JoinCupConfirm from "../modals/JoinCupConfirm";
 import { UserContext } from "../context/UserContext";
-import { useFirestoreGetDocument } from "../hooks/useFirestores";
 import { useContestForm } from "../hooks/useContestForm";
 import {
-  formatBirthDate,
-  formatPhoneNumber,
-  calculateContestPrice,
-} from "../utils/formatUtils";
+  fetchContestEntryBundle,
+  buildInitialInvoicePayload,
+} from "../services/contestService";
+import { calculateContestPrice } from "../utils/formatUtils";
 
 const ContestJoin = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [noticeInfo, setNoticeInfo] = useState({});
   const [contests, setContests] = useState({});
   const [error, setError] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerComponent, setDrawerComponent] = useState(null);
+  const [activeDrawer, setActiveDrawer] = useState(null); // "policy" | "confirm" | null
   const [isApply, setIsApply] = useState({
     title: "m1",
     value: false,
     applyDate: "",
   });
 
-  const getNotice = useFirestoreGetDocument("contest_notice");
-  const getContests = useFirestoreGetDocument("contests");
+  const hasInitializedInvoiceRef = useRef(false);
   const { currentUserInfo: pInfo } = useContext(UserContext);
   const params = useParams();
   const navigate = useNavigate();
@@ -51,19 +48,14 @@ const ContestJoin = () => {
     isConfirmedInfo,
     setIsConfirmedInfo,
     refs,
-    fetchCategorysAndGrades,
+    setCategoriesAndGrades,
     handleInputs,
     handleInvoiceInfo,
     handlePlayerValidateButtonClick,
   } = useContestForm({ initialIsValidate: false });
 
-  const handleOpenDrawer = ({ component }) => {
-    setDrawerComponent(component);
-    setDrawerOpen(true);
-  };
-
   const handleCloseDrawer = () => {
-    setDrawerOpen(false);
+    setActiveDrawer(null);
   };
 
   const handleApply = (e) => {
@@ -75,79 +67,56 @@ const ContestJoin = () => {
   };
 
   useEffect(() => {
-    const fetchNotice = async () => {
+    let isMounted = true;
+    hasInitializedInvoiceRef.current = false;
+
+    const loadContestBundle = async () => {
       setIsLoading(true);
+      setError(false);
       try {
-        const data = await getNotice.getDocument(params.contestId);
-        if (!data?.refContestId) {
+        const { notice, contest, categories, grades: gradeList } =
+          await fetchContestEntryBundle(params.contestId);
+        if (!isMounted) return;
+        setNoticeInfo(notice);
+        setContests(contest);
+        setCategoriesAndGrades(categories, gradeList);
+      } catch {
+        if (isMounted) {
           setError(true);
-          return;
         }
-        setNoticeInfo({ ...data });
-        const contest = await getContests.getDocument(data.refContestId);
-        if (contest?.contestNoticeId) {
-          setContests({ ...contest });
-        }
-      } catch (err) {
-        setError(true);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
-    fetchNotice();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.contestId]);
 
-  useEffect(() => {
-    fetchCategorysAndGrades(
-      contests.contestCategorysListId,
-      contests.contestGradesListId,
-      () => setError(true)
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contests]);
+    loadContestBundle();
+    return () => {
+      isMounted = false;
+    };
+  }, [params.contestId, setCategoriesAndGrades]);
 
   useEffect(() => {
     if (
+      hasInitializedInvoiceRef.current ||
       !noticeInfo.contestTitle ||
       !contests.contestNoticeId ||
-      !pInfo.pName ||
       !pInfo.playerUid
     ) {
       return;
     }
-    const initInvoiceInfo = {
-      invoicePoolId: contests.invoicesPoolId || "",
-      contestId: contests.id || params.contestId || "",
-      contestTitle: noticeInfo.contestTitle || "",
-      contestDate: noticeInfo.contestDate || "",
-      contestLocation: noticeInfo.contestLocation || "",
-      conntestPromoter: noticeInfo.contestPromoter || "",
-      contestPromoter: noticeInfo.contestPromoter || "",
-      contestAssociate: noticeInfo.contestAssociate || "",
-      contestCollectionFileLink: noticeInfo.contestCollectionFileLink || "",
-      contestPriceBasic: noticeInfo.contestPriceBasic || 0,
-      contestPriceExtra: noticeInfo.contestPriceExtra || 0,
-      contestPriceExtraType: noticeInfo.contestPriceExtraType || "",
-      contestPriceType1: noticeInfo.contestPriceType1 || 0,
-      contestPriceType2: noticeInfo.contestPriceType2 || 0,
-      contestBankName: noticeInfo.contestBankName || "",
-      contestAccountNumber: noticeInfo.contestAccountNumber || "",
-      contestAccountOwner: noticeInfo.contestAccountOwner || "",
-      playerUid: pInfo.playerUid || "",
-      playerName: pInfo.pName || "",
-      playerTel: formatPhoneNumber(pInfo.pTel || ""),
-      playerEmail: pInfo.pEmail || "",
-      playerBirth: formatBirthDate(pInfo.pBirth || ""),
-      playerGym: pInfo.pGym || "",
-      playerGender: pInfo.pGender || "m",
-      playerText: "",
-      isPriceCheck: false,
-      joins: [],
-    };
-    setInvoiceInfo(initInvoiceInfo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [noticeInfo, contests, pInfo]);
+
+    hasInitializedInvoiceRef.current = true;
+    setInvoiceInfo(
+      buildInitialInvoicePayload({
+        noticeInfo,
+        contestInfo: contests,
+        playerInfo: pInfo,
+        fallbackContestId: params.contestId,
+      })
+    );
+  }, [noticeInfo, contests, pInfo, params.contestId, setInvoiceInfo]);
 
   return (
     <div className="flex justify-center items-start align-top bg-[#F5F5F7] min-h-screen">
@@ -182,8 +151,21 @@ const ContestJoin = () => {
         <div className="min-h-screen bg-[#F5F5F7] text-[#111111] w-full pb-28 font-sans antialiased">
           <BottomMenu />
           <Header title="대회 참가신청" />
-          <AppDrawer open={drawerOpen} onClose={handleCloseDrawer} size="md">
-            {drawerComponent}
+
+          <AppDrawer
+            open={Boolean(activeDrawer)}
+            onClose={handleCloseDrawer}
+            size="md"
+          >
+            {activeDrawer === "policy" && (
+              <Policy3 onClose={handleCloseDrawer} />
+            )}
+            {activeDrawer === "confirm" && (
+              <JoinCupConfirm
+                propInvoiceInfo={invoiceInfo}
+                prevSetModal={handleCloseDrawer}
+              />
+            )}
           </AppDrawer>
 
           <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
@@ -252,13 +234,7 @@ const ContestJoin = () => {
                         </label>
                         <button
                           type="button"
-                          onClick={() =>
-                            handleOpenDrawer({
-                              component: (
-                                <Policy3 onClose={handleCloseDrawer} />
-                              ),
-                            })
-                          }
+                          onClick={() => setActiveDrawer("policy")}
                           className="text-xs sm:text-sm text-[#111111] hover:underline font-bold shrink-0 cursor-pointer"
                         >
                           약관보기
@@ -337,16 +313,7 @@ const ContestJoin = () => {
                     <button
                       type="button"
                       className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer text-center"
-                      onClick={() =>
-                        handleOpenDrawer({
-                          component: (
-                            <JoinCupConfirm
-                              propInvoiceInfo={invoiceInfo}
-                              prevSetModal={setDrawerOpen}
-                            />
-                          ),
-                        })
-                      }
+                      onClick={() => setActiveDrawer("confirm")}
                     >
                       참가신청서 확인 및 제출
                     </button>

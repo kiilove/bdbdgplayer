@@ -1,12 +1,11 @@
 import React, { useContext, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { doc, setDoc } from "firebase/firestore";
 import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { handleToast } from "../components/HandleToast";
 import { UserContext } from "../context/UserContext";
-import { db } from "../firebase";
+import { savePlayerProfile } from "../services/playerService";
 import {
   formatPhoneNumber,
   formatBirthDate,
@@ -107,13 +106,11 @@ const EditProfile = () => {
     };
 
     try {
-      await setDoc(doc(db, "players_pool", pInfo.id), nextUserInfo, {
-        merge: true,
-      });
+      await savePlayerProfile(pInfo.id, nextUserInfo);
       setCurrentUserInfo(nextUserInfo);
       handleToast("success", "프로필 정보가 저장되었습니다.");
       navigate("/myprofile", { replace: true });
-    } catch (err) {
+    } catch {
       handleToast("error", "저장 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);

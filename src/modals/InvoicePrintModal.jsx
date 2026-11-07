@@ -8,7 +8,7 @@ import {
   RiTimeLine,
 } from "react-icons/ri";
 import AppDrawer from "../components/common/AppDrawer";
-import { useFirestoreGetDocument } from "../hooks/useFirestores";
+import { fetchFallbackNoticeForPrint } from "../services/contestService";
 
 const InvoicePrintModal = ({
   invoiceInfo,
@@ -20,55 +20,30 @@ const InvoicePrintModal = ({
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
   const [submitTarget, setSubmitTarget] = useState("");
   const [fetchedNotice, setFetchedNotice] = useState({});
-  const getContests = useFirestoreGetDocument("contests");
-  const getNotice = useFirestoreGetDocument("contest_notice");
 
   useEffect(() => {
     let isMounted = true;
-    const loadNoticeInfo = async () => {
-      if (
-        noticeInfo?.contestAssociate ||
-        invoiceInfo?.contestAssociate ||
-        contestInfo?.contestAssociate
-      ) {
-        return;
-      }
-      try {
-        if (contestInfo?.contestNoticeId) {
-          const nData = await getNotice.getDocument(
-            contestInfo.contestNoticeId
-          );
-          if (isMounted && nData) {
-            setFetchedNotice(nData);
-            return;
-          }
-        }
-        if (invoiceInfo?.contestId) {
-          const cData = await getContests.getDocument(invoiceInfo.contestId);
-          if (cData?.contestNoticeId) {
-            const nData = await getNotice.getDocument(cData.contestNoticeId);
-            if (isMounted && nData) {
-              setFetchedNotice(nData);
-              return;
-            }
-          }
-          const directNotice = await getNotice.getDocument(
-            invoiceInfo.contestId
-          );
-          if (isMounted && directNotice?.contestTitle) {
-            setFetchedNotice(directNotice);
-          }
-        }
-      } catch (err) {
-        // ignore lookup errors
-      }
-    };
+    if (
+      noticeInfo?.contestAssociate ||
+      invoiceInfo?.contestAssociate ||
+      contestInfo?.contestAssociate
+    ) {
+      return undefined;
+    }
 
-    loadNoticeInfo();
+    fetchFallbackNoticeForPrint({ invoiceInfo, contestInfo })
+      .then((notice) => {
+        if (isMounted && notice) {
+          setFetchedNotice(notice);
+        }
+      })
+      .catch(() => {
+        // ignore lookup errors
+      });
+
     return () => {
       isMounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoiceInfo, contestInfo, noticeInfo]);
 
   if (!invoiceInfo) return null;

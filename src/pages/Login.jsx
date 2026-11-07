@@ -16,7 +16,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const { signInWithEmail, handleSignOut } = useFirebaseAuth();
-  const { setCurrentUid, setCurrentUserInfo } = useContext(UserContext);
+  const { setCurrentUid, clearUserSession } = useContext(UserContext);
 
   const handleLogin = async () => {
     if (loginInfo.email === "" || loginInfo.password === "") {
@@ -32,9 +32,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       await handleSignOut();
-      setCurrentUid("");
-      setCurrentUserInfo({});
-      localStorage.removeItem("globalValue");
+      clearUserSession();
 
       const { user, error } = await signInWithEmail(
         loginInfo.email.trim(),
@@ -51,7 +49,7 @@ const Login = () => {
         setCurrentUid(user.uid);
         navigate("/");
       }
-    } catch (error) {
+    } catch {
       setMessage({
         body: "로그인 중 오류가 발생했습니다.",
         isButton: true,
@@ -96,7 +94,10 @@ const Login = () => {
       <div className="w-full max-w-md bg-white border border-neutral-200/90 rounded-3xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.05)] flex flex-col items-center">
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-y-2 mb-8">
-          <Link to="/" className="text-2xl font-black tracking-tighter text-[#111111]">
+          <Link
+            to="/"
+            className="text-2xl font-black tracking-tighter text-[#111111]"
+          >
             BDBDG
           </Link>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#111111] mt-1">

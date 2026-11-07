@@ -1,30 +1,26 @@
-import React, { useState, useEffect } from "react";
-import dayjs from "dayjs";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModalLayout from "../components/contest/ConfirmModalLayout";
 import { handleToast } from "../components/HandleToast";
-import { useFirestoreAddData } from "../hooks/useFirestores";
+import { submitNewInvoice } from "../services/contestService";
 import { calculateContestPrice } from "../utils/formatUtils";
 
 const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
-  const [invoicePrice, setInvoicePrice] = useState(0);
-  const [invoiceInfo] = useState({ ...propInvoiceInfo });
+  const [invoiceInfo] = useState(() => ({ ...propInvoiceInfo }));
   const [isLoading, setIsLoading] = useState(false);
-  const addInvoice = useFirestoreAddData("invoices_pool");
   const navigate = useNavigate();
 
-  const priceInfo = {
-    contestPriceBasic: invoiceInfo.contestPriceBasic,
-    contestPriceExtra: invoiceInfo.contestPriceExtra,
-    contestPriceExtraType: invoiceInfo.contestPriceExtraType,
-    contestPriceType1: invoiceInfo.contestPriceType1,
-    contestPriceType2: invoiceInfo.contestPriceType2,
-  };
-
-  useEffect(() => {
-    setInvoicePrice(calculateContestPrice(invoiceInfo.joins, priceInfo));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [invoiceInfo]);
+  const invoicePrice = useMemo(
+    () =>
+      calculateContestPrice(invoiceInfo.joins, {
+        contestPriceBasic: invoiceInfo.contestPriceBasic,
+        contestPriceExtra: invoiceInfo.contestPriceExtra,
+        contestPriceExtraType: invoiceInfo.contestPriceExtraType,
+        contestPriceType1: invoiceInfo.contestPriceType1,
+        contestPriceType2: invoiceInfo.contestPriceType2,
+      }),
+    [invoiceInfo]
+  );
 
   const handleInvoice = async () => {
     if (!invoiceInfo.playerName || !invoiceInfo.playerUid) {
@@ -43,29 +39,8 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
     }
 
     setIsLoading(true);
-    const randomString = Math.random().toString(36).substring(2, 6);
-    const docuId = (
-      randomString +
-      "-" +
-      Date.now().toString().substr(-6)
-    ).toUpperCase();
-
-    const rawData = {
-      ...invoiceInfo,
-      docuId,
-      isCanceled: false,
-      invoiceCreateAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
-      contestPriceSum: parseInt(invoicePrice || 0, 10),
-      createBy: "web",
-    };
-
-    const newData = {};
-    Object.keys(rawData).forEach((key) => {
-      newData[key] = rawData[key] !== undefined ? rawData[key] : "";
-    });
-
     try {
-      await addInvoice.addData(newData);
+      await submitNewInvoice(invoiceInfo, invoicePrice);
       setIsLoading(false);
       navigate("/successpage", { replace: true });
     } catch (error) {

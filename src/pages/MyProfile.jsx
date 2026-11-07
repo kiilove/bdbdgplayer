@@ -2,31 +2,22 @@ import React, { useContext, useState, useEffect } from "react";
 import { BsFillCameraFill } from "react-icons/bs";
 import { RiTrophyLine, RiCalendarLine, RiPrinterLine } from "react-icons/ri";
 import { IoChevronForward } from "react-icons/io5";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { doc, setDoc, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
+import { handleToast } from "../components/HandleToast";
 import InvoicePrintModal from "../modals/InvoicePrintModal";
 import { DEFAULT_AVATAR } from "../consts";
-import { db, storage } from "../firebase";
 import { UserContext } from "../context/UserContext";
-import { useFirestoreQuery } from "../hooks/useFirestores";
+import { fetchUserInvoices } from "../services/contestService";
+import { uploadPlayerAvatar } from "../services/playerService";
 import { calculateAge } from "../utils/formatUtils";
-
-const makeFileName = (filename, salt) => {
-  const currentTime = Date.now();
-  const ext = filename.includes(".") ? filename.split(".").pop() : "jpg";
-  return `${String(salt).toUpperCase()}${currentTime}.${ext}`;
-};
 
 const MyProfile = () => {
   const { currentUserInfo: pInfo, setCurrentUserInfo } =
     useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
-
-  const fetchInvoicesQuery = useFirestoreQuery();
   const [userInvoices, setUserInvoices] = useState([]);
   const [invoicesLoading, setInvoicesLoading] = useState(true);
   const [selectedPrintInvoice, setSelectedPrintInvoice] = useState(null);
@@ -34,53 +25,48 @@ const MyProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserInvoices = async () => {
-      const uid = pInfo?.playerUid || pInfo?.pUid;
-      if (!uid) {
-        setInvoicesLoading(false);
-        return;
-      }
-      setInvoicesLoading(true);
-      try {
-        const condition = [where("playerUid", "==", uid)];
-        const data = await fetchInvoicesQuery.getDocuments(
-          "invoices_pool",
-          condition
-        );
-        if (data) {
+    let isMounted = true;
+    const uid = pInfo?.playerUid || pInfo?.pUid;
+
+    if (!uid) {
+      setInvoicesLoading(false);
+      return undefined;
+    }
+
+    setInvoicesLoading(true);
+    fetchUserInvoices(uid)
+      .then((data) => {
+        if (isMounted && data) {
           setUserInvoices(data);
         }
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error("Fetch invoices error:", err);
-      } finally {
-        setInvoicesLoading(false);
-      }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setInvoicesLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
     };
-    fetchUserInvoices();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pInfo?.playerUid, pInfo?.pUid]);
 
   const handleFileSelect = async (e) => {
     e.preventDefault();
     const files = Array.from(e.target.files || []);
-    const uid = pInfo?.playerUid || pInfo?.pUid || pInfo?.id;
-    if (files.length === 0 || !uid || !pInfo?.id) return;
+    if (files.length === 0) return;
 
     setIsLoading(true);
     try {
-      const file = files[0];
-      const filename = makeFileName(file.name, "P");
-      const storageRef = ref(storage, `images/player/${uid}/${filename}`);
-      const uploadTask = await uploadBytesResumable(storageRef, file);
-      const downloadURL = await getDownloadURL(uploadTask.ref);
-
-      const updatedProfile = { ...pInfo, pPic: downloadURL };
-      await setDoc(doc(db, "players_pool", pInfo.id), updatedProfile, {
-        merge: true,
-      });
+      const updatedProfile = await uploadPlayerAvatar(pInfo, files[0]);
       setCurrentUserInfo(updatedProfile);
+      handleToast("success", "프로필 사진이 변경되었습니다.");
     } catch (err) {
       console.error("Profile image upload error:", err);
+      handleToast("error", "프로필 사진 업로드 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
     }

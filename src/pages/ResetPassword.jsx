@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
-import ConfirmationModal from "../messageBox/ConfirmationModal";
-import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import { useNavigate } from "react-router-dom";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
 import {
   FiCopy,
   FiCheck,
@@ -13,6 +9,9 @@ import {
   FiMail,
   FiAlertTriangle,
 } from "react-icons/fi";
+import ConfirmationModal from "../messageBox/ConfirmationModal";
+import useFirebaseAuth from "../hooks/useFirebaseAuth";
+import { findPlayerEmailsByNameAndPhone } from "../services/playerService";
 import { formatPhoneNumber, validateEmail } from "../utils/formatUtils";
 
 // Rate Limit 정책 (백그라운드 보안 로직)
@@ -148,22 +147,10 @@ const ResetPassword = () => {
     setFoundEmails(null);
 
     try {
-      const q = query(
-        collection(db, "players_pool"),
-        where("pName", "==", trimmedName)
+      const matched = await findPlayerEmailsByNameAndPhone(
+        trimmedName,
+        cleanPhone
       );
-      const snapshot = await getDocs(q);
-      const matched = [];
-
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const playerPhone = (data.pTel || "").replace(/[^0-9]/g, "");
-        if (playerPhone === cleanPhone && data.pEmail) {
-          if (!matched.includes(data.pEmail)) {
-            matched.push(data.pEmail);
-          }
-        }
-      });
 
       if (matched.length > 0) {
         setFoundEmails(matched);
@@ -172,7 +159,7 @@ const ResetPassword = () => {
           message: "입력하신 정보와 일치하는 계정을 찾을 수 없습니다.",
         });
       }
-    } catch (err) {
+    } catch {
       setIsError({
         message: "계정 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
       });
@@ -276,7 +263,7 @@ const ResetPassword = () => {
         });
         setMessageOpen(true);
       }
-    } catch (error) {
+    } catch {
       setIsError({
         code: "unknown",
         message: "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",

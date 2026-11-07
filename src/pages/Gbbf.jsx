@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
+import { useLoginPrompt } from "../hooks/useLoginPrompt";
 
 const Gbbf = () => {
   const {
@@ -14,8 +15,13 @@ const Gbbf = () => {
     isLoading,
     playerInfo: pInfo,
   } = useActiveContests();
-  const [message, setMessage] = useState({});
-  const [messageOpen, setMessageOpen] = useState(false);
+  const {
+    message,
+    messageOpen,
+    handleRequireLogin,
+    redirectLogin,
+    messageClose,
+  } = useLoginPrompt();
   const navigate = useNavigate();
 
   const noticeList = allContests.filter(
@@ -23,26 +29,6 @@ const Gbbf = () => {
       item.contestPromoter?.includes("경기도보디빌딩협회") ||
       item.contestAssociate?.includes("경기도보디빌딩협회")
   );
-
-  const redirectLogin = () => {
-    navigate("/login");
-    setMessageOpen(false);
-  };
-
-  const messageClose = () => {
-    setMessageOpen(false);
-  };
-
-  const handleRequireLogin = () => {
-    setMessage({
-      body: "대회 참가신청을 하려면 로그인이 필요합니다.",
-      body2: "로그인 페이지로 이동하시겠습니까?",
-      isButton: true,
-      confirmButtonText: "로그인 이동",
-      cancelButtonText: "취소",
-    });
-    setMessageOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] text-[#111111] flex flex-col pb-32 font-sans antialiased">

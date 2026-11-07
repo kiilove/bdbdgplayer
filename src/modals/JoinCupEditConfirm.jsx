@@ -1,73 +1,35 @@
-import React, { useState, useEffect } from "react";
-import dayjs from "dayjs";
-import { where } from "firebase/firestore";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModalLayout from "../components/contest/ConfirmModalLayout";
 import { handleToast } from "../components/HandleToast";
-import {
-  useFirestoreDeleteData,
-  useFirestoreQuery,
-  useFirestoreUpdateData,
-} from "../hooks/useFirestores";
+import { submitUpdatedInvoice } from "../services/contestService";
 import { calculateContestPrice } from "../utils/formatUtils";
 
 const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
-  const [invoicePrice, setInvoicePrice] = useState(0);
-  const [invoiceInfo] = useState({ ...propInvoiceInfo });
+  const [invoiceInfo] = useState(() => ({ ...propInvoiceInfo }));
   const [isLoading, setIsLoading] = useState(false);
-  const updateInvoice = useFirestoreUpdateData("invoices_pool");
-  const deleteEntries = useFirestoreDeleteData("contest_entrys_list");
-  const fetchEntriesQuery = useFirestoreQuery();
   const navigate = useNavigate();
 
-  const priceInfo = {
-    contestPriceBasic: invoiceInfo.contestPriceBasic,
-    contestPriceExtra: invoiceInfo.contestPriceExtra,
-    contestPriceExtraType: invoiceInfo.contestPriceExtraType,
-    contestPriceType1: invoiceInfo.contestPriceType1,
-    contestPriceType2: invoiceInfo.contestPriceType2,
-  };
+  const priceInfo = useMemo(
+    () => ({
+      contestPriceBasic: invoiceInfo.contestPriceBasic,
+      contestPriceExtra: invoiceInfo.contestPriceExtra,
+      contestPriceExtraType: invoiceInfo.contestPriceExtraType,
+      contestPriceType1: invoiceInfo.contestPriceType1,
+      contestPriceType2: invoiceInfo.contestPriceType2,
+    }),
+    [invoiceInfo]
+  );
 
-  useEffect(() => {
-    setInvoicePrice(calculateContestPrice(invoiceInfo.joins, priceInfo));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [invoiceInfo]);
-
-  const handleCleanUpEntryList = async (data) => {
-    const condition = [where("playerUid", "==", data.playerUid)];
-    const returnEntries = await fetchEntriesQuery.getDocuments(
-      "contest_entrys_list",
-      condition
-    );
-
-    if (returnEntries?.length > 0) {
-      await Promise.all(
-        returnEntries.map(async (entry) => {
-          try {
-            await deleteEntries.deleteData(entry.id);
-          } catch (error) {
-            // error handled
-          }
-        })
-      );
-    }
-  };
+  const invoicePrice = useMemo(
+    () => calculateContestPrice(invoiceInfo.joins, priceInfo),
+    [invoiceInfo.joins, priceInfo]
+  );
 
   const handleInvoice = async () => {
     setIsLoading(true);
-    const newData = {
-      ...invoiceInfo,
-      invoiceEdited: true,
-      isPriceCheck: false,
-      invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
-      contestPriceSum:
-        parseInt(calculateContestPrice(invoiceInfo.joins, priceInfo), 10) || 0,
-      createBy: "web",
-    };
-
     try {
-      await handleCleanUpEntryList(invoiceInfo);
-      await updateInvoice.updateData(invoiceInfo.id, newData);
+      await submitUpdatedInvoice(invoiceInfo, priceInfo);
       setIsLoading(false);
       navigate("/editsuccesspage", { replace: true });
     } catch (error) {

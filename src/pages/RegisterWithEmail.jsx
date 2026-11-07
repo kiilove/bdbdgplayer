@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  createUserWithEmailAndPassword,
-  fetchSignInMethodsForEmail,
-  getAuth,
-} from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
 import { ThreeDots } from "react-loader-spinner";
 import dayjs from "dayjs";
 import Policy3 from "../components/Policy3";
 import { handleToast } from "../components/HandleToast";
 import AppDrawer from "../components/common/AppDrawer";
-import { db } from "../firebase";
+import useFirebaseAuth from "../hooks/useFirebaseAuth";
+import { createPlayerProfile } from "../services/playerService";
 import {
   formatPhoneNumber,
   validateEmail,
@@ -20,6 +15,7 @@ import {
 
 const RegisterWithEmail = () => {
   const navigate = useNavigate();
+  const { signUpWithEmail, checkEmailExists } = useFirebaseAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [chkEmail, setChkEmail] = useState(false);
   const [policyDrawerOpen, setPolicyDrawerOpen] = useState(false);
@@ -117,12 +113,8 @@ const RegisterWithEmail = () => {
     }
 
     try {
-      const auth = getAuth();
-      const signInMethods = await fetchSignInMethodsForEmail(
-        auth,
-        trimmedEmail
-      );
-      if (signInMethods.length > 0) {
+      const exists = await checkEmailExists(trimmedEmail);
+      if (exists) {
         setChkEmail(false);
         setAlertMessage((prev) => ({
           ...prev,
@@ -138,7 +130,7 @@ const RegisterWithEmail = () => {
           },
         }));
       }
-    } catch (error) {
+    } catch {
       setAlertMessage((prev) => ({
         ...prev,
         email: {
@@ -164,37 +156,41 @@ const RegisterWithEmail = () => {
     if (!isFormValid || isLoading) return;
     setIsLoading(true);
     try {
-      const auth = getAuth();
-      const userCred = await createUserWithEmailAndPassword(
-        auth,
+      const { user, error } = await signUpWithEmail(
         form.pEmail.trim(),
         form.password.trim()
       );
-      const uid = userCred.user.uid;
 
-      await addDoc(collection(db, "players_pool"), {
-        pName: form.pName.trim(),
-        pEmail: form.pEmail.trim(),
+      if (error || !user) {
+        if (error?.code === "auth/email-already-in-use") {
+          setAlertMessage((prev) => ({
+            ...prev,
+            email: { code: "exist", message: "이미 사용 중인 이메일입니다." },
+          }));
+        } else {
+          handleToast(
+            "error",
+            error?.message || "회원가입 처리 중 오류가 발생했습니다."
+          );
+        }
+        return;
+      }
+
+      await createPlayerProfile({
+        pName: form.pName,
+        pEmail: form.pEmail,
         pTel: form.pTel,
         pGender: form.pGender,
-        gender: form.pGender,
         license,
-        playerUid: uid,
+        playerUid: user.uid,
       });
 
       navigate("/regsuccess");
-    } catch (error) {
-      if (error.code === "auth/email-already-in-use") {
-        setAlertMessage((prev) => ({
-          ...prev,
-          email: { code: "exist", message: "이미 사용 중인 이메일입니다." },
-        }));
-      } else {
-        handleToast(
-          "error",
-          "회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요."
-        );
-      }
+    } catch {
+      handleToast(
+        "error",
+        "회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요."
+      );
     } finally {
       setIsLoading(false);
     }

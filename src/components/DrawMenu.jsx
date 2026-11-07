@@ -8,8 +8,7 @@ import useFirebaseAuth from "../hooks/useFirebaseAuth";
 const DrawMenu = ({ setOpen }) => {
   const navigate = useNavigate();
   const { handleSignOut } = useFirebaseAuth();
-  const { currentUserInfo: pInfo, setCurrentUserInfo, setCurrentUid } =
-    useContext(UserContext);
+  const { currentUserInfo: pInfo, clearUserSession } = useContext(UserContext);
 
   const handleLogin = () => {
     setOpen();
@@ -19,12 +18,10 @@ const DrawMenu = ({ setOpen }) => {
   const handleLogout = async () => {
     try {
       await handleSignOut();
-    } catch (e) {
+    } catch {
       // ignore signOut errors
     }
-    if (setCurrentUid) setCurrentUid("");
-    setCurrentUserInfo({});
-    localStorage.removeItem("globalValue");
+    clearUserSession();
     setOpen();
     navigate("/");
   };

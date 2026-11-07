@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
-  getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
   signOut,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import { auth } from "../firebase";
 
 const useFirebaseAuth = () => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setIsLoading(false);
@@ -22,8 +22,7 @@ const useFirebaseAuth = () => {
     return () => unsubscribe();
   }, []);
 
-  const signInWithEmail = async (email, password) => {
-    const auth = getAuth();
+  const signInWithEmail = useCallback(async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -63,10 +62,9 @@ const useFirebaseAuth = () => {
       }
       return { user: null, error: { message: errorMessage } };
     }
-  };
+  }, []);
 
-  const signUpWithEmail = async (email, password) => {
-    const auth = getAuth();
+  const signUpWithEmail = useCallback(async (email, password) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -94,12 +92,16 @@ const useFirebaseAuth = () => {
           errorMessage = "회원가입 중 오류가 발생했습니다.";
           break;
       }
-      return { user: null, error: { message: errorMessage } };
+      return { user: null, error: { code: error.code, message: errorMessage } };
     }
-  };
+  }, []);
 
-  const handleSignOut = async () => {
-    const auth = getAuth();
+  const checkEmailExists = useCallback(async (email) => {
+    const methods = await fetchSignInMethodsForEmail(auth, email.trim());
+    return Array.isArray(methods) && methods.length > 0;
+  }, []);
+
+  const handleSignOut = useCallback(async () => {
     try {
       await signOut(auth);
       setUser(null);
@@ -107,10 +109,9 @@ const useFirebaseAuth = () => {
     } catch (error) {
       return { user: null, error: { message: error.message } };
     }
-  };
+  }, []);
 
-  const resetPassword = async (email) => {
-    const auth = getAuth();
+  const resetPassword = useCallback(async (email) => {
     auth.languageCode = "ko";
     if (!email || !email.trim()) {
       return {
@@ -150,8 +151,7 @@ const useFirebaseAuth = () => {
           errorMessage = "네트워크 연결 상태를 확인해주세요.";
           break;
         default:
-          errorMessage =
-            "비밀번호 재설정 메일 발송 중 오류가 발생했습니다.";
+          errorMessage = "비밀번호 재설정 메일 발송 중 오류가 발생했습니다.";
           break;
       }
       return {
@@ -159,13 +159,14 @@ const useFirebaseAuth = () => {
         error: { code: error.code || "error", message: errorMessage },
       };
     }
-  };
+  }, []);
 
   return {
     user,
     isLoading,
     signInWithEmail,
     signUpWithEmail,
+    checkEmailExists,
     handleSignOut,
     resetPassword,
   };

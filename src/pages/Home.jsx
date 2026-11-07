@@ -7,6 +7,7 @@ import BottomMenu from "../components/BottomMenu";
 import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
+import { useLoginPrompt } from "../hooks/useLoginPrompt";
 
 const isGbbfDirectContest = (item) =>
   Boolean(
@@ -21,31 +22,16 @@ const Home = () => {
     isLoading,
     playerInfo: pInfo,
   } = useActiveContests();
+  const {
+    message,
+    messageOpen,
+    handleRequireLogin,
+    redirectLogin,
+    messageClose,
+  } = useLoginPrompt();
   const [activeTab, setActiveTab] = useState("all"); // 'all' | 'gbbf' | 'sub'
-  const [message, setMessage] = useState({});
-  const [messageOpen, setMessageOpen] = useState(false);
   const tabRefs = useRef({});
   const navigate = useNavigate();
-
-  const redirectLogin = () => {
-    navigate("/login");
-    setMessageOpen(false);
-  };
-
-  const messageClose = () => {
-    setMessageOpen(false);
-  };
-
-  const handleRequireLogin = () => {
-    setMessage({
-      body: "대회 참가신청을 하려면 로그인이 필요합니다.",
-      body2: "로그인 페이지로 이동하시겠습니까?",
-      isButton: true,
-      confirmButtonText: "로그인 이동",
-      cancelButtonText: "취소",
-    });
-    setMessageOpen(true);
-  };
 
   const handleTabSelect = (tabId) => {
     setActiveTab(tabId);

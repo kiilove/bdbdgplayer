@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { useFirestoreGetDocument } from "./useFirestores";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { handleToast } from "../components/HandleToast";
 import {
   formatBirthDate,
@@ -9,13 +8,21 @@ import {
   validateDate,
 } from "../utils/formatUtils";
 
+const computeFieldErrors = (targetInfo = {}) => ({
+  playerName: !targetInfo.playerName || targetInfo.playerName.trim() === "",
+  playerTel: !validatePhoneNumber(targetInfo.playerTel),
+  playerBirth: !validateDate(targetInfo.playerBirth),
+  playerGender: !targetInfo.playerGender,
+  playerGym: !targetInfo.playerGym || targetInfo.playerGym.trim() === "",
+});
+
 export const useContestForm = ({ initialIsValidate = false } = {}) => {
   const [invoiceInfo, setInvoiceInfo] = useState({ joins: [] });
   const [categorys, setCategorys] = useState([]);
   const [filteredCategorys, setFilteredCategorys] = useState([]);
   const [grades, setGrades] = useState([]);
   const [chkAllItem, setChkAllItem] = useState(true);
-  const [playerAge, setPlayerAge] = useState();
+  const [playerAge, setPlayerAge] = useState(0);
   const [isValidate, setIsValidate] = useState(initialIsValidate);
   const [isConfirmedInfo, setIsConfirmedInfo] = useState(initialIsValidate);
   const [hasAttemptedValidate, setHasAttemptedValidate] = useState(false);
@@ -27,74 +34,52 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
     playerGender: false,
   });
 
-  const pNameRef = useRef();
-  const pTelRef = useRef();
-  const pGenderRef = useRef();
-  const pEmailRef = useRef();
-  const pBirthRef = useRef();
-  const pGymRef = useRef();
-  const pTextRef = useRef();
+  const pNameRef = useRef(null);
+  const pTelRef = useRef(null);
+  const pGenderRef = useRef(null);
+  const pEmailRef = useRef(null);
+  const pBirthRef = useRef(null);
+  const pGymRef = useRef(null);
+  const pTextRef = useRef(null);
 
-  const getCategorys = useFirestoreGetDocument("contest_categorys_list");
-  const getGrades = useFirestoreGetDocument("contest_grades_list");
-
-  const fetchCategorysAndGrades = async (categoryListId, gradeListId, onError) => {
-    if (!categoryListId || !gradeListId) return;
-    try {
-      const categoryData = await getCategorys.getDocument(categoryListId);
-      const gradeData = await getGrades.getDocument(gradeListId);
-      if (categoryData?.id && gradeData?.id) {
-        const filteredCategories = (categoryData.categorys || []).filter(
-          (category) => category.contestCategorySection !== "그랑프리"
-        );
-        setCategorys([...filteredCategories]);
-        setFilteredCategorys([...filteredCategories]);
-        setGrades([...(gradeData.grades || [])]);
-      }
-    } catch (err) {
-      if (onError) onError(err);
-    }
-  };
+  const setCategoriesAndGrades = useCallback(
+    (nextCategories = [], nextGrades = []) => {
+      setCategorys([...nextCategories]);
+      setFilteredCategorys([...nextCategories]);
+      setGrades([...nextGrades]);
+    },
+    []
+  );
 
   useEffect(() => {
-    let age;
     const gender = invoiceInfo.playerGender === "m" ? "남" : "여";
-    if (invoiceInfo.playerBirth) {
-      age = calculateAge(invoiceInfo.playerBirth);
-    }
+    const age = invoiceInfo.playerBirth
+      ? calculateAge(invoiceInfo.playerBirth)
+      : 0;
     setPlayerAge(age);
 
     if (chkAllItem) {
       setFilteredCategorys([...categorys]);
     } else {
-      const dummy = categorys.filter(
+      const genderFiltered = categorys.filter(
         (category) =>
           category.contestCategoryGender === gender ||
           category.contestCategoryGender === "무관"
       );
-      setFilteredCategorys([...dummy]);
+      setFilteredCategorys(genderFiltered);
     }
   }, [categorys, chkAllItem, invoiceInfo.playerGender, invoiceInfo.playerBirth]);
 
-  const computeFieldErrors = (targetInfo = invoiceInfo) => ({
-    playerName: !targetInfo.playerName || targetInfo.playerName.trim() === "",
-    playerTel: !validatePhoneNumber(targetInfo.playerTel),
-    playerBirth: !validateDate(targetInfo.playerBirth),
-    playerGender: !targetInfo.playerGender,
-    playerGym: !targetInfo.playerGym || targetInfo.playerGym.trim() === "",
-  });
-
   useEffect(() => {
     const errors = computeFieldErrors(invoiceInfo);
-    const hasInvalid = Object.values(errors).some((u) => u === true);
+    const hasInvalid = Object.values(errors).some((flag) => flag === true);
     setIsValidate(!hasInvalid);
     if (hasAttemptedValidate) {
       setPlayerValidate(errors);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoiceInfo, hasAttemptedValidate]);
 
-  const handleInputs = (e) => {
+  const handleInputs = useCallback((e) => {
     const { name, value } = e.target;
     let formattedValue = value;
 
@@ -108,45 +93,47 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
       ...prev,
       [name]: formattedValue,
     }));
-  };
+  }, []);
 
-  const handleInvoiceInfo = (e) => {
+  const handleInvoiceInfo = useCallback((e) => {
     const { name, id, value } = e.target;
-    if (!value || value === "체급선택") {
-      const dummy = (invoiceInfo.joins || []).filter(
-        (category) => category.contestCategoryId !== id
+
+    setInvoiceInfo((prev) => {
+      const currentJoins = Array.isArray(prev.joins) ? [...prev.joins] : [];
+
+      if (!value || value === "체급선택") {
+        return {
+          ...prev,
+          joins: currentJoins.filter(
+            (category) => category.contestCategoryId !== id
+          ),
+        };
+      }
+
+      const [gradeId, gradeTitle, categoryPriceType = ""] = value.split(",");
+      const newEntry = {
+        contestCategoryId: id,
+        contestCategoryTitle: name,
+        contestCategoryPriceType: categoryPriceType,
+        contestGradeId: gradeId,
+        contestGradeTitle: gradeTitle,
+      };
+
+      const existingIdx = currentJoins.findIndex(
+        (category) => category.contestCategoryId === id
       );
-      setInvoiceInfo((prev) => ({ ...prev, joins: dummy }));
-      return;
-    }
 
-    const splitValue = value.split(",");
-    const gradeId = splitValue[0];
-    const gradeTitle = splitValue[1];
-    const categoryPriceType = splitValue[2] || "";
-    const dummy = [...(invoiceInfo.joins || [])];
-    const findIndex = dummy.findIndex(
-      (category) => category.contestCategoryId === id
-    );
+      if (existingIdx === -1) {
+        currentJoins.push(newEntry);
+      } else {
+        currentJoins.splice(existingIdx, 1, newEntry);
+      }
 
-    const newValue = {
-      contestCategoryId: id,
-      contestCategoryTitle: name,
-      contestCategoryPriceType: categoryPriceType,
-      contestGradeId: gradeId,
-      contestGradeTitle: gradeTitle,
-    };
+      return { ...prev, joins: currentJoins };
+    });
+  }, []);
 
-    if (findIndex === -1) {
-      dummy.push({ ...newValue });
-    } else {
-      dummy.splice(findIndex, 1, { ...newValue });
-    }
-
-    setInvoiceInfo((prev) => ({ ...prev, joins: dummy }));
-  };
-
-  const handlePlayerValidateButtonClick = () => {
+  const handlePlayerValidateButtonClick = useCallback(() => {
     setHasAttemptedValidate(true);
     const errors = computeFieldErrors(invoiceInfo);
     setPlayerValidate(errors);
@@ -177,7 +164,7 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
 
     setIsValidate(true);
     setIsConfirmedInfo(true);
-  };
+  }, [invoiceInfo]);
 
   return {
     invoiceInfo,
@@ -201,7 +188,7 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
       pGymRef,
       pTextRef,
     },
-    fetchCategorysAndGrades,
+    setCategoriesAndGrades,
     handleInputs,
     handleInvoiceInfo,
     handlePlayerValidateButtonClick,
