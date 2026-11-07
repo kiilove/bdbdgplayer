@@ -169,6 +169,8 @@ const InvoicePrintModal = ({
 
     const doc = iframe.contentWindow.document;
     const docTitle = `접수증_${contestTitle}_${invoiceInfo.playerName || "선수"}`;
+    const originalTitle = document.title;
+    document.title = docTitle;
 
     doc.open();
     doc.write(`
@@ -180,14 +182,14 @@ const InvoicePrintModal = ({
         <style>
           @page {
             size: A4 portrait;
-            margin: 12mm;
+            margin: 0mm;
           }
           * {
             box-sizing: border-box;
           }
           body {
             margin: 0;
-            padding: 0;
+            padding: 12mm;
             font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", sans-serif;
             color: #222222;
             background: #ffffff;
@@ -405,6 +407,7 @@ const InvoicePrintModal = ({
     setTimeout(() => {
       iframe.contentWindow.focus();
       iframe.contentWindow.print();
+      document.title = originalTitle;
       setTimeout(() => {
         if (document.body.contains(iframe)) {
           document.body.removeChild(iframe);
