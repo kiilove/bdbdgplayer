@@ -8,6 +8,7 @@ import {
   useFirestoreQuery,
   useFirestoreUpdateData,
 } from "../hooks/useFirestores";
+import { calculateContestPrice } from "../utils/formatUtils";
 import { RiTrophyLine, RiUserLine, RiCheckDoubleLine, RiCloseLine, RiErrorWarningLine } from "react-icons/ri";
 
 const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
@@ -38,55 +39,6 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
     }
   };
 
-  const handlePrice = (data, priceInfo) => {
-    let basePrice = 0;
-    let extraPrice = 0;
-    let totalPrice = 0;
-    const categoryCount = data ? data.length : 0;
-
-    if (categoryCount <= 1) {
-      if (data && data.length > 0) {
-        switch (data[0].contestCategoryPriceType) {
-          case "기본참가비":
-            totalPrice = parseInt(priceInfo.contestPriceBasic || 0);
-            break;
-          case "타입1":
-            totalPrice = parseInt(priceInfo.contestPriceType1 || 0);
-            break;
-          case "타입2":
-            totalPrice = parseInt(priceInfo.contestPriceType2 || 0);
-            break;
-          default:
-            totalPrice = parseInt(priceInfo.contestPriceBasic || 0);
-            break;
-        }
-      }
-    } else {
-      if (priceInfo.contestPriceExtraType === "누적") {
-        extraPrice = parseInt(priceInfo.contestPriceExtra || 0) * (categoryCount - 1);
-      } else if (priceInfo.contestPriceExtraType === "정액") {
-        extraPrice = parseInt(priceInfo.contestPriceExtra || 0);
-      } else {
-        extraPrice = 0;
-      }
-
-      const findType1 = data.some((d) => d.contestCategoryPriceType === "타입1");
-      const findType2 = data.some((d) => d.contestCategoryPriceType === "타입2");
-
-      if (findType1) {
-        basePrice = parseInt(priceInfo.contestPriceType1 || 0);
-      } else if (findType2) {
-        basePrice = parseInt(priceInfo.contestPriceType2 || 0);
-      } else {
-        basePrice = parseInt(priceInfo.contestPriceBasic || 0);
-      }
-
-      totalPrice = basePrice + extraPrice;
-    }
-
-    return totalPrice;
-  };
-
   const priceInfo = {
     contestPriceBasic: invoiceInfo.contestPriceBasic,
     contestPriceExtra: invoiceInfo.contestPriceExtra,
@@ -96,7 +48,7 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
   };
 
   useEffect(() => {
-    setInvoicePrice(handlePrice(invoiceInfo.joins, priceInfo));
+    setInvoicePrice(calculateContestPrice(invoiceInfo.joins, priceInfo));
   }, [invoiceInfo]);
 
   const handleInvoice = () => {
@@ -110,7 +62,7 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
       invoiceEdited: true,
       isPriceCheck: false,
       invoiceEditAt: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
-      contestPriceSum: parseInt(handlePrice(invoiceInfo.joins, priceInfo)),
+      contestPriceSum: parseInt(calculateContestPrice(invoiceInfo.joins, priceInfo), 10) || 0,
       createBy: "web",
     };
 

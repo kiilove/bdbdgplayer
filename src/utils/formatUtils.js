@@ -64,3 +64,97 @@ export const calculateAge = (birthDateStr) => {
 
   return age < 0 ? 0 : age;
 };
+
+/**
+ * 이메일 유효성 검사
+ */
+export const validateEmail = (email) => {
+  return Boolean(email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+};
+
+/**
+ * 전화번호 유효성 검사
+ */
+export const validatePhoneNumber = (phoneNumber) => {
+  if (!phoneNumber) return false;
+  const cleaned = String(phoneNumber).replace(/[^0-9]/g, "");
+  if (cleaned.length < 9 || cleaned.length > 11) return false;
+  return /^\d{2,3}-\d{3,4}-\d{4}$/.test(formatPhoneNumber(phoneNumber));
+};
+
+/**
+ * 생년월일(YYYY-MM-DD) 유효성 검사
+ */
+export const validateDate = (date) => {
+  return Boolean(date && /^\d{4}-\d{2}-\d{2}$/.test(date));
+};
+
+/**
+ * 종목 가격 타입 정규화 ("타입1" / "type1" 모두 호환)
+ */
+export const normalizePriceType = (rawType) => {
+  if (!rawType) return "basic";
+  const str = String(rawType).trim().toLowerCase();
+  if (str === "타입1" || str === "type1") return "type1";
+  if (str === "타입2" || str === "type2") return "type2";
+  return "basic";
+};
+
+/**
+ * 종목 카드 우측 참가비 배지 텍스트 반환
+ */
+export const getCategoryPriceBadgeText = (rawType, priceSource = {}) => {
+  const norm = normalizePriceType(rawType);
+  if (norm === "type1" && Number(priceSource?.contestPriceType1) > 0) {
+    return `${Number(priceSource.contestPriceType1).toLocaleString()}원`;
+  }
+  if (norm === "type2" && Number(priceSource?.contestPriceType2) > 0) {
+    return `${Number(priceSource.contestPriceType2).toLocaleString()}원`;
+  }
+  return null;
+};
+
+/**
+ * 참가 신청 종목 배열과 대회 가격 정책을 기반으로 총 참가비 계산
+ */
+export const calculateContestPrice = (joins = [], priceInfo = {}) => {
+  const list = Array.isArray(joins) ? joins : [];
+  const categoryCount = list.length;
+  if (categoryCount === 0) return 0;
+
+  const basicPrice = parseInt(priceInfo.contestPriceBasic || 0, 10) || 0;
+  const type1Price = parseInt(priceInfo.contestPriceType1 || 0, 10) || 0;
+  const type2Price = parseInt(priceInfo.contestPriceType2 || 0, 10) || 0;
+  const extraUnit = parseInt(priceInfo.contestPriceExtra || 0, 10) || 0;
+  const extraType = priceInfo.contestPriceExtraType || "";
+
+  if (categoryCount === 1) {
+    const norm = normalizePriceType(list[0].contestCategoryPriceType);
+    if (norm === "type1") return type1Price || basicPrice;
+    if (norm === "type2") return type2Price || basicPrice;
+    return basicPrice;
+  }
+
+  let extraPrice = 0;
+  if (extraType === "누적") {
+    extraPrice = extraUnit * (categoryCount - 1);
+  } else if (extraType === "정액") {
+    extraPrice = extraUnit;
+  }
+
+  const hasType1 = list.some(
+    (d) => normalizePriceType(d.contestCategoryPriceType) === "type1"
+  );
+  const hasType2 = list.some(
+    (d) => normalizePriceType(d.contestCategoryPriceType) === "type2"
+  );
+
+  let basePrice = basicPrice;
+  if (hasType1 && type1Price > 0) {
+    basePrice = type1Price;
+  } else if (hasType2 && type2Price > 0) {
+    basePrice = type2Price;
+  }
+
+  return basePrice + extraPrice;
+};

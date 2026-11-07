@@ -12,8 +12,15 @@ import { useFirestoreGetDocument } from "../hooks/useFirestores";
 import JoinCupEditConfirm from "../modals/JoinCupEditConfirm";
 import InvoicePrintModal from "../modals/InvoicePrintModal";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
-import { formatBirthDate, formatPhoneNumber, calculateAge } from "../utils/formatUtils";
-import { BsFillQuestionCircleFill } from "react-icons/bs";
+import {
+  formatBirthDate,
+  formatPhoneNumber,
+  calculateAge,
+  validatePhoneNumber,
+  validateDate,
+  getCategoryPriceBadgeText,
+  calculateContestPrice,
+} from "../utils/formatUtils";
 import dayjs from "dayjs";
 
 const ContestJoinEdit = () => {
@@ -158,33 +165,6 @@ const ContestJoinEdit = () => {
     }
   };
 
-  function calculateAge(birthDate) {
-    const today = new Date();
-    const birth = new Date(birthDate);
-
-    let age = today.getFullYear() - birth.getFullYear();
-
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birth.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
-  }
-
-  const handelOptionOpen = () => {
-    setMessage({
-      body: "무대사진5컷: 6만원",
-      body2: "문의:정태천 대표(010-4886-0047)",
-      body3: "우리은행 1002-250-338392 정태천",
-      isButton: true,
-      confirmButtonText: "확인",
-    });
-    setOptionOpen(true);
-  };
   useEffect(() => {
     fetchInvoice();
   }, []);
@@ -214,7 +194,7 @@ const ContestJoinEdit = () => {
       );
       setFilteredCategorys([...dummy]);
     }
-  }, [chkAllItem, invoiceInfo.playerGender, invoiceInfo.playerBirth]);
+  }, [categorys, chkAllItem, invoiceInfo.playerGender, invoiceInfo.playerBirth]);
 
   const fileSave = (fileUrl) => {
     const fileURL = fileUrl;
@@ -292,42 +272,7 @@ const ContestJoinEdit = () => {
     }
   };
 
-  function validatePhoneNumber(phoneNumber) {
-    if (!phoneNumber) return false;
-    const cleaned = String(phoneNumber).replace(/[^0-9]/g, "");
-    if (cleaned.length < 9 || cleaned.length > 11) return false;
-    return /^\d{2,3}-\d{3,4}-\d{4}$/.test(formatPhoneNumber(phoneNumber));
-  }
-
-  function validateDate(date) {
-    return date && /^\d{4}-\d{2}-\d{2}$/.test(date);
-  }
-
-  function formatPhoneNumber(phoneNumber) {
-    if (!phoneNumber) return "";
-    const cleaned = String(phoneNumber).replace(/[^0-9]/g, "").slice(0, 11);
-
-    if (cleaned.startsWith("02")) {
-      if (cleaned.length <= 2) return cleaned;
-      if (cleaned.length <= 5) return `${cleaned.slice(0, 2)}-${cleaned.slice(2)}`;
-      if (cleaned.length <= 9) return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 5)}-${cleaned.slice(5)}`;
-      return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 6)}-${cleaned.slice(6, 10)}`;
-    } else {
-      if (cleaned.length <= 3) return cleaned;
-      if (cleaned.length <= 7) return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
-      if (cleaned.length <= 10) return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-      return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7, 11)}`;
-    }
-  }
-
-  function formatDate(date) {
-    if (!date) return "";
-    const sanitizedDate = date.replace(/[^\d.-]/g, "");
-    const match = sanitizedDate.match(/^(\d{0,4})(\d{0,2})(\d{0,2})$/);
-    if (!match) return date;
-    const formattedDate = match.slice(1).filter(Boolean).join("-");
-    return formattedDate;
-  }
+  const priceSource = noticeInfo?.contestPriceBasic ? noticeInfo : invoiceInfo;
 
   return (
     <div className="min-h-screen bg-[#0B0B0B] text-white font-sans antialiased pb-28">
@@ -581,12 +526,25 @@ const ContestJoinEdit = () => {
                 {/* Step 2: Category & Grade Selection */}
                 {isValidate && (
                   <div className="bg-[#141414] border border-neutral-800 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col gap-y-6">
-                    <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-800/80 pb-4">
                       <h2 className="text-lg md:text-xl font-black text-white flex items-center gap-x-2.5">
                         <span className="w-7 h-7 rounded-full bg-white text-black text-xs flex items-center justify-center font-black">2</span>
                         참가 종목 및 체급 변경
                       </h2>
-                      <span className="text-xs text-neutral-400 font-bold bg-neutral-800 px-3 py-1 rounded-full border border-neutral-700">종목 중복 가능 (각 종목당 1개 체급 선택)</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setChkAllItem((prev) => !prev)}
+                          className={`text-xs font-bold px-3 py-1.5 rounded-full border transition cursor-pointer ${
+                            !chkAllItem
+                              ? "bg-white text-black border-white"
+                              : "bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-neutral-500"
+                          }`}
+                        >
+                          {!chkAllItem ? "내 성별 종목만 표시 중" : "내 성별 종목만 보기"}
+                        </button>
+                        <span className="text-xs text-neutral-400 font-bold bg-neutral-800 px-3 py-1.5 rounded-full border border-neutral-700">종목 중복 가능</span>
+                      </div>
                     </div>
 
                     {/* 참가비 유의사항 안내 박스 */}
@@ -616,15 +574,7 @@ const ContestJoinEdit = () => {
                             (join) => join.contestCategoryId === cId
                           );
 
-                          const badgeText = (() => {
-                            if (cType === "type1" && contests.contestPriceType1) {
-                              return `+${contests.contestPriceType1.toLocaleString()}원`;
-                            }
-                            if (cType === "type2" && contests.contestPriceType2) {
-                              return `+${contests.contestPriceType2.toLocaleString()}원`;
-                            }
-                            return null;
-                          })();
+                          const badgeText = getCategoryPriceBadgeText(cType, priceSource);
 
                           return (
                             <div
@@ -719,6 +669,15 @@ const ContestJoinEdit = () => {
                           </span>
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {invoiceInfo.joins?.length > 0 && (
+                    <div className="flex items-center justify-between bg-neutral-900 border border-neutral-800 rounded-2xl px-4 py-3 text-xs">
+                      <span className="font-bold text-neutral-400">예상 참가비 합계</span>
+                      <span className="text-base font-black text-white">
+                        {calculateContestPrice(invoiceInfo.joins, priceSource).toLocaleString()} 원
+                      </span>
                     </div>
                   )}
 

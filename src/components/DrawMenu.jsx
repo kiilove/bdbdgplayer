@@ -1,28 +1,29 @@
-import React from "react";
+import React, { useContext } from "react";
 import { DEFAULT_AVATAR } from "../consts";
-import QrGenerator from "./QrGenerator";
-import { IoLogOutOutline, IoCloseOutline } from "react-icons/io5";
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { json, useNavigate } from "react-router-dom";
-import { PlayerEditContext } from "../context/PlayerContext";
+import { IoCloseOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import useFirebaseAuth from "../hooks/useFirebaseAuth";
 
 const DrawMenu = ({ setOpen }) => {
   const navigate = useNavigate();
-  const { currentUserInfo: pInfo, setCurrentUserInfo } =
+  const { handleSignOut } = useFirebaseAuth();
+  const { currentUserInfo: pInfo, setCurrentUserInfo, setCurrentUid } =
     useContext(UserContext);
 
   const handleLogin = () => {
     setOpen();
     navigate("/login");
   };
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await handleSignOut();
+    } catch (e) {
+      // ignore signOut errors
+    }
+    if (setCurrentUid) setCurrentUid("");
     setCurrentUserInfo({});
-    localStorage.setItem(
-      "globalValue",
-      JSON.stringify({ value: "", token: "" })
-    );
+    localStorage.removeItem("globalValue");
     setOpen();
     navigate("/");
   };

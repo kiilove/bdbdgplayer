@@ -1,12 +1,10 @@
-import React, { useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import BottomMenu from "../components/BottomMenu";
-import { AuthContext } from "../context/AuthContext";
 import { BsFillCameraFill } from "react-icons/bs";
 import { DEFAULT_AVATAR } from "../consts";
 import { db, storage } from "../firebase";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { doc, setDoc, where } from "firebase/firestore";
-import { PlayerEditContext } from "../context/PlayerContext";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { RotatingLines } from "react-loader-spinner";
@@ -24,10 +22,7 @@ const makeFileName = (filename, salt) => {
 
 const MyProfile = () => {
   const { currentUserInfo: pInfo, setCurrentUserInfo } = useContext(UserContext);
-  const { userInfo } = useContext(AuthContext);
-  const { editDispatch } = useContext(PlayerEditContext);
   const [playerInfo, setPlayerInfo] = useState({ ...pInfo });
-  const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [downloadURLs, setDownloadURLs] = useState([{ link: "", filename: "" }]);
   
@@ -100,7 +95,6 @@ const MyProfile = () => {
   const handleFileSelect = async (e) => {
     e.preventDefault();
     const path = `images/player/${pInfo.pUid}`;
-    setFiles(Array.prototype.slice.call(e.target.files));
     await uploadFiles(Array.prototype.slice.call(e.target.files), path);
   };
 
@@ -115,17 +109,18 @@ const MyProfile = () => {
     [pInfo.id]
   );
 
-  useMemo(() => {
+  useEffect(() => {
     if (downloadURLs[0].link !== "") {
       setPlayerInfo((prev) => ({ ...prev, pPic: downloadURLs[0].link }));
     }
   }, [downloadURLs]);
 
-  useMemo(() => {
+  useEffect(() => {
     if (playerInfo.pPic !== "") {
       updatePlayer(playerInfo);
       setCurrentUserInfo({ ...pInfo, ...playerInfo });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerInfo.pPic]);
 
   return (
@@ -269,11 +264,17 @@ const MyProfile = () => {
                       </span>
                     </div>
                     <span className={`text-xs font-bold px-3 py-1 rounded-full border whitespace-nowrap ${
-                      inv.isPriceCheck 
+                      inv.isCanceled
+                        ? "bg-rose-950/50 text-rose-400 border-rose-800"
+                        : inv.isPriceCheck 
                         ? "bg-white text-black border-white font-black" 
                         : "bg-neutral-800 text-neutral-300 border-neutral-700"
                     }`}>
-                      {inv.isPriceCheck ? "입금확인 완료" : "입금 대기중"}
+                      {inv.isCanceled
+                        ? "접수 취소됨"
+                        : inv.isPriceCheck
+                        ? "입금확인 완료"
+                        : "입금 대기중"}
                     </span>
                   </div>
 
@@ -295,23 +296,25 @@ const MyProfile = () => {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedPrintInvoice(inv)}
-                        className="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 font-bold text-xs rounded-full transition shadow-md cursor-pointer flex items-center gap-1.5 active:scale-95"
-                      >
-                        <RiPrinterLine className="text-sm" />
-                        <span>접수증 출력 / PDF</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/contestjoinedit/${inv.id}`)}
-                        className="px-4 py-2 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full transition shadow-md cursor-pointer active:scale-95"
-                      >
-                        신청내역 수정 &gt;
-                      </button>
-                    </div>
+                    {!inv.isCanceled && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPrintInvoice(inv)}
+                          className="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 font-bold text-xs rounded-full transition shadow-md cursor-pointer flex items-center gap-1.5 active:scale-95"
+                        >
+                          <RiPrinterLine className="text-sm" />
+                          <span>접수증 출력 / PDF</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/contestjoinedit/${inv.id}`)}
+                          className="px-4 py-2 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full transition shadow-md cursor-pointer active:scale-95"
+                        >
+                          신청내역 수정 &gt;
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
