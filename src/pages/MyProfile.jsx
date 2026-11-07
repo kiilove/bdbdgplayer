@@ -261,7 +261,7 @@ const MyProfile = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex flex-col gap-y-1">
                       <span className="text-[11px] font-black text-neutral-400 uppercase tracking-widest">
-                        {inv.contestPromoter || "공식 참가신청서"}
+                        {inv.contestAssociate || inv.contestPromoter || "공식 참가신청서"}
                       </span>
                       <h4 className="text-base font-black text-white tracking-tight">{inv.contestTitle}</h4>
                       <span className="text-xs text-neutral-400 font-medium flex items-center gap-x-1.5 mt-0.5">

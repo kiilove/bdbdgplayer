@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 const ContestJoinEdit = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [contests, setContests] = useState({});
+  const [noticeInfo, setNoticeInfo] = useState({});
   const [error, setError] = useState(false);
   const [playerAge, setPlayerAge] = useState();
   const [modal, setModal] = useState(false);
@@ -44,6 +45,7 @@ const ContestJoinEdit = () => {
 
   const getInvoice = useFirestoreGetDocument("invoices_pool");
   const getContests = useFirestoreGetDocument("contests");
+  const getNotice = useFirestoreGetDocument("contest_notice");
   const getCategorys = useFirestoreGetDocument("contest_categorys_list");
   const getGrades = useFirestoreGetDocument("contest_grades_list");
 
@@ -144,6 +146,10 @@ const ContestJoinEdit = () => {
         return;
       } else {
         setContests({ ...contest });
+        const notice = await getNotice.getDocument(contest.contestNoticeId);
+        if (notice?.id) {
+          setNoticeInfo({ ...notice });
+        }
       }
     } catch (error) {
       // error handled silently
@@ -357,7 +363,13 @@ const ContestJoinEdit = () => {
               <div className="flex flex-col gap-y-2">
                 <div className="flex items-center gap-x-2">
                   <span className="text-xs font-black px-3 py-1 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 uppercase tracking-wider">
-                    {contests.contestPromoter || "보디빌딩협회"}
+                    {noticeInfo.contestAssociate ||
+                      invoiceInfo.contestAssociate ||
+                      contests.contestAssociate ||
+                      noticeInfo.contestPromoter ||
+                      invoiceInfo.contestPromoter ||
+                      contests.contestPromoter ||
+                      "보디빌딩협회"}
                   </span>
                   <span className="text-xs font-semibold text-neutral-500">참가신청 수정</span>
                 </div>
@@ -748,6 +760,7 @@ const ContestJoinEdit = () => {
             <InvoicePrintModal
               invoiceInfo={invoiceInfo}
               contestInfo={contests}
+              noticeInfo={noticeInfo}
               onClose={() => setPrintModalOpen(false)}
             />
           )}

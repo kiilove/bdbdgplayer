@@ -243,6 +243,8 @@ const ContestJoin = () => {
       contestDate: noticeInfo.contestDate || "",
       contestLocation: noticeInfo.contestLocation || "",
       conntestPromoter: noticeInfo.contestPromoter || "",
+      contestPromoter: noticeInfo.contestPromoter || "",
+      contestAssociate: noticeInfo.contestAssociate || "",
       contestCollectionFileLink: noticeInfo.contestCollectionFileLink || "",
       contestPriceBasic: noticeInfo.contestPriceBasic || 0,
       contestPriceExtra: noticeInfo.contestPriceExtra || 0,
@@ -438,7 +440,7 @@ const ContestJoin = () => {
               <div className="flex flex-col gap-y-2">
                 <div className="flex items-center gap-x-2">
                   <span className="text-xs font-black px-3 py-1 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 uppercase tracking-wider">
-                    {noticeInfo.contestPromoter || "보디빌딩협회"}
+                    {noticeInfo.contestAssociate || noticeInfo.contestPromoter || "보디빌딩협회"}
                   </span>
                   <span className="text-xs font-semibold text-neutral-500">공식 참가접수</span>
                 </div>

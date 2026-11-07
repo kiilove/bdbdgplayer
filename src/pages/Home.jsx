@@ -99,14 +99,19 @@ const Home = () => {
       );
     }
     if (activeTab === "gbbf") {
-      return item.contestPromoter?.includes("경기도");
+      return (
+        item.contestPromoter?.includes("경기도") ||
+        item.contestAssociate?.includes("경기도")
+      );
     }
     return true; // 'all'인 경우 전체 동적 노출
   });
 
   const totalCount = allContests.length;
-  const gbbfCount = allContests.filter((item) =>
-    item.contestPromoter?.includes("경기도")
+  const gbbfCount = allContests.filter(
+    (item) =>
+      item.contestPromoter?.includes("경기도") ||
+      item.contestAssociate?.includes("경기도")
   ).length;
   const yonginCount = allContests.filter(
     (item) =>
@@ -267,7 +272,7 @@ const Home = () => {
                   <div className="lg:col-span-7 flex flex-col gap-y-6">
                     <div>
                       <span className="text-[11px] font-black tracking-widest text-neutral-400 uppercase bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full inline-block">
-                        {item.contestPromoter || item.contestAssociate || "주관 협회"}
+                        {item.contestAssociate || item.contestPromoter || "주관 협회"}
                       </span>
                       <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-3 leading-snug break-keep">
                         {item.contestTitle}
