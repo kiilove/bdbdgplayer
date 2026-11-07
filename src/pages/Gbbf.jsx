@@ -56,25 +56,29 @@ const Gbbf = () => {
         message={message}
       />
 
-      <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-7 md:py-10 flex flex-col gap-y-8">
+      <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
         <section className="rounded-3xl bg-white border border-neutral-200/90 p-6 sm:p-9 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="flex flex-col gap-y-2.5 max-w-2xl">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#F5F5F7] border border-neutral-200/80 text-xs font-bold text-neutral-700 w-fit">
-                경기도보디빌딩협회 (GBBF) 공식 승인
-              </span>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight leading-tight break-keep">
-                경기도보디빌딩협회 주관 대회
+            <div className="flex flex-col gap-y-3 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111111] text-white text-xs font-bold w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>경기도보디빌딩협회 (GBBF) 공식 승인</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight leading-[1.3] break-keep">
+                경기도보디빌딩협회 <br className="sm:hidden" />
+                공식 주관 대회 일정
               </h1>
               <p className="text-sm sm:text-base text-neutral-600 font-medium leading-relaxed break-keep">
-                경기도보디빌딩협회에서 주관 및 승인한 공식 보디빌딩 & 피트니스 대회 공고 목록입니다.
+                경기도보디빌딩협회에서 직접 주관 및 승인한{" "}
+                <br className="sm:hidden" />
+                공식 보디빌딩 & 피트니스 대회 공고 목록입니다.
               </p>
             </div>
 
             <button
               type="button"
               onClick={() => navigate("/")}
-              className="px-5 py-3 bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] border border-neutral-200 font-bold text-sm rounded-full transition cursor-pointer whitespace-nowrap shrink-0"
+              className="w-full sm:w-auto px-5 py-3.5 bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] border border-neutral-200 font-bold text-sm rounded-full transition cursor-pointer whitespace-nowrap shrink-0 text-center"
             >
               전체 대회 통합 보기
             </button>
@@ -111,7 +115,7 @@ const Gbbf = () => {
                   isLoggedIn={Boolean(pInfo?.playerUid)}
                   onRequireLogin={handleRequireLogin}
                   variant="horizontal"
-                  posterBadgeText="경기도보디빌딩협회"
+                  posterBadgeText="접수중"
                 />
               );
             })}

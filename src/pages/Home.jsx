@@ -126,19 +126,23 @@ const Home = () => {
         message={message}
       />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-7 md:py-10 flex flex-col gap-y-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
         {/* Clean Editorial Hero Banner */}
         <section className="rounded-3xl bg-white border border-neutral-200/90 p-6 sm:p-10 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex flex-col gap-y-3 max-w-2xl">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#F5F5F7] border border-neutral-200/80 text-xs font-bold text-neutral-700 w-fit">
-                공식 협회 주관 대회 통합 접수
-              </span>
-              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#111111] leading-tight break-keep">
-                보디빌딩 & 피트니스 공식 대회 참가접수
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111111] text-white text-xs font-bold w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>공식 협회 주관 대회 통합 접수</span>
+              </div>
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#111111] leading-[1.3] break-keep">
+                보디빌딩 & 피트니스 <br className="sm:hidden" />
+                공식 대회 참가접수
               </h1>
               <p className="text-sm sm:text-base text-neutral-600 font-medium leading-relaxed break-keep">
-                현재 접수 중인 대회의 모집 요강을 확인하고, 온라인 참가신청 및 접수증 출력을 간편하게 진행하세요.
+                현재 접수 중인 대회의 모집 요강을 확인하고,{" "}
+                <br className="sm:hidden" />
+                온라인 참가신청 및 접수증 출력을 간편하게 진행하세요.
               </p>
             </div>
 
