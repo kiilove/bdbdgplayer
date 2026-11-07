@@ -6,8 +6,6 @@ import {
   getAuth,
 } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { ThreeDots } from "react-loader-spinner";
 import dayjs from "dayjs";
 import Policy3 from "../components/Policy3";
@@ -69,7 +67,7 @@ const RegisterWithEmail = () => {
     if (nextForm.password.length > 0 && nextForm.password.length < 6) {
       setAlertMessage((prev) => ({
         ...prev,
-        pwd: { code: "short", message: "6자리 이상 입력해주세요." },
+        pwd: { code: "short", message: "비밀번호는 6자리 이상 입력해주세요." },
       }));
     } else if (
       nextForm.confirmPassword.length > 0 &&
@@ -127,7 +125,7 @@ const RegisterWithEmail = () => {
         setChkEmail(false);
         setAlertMessage((prev) => ({
           ...prev,
-          email: { code: "exist", message: "이미 사용중인 이메일입니다." },
+          email: { code: "exist", message: "이미 사용 중인 이메일입니다." },
         }));
       } else {
         setChkEmail(true);
@@ -188,7 +186,7 @@ const RegisterWithEmail = () => {
       if (error.code === "auth/email-already-in-use") {
         setAlertMessage((prev) => ({
           ...prev,
-          email: { code: "exist", message: "이미 사용중인 이메일입니다." },
+          email: { code: "exist", message: "이미 사용 중인 이메일입니다." },
         }));
       } else {
         alert("회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
@@ -199,7 +197,7 @@ const RegisterWithEmail = () => {
   };
 
   return (
-    <div className="flex w-full min-h-screen justify-center items-center bg-[#0B0B0B] text-white py-12 px-4 font-sans antialiased">
+    <div className="flex w-full min-h-screen justify-center items-center bg-[#F5F5F7] text-[#111111] py-12 px-4 font-sans antialiased">
       <AppDrawer
         open={policyDrawerOpen}
         onClose={() => setPolicyDrawerOpen(false)}
@@ -209,46 +207,43 @@ const RegisterWithEmail = () => {
       </AppDrawer>
 
       <div className="flex flex-col w-full max-w-md items-center">
-        <div className="flex w-full justify-center flex-col items-center gap-y-2 mb-8 text-center">
-          <Link to="/" className="inline-block mb-3">
-            <span className="text-3xl font-black text-white tracking-tighter uppercase">
+        <div className="flex w-full justify-center flex-col items-center gap-y-1.5 mb-6 text-center">
+          <Link to="/" className="inline-block mb-1">
+            <span className="text-2xl font-black text-[#111111] tracking-tighter">
               BDBDG
             </span>
           </Link>
-          <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 tracking-wider uppercase">
-            Create Account
-          </span>
-          <h1 className="text-2xl font-black text-white tracking-tight mt-2">
-            회원가입
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight">
+            선수 회원가입
           </h1>
-          <p className="text-xs text-neutral-400 font-medium">
+          <p className="text-sm text-neutral-500 font-medium">
             선수 등록 및 대회 참가를 위한 계정을 생성합니다.
           </p>
         </div>
 
-        <div className="w-full bg-[#141414] border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-y-4">
+        <div className="w-full bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.05)] flex flex-col gap-y-4">
           <div>
-            <label className="block text-xs font-bold text-neutral-400 mb-1.5">
-              이름
+            <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
+              이름 (실명)
             </label>
             <input
               type="text"
-              className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 text-white placeholder-neutral-600 px-4 text-sm focus:border-white focus:outline-none transition"
+              className="w-full h-12 rounded-xl bg-[#F5F5F7] border border-neutral-200 text-[#111111] placeholder-neutral-400 px-4 text-base focus:bg-white focus:border-[#111111] focus:outline-none transition"
               name="pName"
               value={form.pName}
               onChange={handleFieldChange}
-              placeholder="실명 입력"
+              placeholder="실명을 입력해 주세요"
             />
           </div>
 
           <div className="flex flex-col gap-y-1.5">
-            <label className="block text-xs font-bold text-neutral-400">
-              이메일
+            <label className="block text-sm font-semibold text-neutral-700">
+              이메일 아이디
             </label>
             <div className="flex w-full gap-x-2">
               <input
                 type="email"
-                className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 text-white placeholder-neutral-600 px-4 text-sm focus:border-white focus:outline-none transition"
+                className="w-full h-12 rounded-xl bg-[#F5F5F7] border border-neutral-200 text-[#111111] placeholder-neutral-400 px-4 text-base focus:bg-white focus:border-[#111111] focus:outline-none transition"
                 name="pEmail"
                 value={form.pEmail}
                 onChange={handleFieldChange}
@@ -256,7 +251,7 @@ const RegisterWithEmail = () => {
               />
               <button
                 type="button"
-                className="bg-white hover:bg-neutral-200 text-black px-4 rounded-2xl text-xs font-black whitespace-nowrap cursor-pointer transition"
+                className="bg-[#111111] hover:bg-neutral-800 text-white px-4 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap cursor-pointer transition"
                 onClick={handleChkEmail}
               >
                 중복확인
@@ -264,10 +259,10 @@ const RegisterWithEmail = () => {
             </div>
             {alertMessage.email.message && (
               <span
-                className={`text-xs p-2 rounded-xl mt-1 border ${
+                className={`text-xs sm:text-sm font-medium p-2.5 rounded-xl mt-1 border ${
                   alertMessage.email.code === "ok"
-                    ? "text-emerald-400 bg-emerald-950/40 border-emerald-800/60"
-                    : "text-rose-400 bg-rose-950/40 border-rose-800/60"
+                    ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                    : "text-rose-600 bg-rose-50 border-rose-200"
                 }`}
               >
                 {alertMessage.email.message}
@@ -276,12 +271,13 @@ const RegisterWithEmail = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-neutral-400 mb-1.5">
-              연락처
+            <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
+              휴대폰 번호
             </label>
             <input
-              type="text"
-              className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 text-white placeholder-neutral-600 px-4 text-sm focus:border-white focus:outline-none transition"
+              type="tel"
+              inputMode="numeric"
+              className="w-full h-12 rounded-xl bg-[#F5F5F7] border border-neutral-200 text-[#111111] placeholder-neutral-400 px-4 text-base focus:bg-white focus:border-[#111111] focus:outline-none transition"
               name="pTel"
               value={form.pTel}
               onChange={handleFieldChange}
@@ -290,34 +286,34 @@ const RegisterWithEmail = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-neutral-400 mb-1.5">
+            <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
               비밀번호
             </label>
             <input
               type="password"
-              className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 text-white placeholder-neutral-600 px-4 text-sm focus:border-white focus:outline-none transition"
+              className="w-full h-12 rounded-xl bg-[#F5F5F7] border border-neutral-200 text-[#111111] placeholder-neutral-400 px-4 text-base focus:bg-white focus:border-[#111111] focus:outline-none transition"
               name="password"
               value={form.password}
               onChange={handlePasswordChange}
               placeholder="6자리 이상 비밀번호"
             />
             {alertMessage.pwd.code === "short" && (
-              <span className="text-xs text-rose-400 bg-rose-950/40 border border-rose-800/60 p-2 rounded-xl mt-1 block">
+              <span className="text-xs sm:text-sm text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl mt-1.5 block font-medium">
                 {alertMessage.pwd.message}
               </span>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-neutral-400 mb-1.5">
+            <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
               비밀번호 확인
             </label>
             <input
               type="password"
-              className={`w-full h-12 rounded-2xl bg-[#1A1A1A] border px-4 text-sm focus:outline-none transition ${
+              className={`w-full h-12 rounded-xl bg-[#F5F5F7] border px-4 text-base focus:outline-none transition ${
                 alertMessage.pwd.code === "wrong"
-                  ? "border-rose-500 text-white"
-                  : "border-neutral-800 text-white placeholder-neutral-600 focus:border-white"
+                  ? "border-rose-500 text-[#111111] bg-rose-50/40"
+                  : "border-neutral-200 text-[#111111] placeholder-neutral-400 focus:bg-white focus:border-[#111111]"
               }`}
               name="confirmPassword"
               value={form.confirmPassword}
@@ -325,24 +321,24 @@ const RegisterWithEmail = () => {
               placeholder="비밀번호 다시 입력"
             />
             {alertMessage.pwd.code === "wrong" && (
-              <span className="text-xs text-rose-400 bg-rose-950/40 border border-rose-800/60 p-2 rounded-xl mt-1 block">
+              <span className="text-xs sm:text-sm text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-xl mt-1.5 block font-medium">
                 {alertMessage.pwd.message}
               </span>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-neutral-400 mb-1.5">
+            <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
               성별
             </label>
             <select
-              className="w-full h-12 rounded-2xl bg-[#1A1A1A] border border-neutral-800 px-4 text-white text-sm focus:border-white focus:outline-none cursor-pointer"
+              className="w-full h-12 rounded-xl bg-[#F5F5F7] border border-neutral-200 px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none cursor-pointer"
               name="pGender"
               value={form.pGender}
               onChange={handleFieldChange}
             >
               <option value="" disabled>
-                성별 선택
+                성별을 선택해 주세요
               </option>
               <option value="m">남자</option>
               <option value="f">여자</option>
@@ -350,86 +346,97 @@ const RegisterWithEmail = () => {
           </div>
 
           {/* Terms Section */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex flex-col gap-y-3 mt-2 text-xs">
-            <div className="flex flex-col border-b border-neutral-800 pb-3">
-              <label className="flex items-center gap-x-2 font-black text-white cursor-pointer">
+          <div className="bg-[#F5F5F7] border border-neutral-200/80 rounded-2xl p-4 flex flex-col gap-y-3 mt-1 text-sm">
+            <div className="flex flex-col border-b border-neutral-200 pb-3">
+              <label className="flex items-center gap-x-2.5 font-bold text-[#111111] cursor-pointer">
                 <input
                   type="checkbox"
                   name="allApply"
-                  className="w-4 h-4 accent-white rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#111111] rounded cursor-pointer"
                   checked={licenseAll}
                   onChange={(e) => handleLicenseAll(e.target.checked)}
                 />
-                전체 동의
+                약관 전체 동의
               </label>
-              <span className="text-neutral-500 text-[11px] ml-6 mt-0.5">
-                필수동의 항목 및 이벤트 정보 수신에 전체 동의합니다.
+              <span className="text-neutral-500 text-xs ml-6 mt-0.5">
+                필수 동의 항목 및 대회 안내 수신에 전체 동의합니다.
               </span>
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-x-2 text-neutral-300 cursor-pointer">
+              <label className="flex items-center gap-x-2.5 text-neutral-700 cursor-pointer">
                 <input
                   type="checkbox"
                   name="m1Apply"
-                  className="w-4 h-4 accent-white rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#111111] rounded cursor-pointer"
                   checked={license.m1Apply.value}
                   onChange={(e) =>
                     handleSingleLicense("m1Apply", e.target.checked)
                   }
                 />
-                <span className="font-bold text-white">[필수]</span> 이용약관 동의
+                <span>
+                  <strong className="font-bold text-[#111111]">[필수]</strong>{" "}
+                  이용약관 동의
+                </span>
               </label>
               <button
                 type="button"
                 onClick={() => setPolicyDrawerOpen(true)}
-                className="text-neutral-400 hover:text-white transition cursor-pointer p-1"
+                className="text-xs text-neutral-500 hover:text-[#111111] underline font-semibold cursor-pointer p-1"
               >
-                <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
+                보기
               </button>
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-x-2 text-neutral-300 cursor-pointer">
+              <label className="flex items-center gap-x-2.5 text-neutral-700 cursor-pointer">
                 <input
                   type="checkbox"
                   name="m2Apply"
-                  className="w-4 h-4 accent-white rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#111111] rounded cursor-pointer"
                   checked={license.m2Apply.value}
                   onChange={(e) =>
                     handleSingleLicense("m2Apply", e.target.checked)
                   }
                 />
-                <span className="font-bold text-white">[필수]</span> 개인정보 수집 및 이용 동의
+                <span>
+                  <strong className="font-bold text-[#111111]">[필수]</strong>{" "}
+                  개인정보 수집 및 이용 동의
+                </span>
               </label>
               <button
                 type="button"
                 onClick={() => setPolicyDrawerOpen(true)}
-                className="text-neutral-400 hover:text-white transition cursor-pointer p-1"
+                className="text-xs text-neutral-500 hover:text-[#111111] underline font-semibold cursor-pointer p-1"
               >
-                <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
+                보기
               </button>
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-x-2 text-neutral-300 cursor-pointer">
+              <label className="flex items-center gap-x-2.5 text-neutral-700 cursor-pointer">
                 <input
                   type="checkbox"
                   name="s1Apply"
-                  className="w-4 h-4 accent-white rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#111111] rounded cursor-pointer"
                   checked={license.s1Apply.value}
                   onChange={(e) =>
                     handleSingleLicense("s1Apply", e.target.checked)
                   }
                 />
-                <span className="font-bold text-neutral-400">[선택]</span> 신규 콘텐츠/이벤트 알림받기
+                <span>
+                  <strong className="font-semibold text-neutral-500">
+                    [선택]
+                  </strong>{" "}
+                  신규 대회 및 공지 알림 받기
+                </span>
               </label>
               <button
                 type="button"
                 onClick={() => setPolicyDrawerOpen(true)}
-                className="text-neutral-400 hover:text-white transition cursor-pointer p-1"
+                className="text-xs text-neutral-500 hover:text-[#111111] underline font-semibold cursor-pointer p-1"
               >
-                <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
+                보기
               </button>
             </div>
           </div>
@@ -439,13 +446,13 @@ const RegisterWithEmail = () => {
             isLoading ? (
               <button
                 type="button"
-                className="w-full py-4 bg-white text-black font-black text-sm rounded-full flex justify-center items-center opacity-90 cursor-not-allowed mt-2"
+                className="w-full py-4 bg-[#111111] text-white font-bold text-[15px] rounded-full flex justify-center items-center opacity-90 cursor-not-allowed mt-2"
               >
                 <ThreeDots
                   height="20"
                   width="40"
                   radius="9"
-                  color="#000"
+                  color="#ffffff"
                   ariaLabel="three-dots-loading"
                   visible={true}
                 />
@@ -453,7 +460,7 @@ const RegisterWithEmail = () => {
             ) : (
               <button
                 type="button"
-                className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full shadow-xl transition cursor-pointer text-center tracking-tight mt-2"
+                className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer text-center mt-2"
                 onClick={handleRegister}
               >
                 회원가입 완료
@@ -463,7 +470,7 @@ const RegisterWithEmail = () => {
             <button
               type="button"
               disabled
-              className="w-full py-4 bg-neutral-900 border border-neutral-800 text-neutral-600 font-bold text-xs rounded-full cursor-not-allowed text-center mt-2"
+              className="w-full py-4 bg-neutral-100 border border-neutral-200 text-neutral-400 font-semibold text-sm rounded-full cursor-not-allowed text-center mt-2"
             >
               {chkEmail
                 ? "필수 항목을 모두 입력해 주세요"
@@ -472,11 +479,11 @@ const RegisterWithEmail = () => {
           )}
         </div>
 
-        <div className="flex justify-center items-center mt-8 text-center">
-          <p className="text-xs text-neutral-400 font-medium">
+        <div className="flex justify-center items-center mt-6 text-center">
+          <p className="text-sm text-neutral-500 font-medium">
             이미 계정이 있으신가요?
             <Link to="/login">
-              <span className="text-white font-bold ml-2 underline underline-offset-4 hover:text-neutral-300">
+              <span className="text-[#111111] font-bold ml-2 underline underline-offset-4">
                 로그인하기
               </span>
             </Link>

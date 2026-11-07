@@ -3,7 +3,7 @@ import {
   RxHome,
   RxCalendar,
   RxSketchLogo,
-  RxDotsHorizontal,
+  RxHamburgerMenu,
 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 import AppDrawer from "./common/AppDrawer";
@@ -24,71 +24,47 @@ const BottomMenu = () => {
     return location.pathname.startsWith(path);
   };
 
+  const navItems = [
+    { to: "/", label: "홈", icon: RxHome },
+    { to: "/gbbf", label: "경기도협회", icon: RxSketchLogo },
+    { to: "/cuplist", label: "대회일정", icon: RxCalendar },
+  ];
+
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-2xl border-t border-neutral-900 shadow-2xl shadow-black">
-        <div className="max-w-md mx-auto h-16 px-4 flex justify-around items-center">
-          <Link
-            to="/"
-            className={`flex flex-col items-center justify-center w-16 h-full transition-all duration-150 ${
-              isActive("/")
-                ? "text-white font-black"
-                : "text-neutral-500 hover:text-neutral-200 font-semibold"
-            }`}
-          >
-            <RxHome className="text-xl" />
-            <span className="text-[11px] mt-1 tracking-tight">홈</span>
-            {isActive("/") && (
-              <span className="w-1 h-1 rounded-full bg-white mt-0.5 shadow-[0_0_8px_#ffffff]"></span>
-            )}
-          </Link>
-
-          <Link
-            to="/gbbf"
-            className={`flex flex-col items-center justify-center w-16 h-full transition-all duration-150 ${
-              isActive("/gbbf")
-                ? "text-white font-black"
-                : "text-neutral-500 hover:text-neutral-200 font-semibold"
-            }`}
-          >
-            <RxSketchLogo className="text-xl" />
-            <span className="text-[11px] mt-1 tracking-tight">경기도협회</span>
-            {isActive("/gbbf") && (
-              <span className="w-1 h-1 rounded-full bg-white mt-0.5 shadow-[0_0_8px_#ffffff]"></span>
-            )}
-          </Link>
-
-          <Link
-            to="/cuplist"
-            className={`flex flex-col items-center justify-center w-16 h-full transition-all duration-150 ${
-              isActive("/cuplist")
-                ? "text-white font-black"
-                : "text-neutral-500 hover:text-neutral-200 font-semibold"
-            }`}
-          >
-            <RxCalendar className="text-xl" />
-            <span className="text-[11px] mt-1 tracking-tight">대회일정</span>
-            {isActive("/cuplist") && (
-              <span className="w-1 h-1 rounded-full bg-white mt-0.5 shadow-[0_0_8px_#ffffff]"></span>
-            )}
-          </Link>
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-neutral-200 shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+        <div className="max-w-lg mx-auto h-16 px-2 flex justify-around items-center">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.to);
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                  active
+                    ? "text-[#111111] font-bold"
+                    : "text-neutral-400 hover:text-neutral-700 font-medium"
+                }`}
+              >
+                <Icon className="text-[21px]" />
+                <span className="text-xs mt-1 tracking-tight">{item.label}</span>
+              </Link>
+            );
+          })}
 
           <button
             type="button"
             onClick={handleDrawer}
-            className="flex flex-col items-center justify-center w-16 h-full text-neutral-500 hover:text-neutral-200 font-semibold transition-all duration-150 cursor-pointer"
+            className="flex flex-col items-center justify-center flex-1 h-full text-neutral-400 hover:text-[#111111] font-medium transition-colors cursor-pointer"
           >
-            <RxDotsHorizontal className="text-xl" />
-            <span className="text-[11px] mt-1 tracking-tight">전체메뉴</span>
+            <RxHamburgerMenu className="text-[21px]" />
+            <span className="text-xs mt-1 tracking-tight">전체메뉴</span>
           </button>
         </div>
-      </div>
+      </nav>
 
-      <AppDrawer
-        open={isOpenDrawer}
-        onClose={handleDrawer}
-        size="sm"
-      >
+      <AppDrawer open={isOpenDrawer} onClose={handleDrawer} size="sm">
         <DrawMenu setOpen={handleDrawer} />
       </AppDrawer>
     </>

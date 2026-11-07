@@ -415,21 +415,24 @@ const InvoicePrintModal = ({
 
   return (
     <AppDrawer open={true} onClose={onClose} size="xl">
-      <div className="w-full h-full bg-[#121212] flex flex-col overflow-y-auto">
+      <div className="w-full h-full bg-[#F5F5F7] flex flex-col overflow-y-auto">
         {/* Top Sticky Drawer Action Bar */}
-        <div className="w-full bg-[#181818] border-b border-neutral-800 px-5 py-4 flex flex-col gap-3 sticky top-0 z-20 shadow-xl">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5 text-white">
-              <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center font-black shrink-0">
+        <div className="w-full bg-white border-b border-neutral-200 px-5 py-4 flex flex-col gap-3.5 sticky top-0 z-20 shadow-sm">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 text-[#111111]">
+              <div className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold shrink-0">
                 <RiFileTextLine className="text-lg" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-base font-black leading-tight">
-                  대회 참가신청 접수증 (잉크 절약형 A4 / PDF)
+                <h3 className="text-base sm:text-lg font-extrabold leading-tight tracking-tight text-[#111111]">
+                  대회 참가신청 접수증 (A4 인쇄 / PDF)
                 </h3>
-                <p className="text-[11px] text-neutral-400">
+                <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">
                   인쇄 창에서 대상 프린터를{" "}
-                  <strong className="text-white">'PDF로 저장'</strong>으로 선택하면 PDF 파일로 저장됩니다.
+                  <strong className="text-[#111111] font-bold">
+                    'PDF로 저장'
+                  </strong>
+                  으로 선택하면 PDF 파일로 저장됩니다.
                 </p>
               </div>
             </div>
@@ -437,28 +440,28 @@ const InvoicePrintModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="w-9 h-9 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white flex items-center justify-center transition cursor-pointer shrink-0"
+              className="w-9 h-9 rounded-full bg-[#F5F5F7] hover:bg-neutral-200 text-neutral-600 hover:text-[#111111] flex items-center justify-center transition cursor-pointer shrink-0"
             >
               <RiCloseLine className="text-xl" />
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-neutral-800/80">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-neutral-100">
             <div className="flex flex-wrap items-center gap-2 flex-1">
               <input
                 type="text"
                 value={submitTarget}
                 onChange={(e) => setSubmitTarget(e.target.value)}
                 placeholder="제출처 입력 (예: OO학교, OO회사 - 선택)"
-                className="px-3.5 py-2 bg-neutral-900 border border-neutral-700 focus:border-white rounded-full text-xs text-white placeholder-neutral-500 focus:outline-none w-full sm:w-60"
+                className="px-4 py-2.5 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] rounded-full text-sm text-[#111111] placeholder-neutral-400 focus:outline-none w-full sm:w-64 transition"
               />
 
-              <label className="flex items-center gap-2 text-xs font-bold text-neutral-200 bg-neutral-900 border border-neutral-700 px-3.5 py-2 rounded-full cursor-pointer select-none hover:border-neutral-500 transition">
+              <label className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#111111] bg-[#F5F5F7] border border-neutral-200 px-4 py-2.5 rounded-full cursor-pointer select-none hover:bg-neutral-200/70 transition">
                 <input
                   type="checkbox"
                   checked={showPaymentInfo}
                   onChange={(e) => setShowPaymentInfo(e.target.checked)}
-                  className="w-3.5 h-3.5 accent-white rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#111111] rounded cursor-pointer"
                 />
                 <span>참가비/계좌 표시</span>
               </label>
@@ -467,7 +470,7 @@ const InvoicePrintModal = ({
             <button
               type="button"
               onClick={handlePrint}
-              className="px-5 py-2.5 bg-white hover:bg-neutral-200 text-black font-black text-xs sm:text-sm rounded-full shadow-lg transition flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto"
+              className="px-5 py-2.5 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-full shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto"
             >
               <RiPrinterLine className="text-base" />
               <span>A4 인쇄 / PDF 저장</span>
@@ -477,7 +480,7 @@ const InvoicePrintModal = ({
 
         {/* A4 Sheet Preview Container */}
         <div className="p-4 sm:p-6 flex-1 flex justify-center items-start">
-          <div className="w-full max-w-[210mm] bg-white text-gray-900 rounded-xl shadow-2xl p-4 sm:p-8 overflow-x-auto">
+          <div className="w-full max-w-[210mm] bg-white text-gray-900 rounded-2xl border border-neutral-200 shadow-[0_4px_20px_rgba(0,0,0,0.06)] p-4 sm:p-8 overflow-x-auto">
             <div ref={printAreaRef}>
               <div className="receipt-sheet border border-gray-500 p-5 sm:p-7 bg-white text-gray-900">
                 {/* Header */}

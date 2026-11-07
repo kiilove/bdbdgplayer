@@ -21,7 +21,7 @@ const Login = () => {
   const handleLogin = async () => {
     if (loginInfo.email === "" || loginInfo.password === "") {
       setMessage({
-        body: "아이디와 패스워드를 입력해주세요",
+        body: "이메일 아이디와 비밀번호를 입력해주세요.",
         isButton: true,
         confirmButtonText: "확인",
       });
@@ -73,7 +73,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-neutral-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden font-sans antialiased">
+    <div className="min-h-screen bg-[#F5F5F7] text-[#111111] flex flex-col justify-center items-center px-4 py-12 font-sans antialiased">
       <ConfirmationModal
         isOpen={messageOpen}
         onCancel={handleMessageBox}
@@ -82,50 +82,50 @@ const Login = () => {
       />
 
       {isLoading && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="#ffffff"
+            strokeColor="#111111"
             strokeWidth="4"
             animationDuration="0.75"
-            width="64"
+            width="52"
             visible={true}
           />
         </div>
       )}
 
-      <div className="w-full max-w-md bg-[#141414] border border-neutral-800 rounded-3xl p-8 sm:p-10 shadow-2xl relative z-10 flex flex-col items-center">
+      <div className="w-full max-w-md bg-white border border-neutral-200/90 rounded-3xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.05)] flex flex-col items-center">
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-y-2 mb-8">
-          <span className="text-[10px] font-black tracking-widest text-neutral-400 uppercase bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full">
-            ATHLETE PORTAL / SIGN IN
-          </span>
-          <h1 className="text-3xl font-black tracking-tighter text-white uppercase mt-2">
-            BDBDg LOGIN
+          <Link to="/" className="text-2xl font-black tracking-tighter text-[#111111]">
+            BDBDG
+          </Link>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#111111] mt-1">
+            선수 로그인
           </h1>
-          <p className="text-xs text-neutral-400 font-medium">
-            보디빌딩 & 피트니스 대회 공식 접수 시스템
+          <p className="text-sm text-neutral-500 font-medium">
+            보디빌딩 & 피트니스 대회 공식 참가접수 시스템
           </p>
         </div>
 
         {/* Input Form */}
         <div className="w-full flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-1.5">
-            <label className="text-xs font-bold text-neutral-300 px-1">
+            <label className="text-sm font-semibold text-neutral-700 px-0.5">
               이메일 계정
             </label>
             <input
-              type="text"
+              type="email"
               name="email"
               value={loginInfo.email}
               onChange={handleInputs}
               ref={loginEmailRef}
-              className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition"
-              placeholder="이메일을 입력하세요"
+              className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-base text-[#111111] placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111] transition"
+              placeholder="name@example.com"
             />
           </div>
 
           <div className="flex flex-col gap-y-1.5">
-            <label className="text-xs font-bold text-neutral-300 px-1">
+            <label className="text-sm font-semibold text-neutral-700 px-0.5">
               비밀번호
             </label>
             <input
@@ -134,14 +134,15 @@ const Login = () => {
               value={loginInfo.password}
               onChange={handleInputs}
               ref={loginPasswordRef}
-              className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition"
+              className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-base text-[#111111] placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111] transition"
               placeholder="비밀번호를 입력하세요"
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
           </div>
 
           <button
-            className="w-full h-14 mt-4 bg-white hover:bg-neutral-200 text-black font-black text-sm tracking-wider uppercase rounded-full shadow-xl transition cursor-pointer flex items-center justify-center active:scale-95"
+            type="button"
+            className="w-full h-13 py-3.5 mt-3 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer flex items-center justify-center active:scale-[0.99]"
             onClick={handleLogin}
           >
             로그인
@@ -149,24 +150,24 @@ const Login = () => {
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between w-full mt-8 pt-6 border-t border-neutral-800 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2 w-full mt-8 pt-6 border-t border-neutral-100 text-xs sm:text-sm">
           <Link
             to="/register"
-            className="font-black text-white hover:underline transition"
+            className="font-bold text-[#111111] hover:underline transition"
           >
-            선수 무료 회원가입
+            신규 선수 회원가입
           </Link>
           <div className="flex items-center gap-x-3">
             <Link
               to="/resetpassword"
-              className="text-neutral-400 hover:text-white transition font-medium"
+              className="text-neutral-500 hover:text-[#111111] transition font-medium"
             >
-              아이디 / 비밀번호 찾기
+              아이디 · 비밀번호 찾기
             </Link>
-            <span className="text-neutral-700">|</span>
+            <span className="text-neutral-300">|</span>
             <Link
               to="/"
-              className="text-neutral-400 hover:text-white transition font-medium"
+              className="text-neutral-500 hover:text-[#111111] transition font-medium"
             >
               홈으로
             </Link>

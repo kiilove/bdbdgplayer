@@ -43,7 +43,7 @@ const EDIT_CONFIG = {
   pGym: {
     title: "소속클럽 변경",
     label: "소속 체육관 / 팀명",
-    placeholder: "소속 헬스장 또는 무소속",
+    placeholder: "소속 체육관 또는 무소속",
     hints: [
       "소속이 없을 경우 '무소속'으로 입력해 주세요.",
       "최대 30자까지 입력 가능합니다.",
@@ -124,105 +124,92 @@ const EditProfile = () => {
     editType === "pBirth" && validateDate(value) ? calculateAge(value) : null;
 
   return (
-    <div className="flex justify-center items-start align-top bg-[#0B0B0B] min-h-screen text-white">
+    <div className="min-h-screen bg-[#F5F5F7] text-[#111111] pb-28 font-sans antialiased">
       <BottomMenu />
+      <Header title={config.title} />
+
       {isLoading && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="white"
-            strokeWidth="5"
+            strokeColor="#111111"
+            strokeWidth="4"
             animationDuration="0.75"
-            width="64"
+            width="52"
             visible={true}
           />
         </div>
       )}
 
-      <div
-        className="flex w-full h-full justify-center items-start align-top bg-[#0B0B0B] flex-col mb-32"
-        style={{ maxWidth: "420px" }}
-      >
-        <Header title={config.title} />
+      <main className="max-w-md mx-auto px-4 pt-8">
+        <div className="flex w-full flex-col bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 gap-y-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
+          <label className="text-sm font-bold text-[#111111]">
+            {config.label}
+          </label>
 
-        <div className="flex w-full h-full justify-center items-start align-top flex-col gap-y-2 bg-[#0B0B0B] px-4 mt-6">
-          <div className="flex w-full flex-col bg-[#141414] border border-neutral-800 rounded-3xl p-6 gap-y-4 shadow-xl">
-            <label className="text-xs font-bold text-neutral-400">
-              {config.label}
-            </label>
+          {editType === "pGender" ? (
+            <select
+              className="w-full h-13 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:outline-none px-4 py-3.5 rounded-xl text-[#111111] text-base font-medium cursor-pointer transition"
+              value={value}
+              onChange={handleChange}
+            >
+              <option value="m">남자</option>
+              <option value="f">여자</option>
+            </select>
+          ) : (
+            <input
+              type="text"
+              value={value}
+              onChange={handleChange}
+              maxLength={editType === "pGym" ? 30 : 13}
+              inputMode={
+                editType === "pTel" || editType === "pBirth"
+                  ? "numeric"
+                  : "text"
+              }
+              placeholder={config.placeholder}
+              className="w-full h-13 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-1 focus:ring-[#111111] focus:outline-none px-4 py-3.5 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
+            />
+          )}
 
-            {editType === "pGender" ? (
-              <div className="flex w-full bg-[#1A1A1A] border border-neutral-800 rounded-2xl">
-                <select
-                  className="w-full bg-transparent focus:outline-none p-4 text-white text-sm cursor-pointer"
-                  value={value}
-                  onChange={handleChange}
-                >
-                  <option value="m" className="bg-[#1A1A1A] text-white">
-                    남자
-                  </option>
-                  <option value="f" className="bg-[#1A1A1A] text-white">
-                    여자
-                  </option>
-                </select>
-              </div>
-            ) : (
-              <div className="flex w-full bg-[#1A1A1A] border border-neutral-800 rounded-2xl">
-                <input
-                  type="text"
-                  value={value}
-                  onChange={handleChange}
-                  maxLength={editType === "pGym" ? 30 : 13}
-                  inputMode={
-                    editType === "pTel" || editType === "pBirth"
-                      ? "numeric"
-                      : "text"
-                  }
-                  placeholder={config.placeholder}
-                  className="bg-transparent focus:outline-none w-full p-4 text-white text-sm placeholder-neutral-600"
-                />
-              </div>
-            )}
-
-            {computedAge !== null && computedAge > 0 && (
-              <div className="flex justify-end items-center">
-                <span className="text-xs font-bold text-neutral-300 bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full">
-                  현재 만 {computedAge}세
-                </span>
-              </div>
-            )}
-
-            {config.hints.length > 0 && (
-              <ul className="text-xs text-neutral-400 space-y-1 py-1">
-                {config.hints.map((hint, idx) => (
-                  <li key={idx}>• {hint}</li>
-                ))}
-              </ul>
-            )}
-
-            <div className="flex w-full gap-x-2.5 mt-4">
-              <button
-                type="button"
-                onClick={() => navigate("/myprofile")}
-                className="flex-1 py-3.5 rounded-full font-bold text-xs bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition cursor-pointer"
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                disabled={!isValid() || isLoading}
-                onClick={handleSave}
-                className={`flex-1 py-3.5 rounded-full font-black text-sm transition tracking-tight ${
-                  isValid()
-                    ? "bg-white hover:bg-neutral-200 text-black cursor-pointer shadow-lg"
-                    : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
-                }`}
-              >
-                저장하기
-              </button>
+          {computedAge !== null && computedAge > 0 && (
+            <div className="flex justify-end items-center">
+              <span className="text-xs font-bold text-[#111111] bg-[#F5F5F7] border border-neutral-200 px-3 py-1.5 rounded-full">
+                계산된 나이: 만 {computedAge}세
+              </span>
             </div>
+          )}
+
+          {config.hints.length > 0 && (
+            <ul className="text-xs sm:text-sm text-neutral-500 space-y-1.5 bg-[#F5F5F7] p-4 rounded-2xl">
+              {config.hints.map((hint, idx) => (
+                <li key={idx}>• {hint}</li>
+              ))}
+            </ul>
+          )}
+
+          <div className="flex w-full gap-x-2.5 pt-2">
+            <button
+              type="button"
+              onClick={() => navigate("/myprofile")}
+              className="flex-1 py-3.5 rounded-full font-bold text-sm bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] transition cursor-pointer"
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              disabled={!isValid() || isLoading}
+              onClick={handleSave}
+              className={`flex-1 py-3.5 rounded-full font-bold text-sm transition ${
+                isValid()
+                  ? "bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer shadow-sm"
+                  : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+              }`}
+            >
+              저장하기
+            </button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

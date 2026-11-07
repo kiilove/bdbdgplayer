@@ -11,7 +11,7 @@ import {
 const ConfirmModalLayout = ({
   title = "참가신청 내용 확인",
   subtitle = "신청 정보를 최종 확인 후 접수를 완료해 주세요",
-  confirmButtonText = "신청서접수",
+  confirmButtonText = "신청서 접수 완료",
   invoiceInfo = {},
   invoicePrice = 0,
   isLoading = false,
@@ -19,65 +19,69 @@ const ConfirmModalLayout = ({
   onConfirm,
 }) => {
   return (
-    <div className="w-full h-full bg-[#141414] p-6 sm:p-8 flex flex-col justify-between text-white overflow-y-auto">
+    <div className="w-full h-full bg-white p-6 sm:p-8 flex flex-col justify-between text-[#111111] overflow-y-auto">
       <div>
         {/* Drawer Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4 mb-6">
-          <div className="flex items-center gap-x-2.5">
-            <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center font-black text-lg">
+        <div className="flex items-center justify-between border-b border-neutral-200 pb-4 mb-6">
+          <div className="flex items-center gap-x-3">
+            <div className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold text-lg shrink-0">
               <RiCheckDoubleLine />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-black text-white">
+              <h2 className="text-lg sm:text-xl font-extrabold text-[#111111] tracking-tight">
                 {title}
               </h2>
-              <p className="text-xs text-neutral-400 font-medium">{subtitle}</p>
+              <p className="text-xs sm:text-sm text-neutral-500 font-medium mt-0.5">
+                {subtitle}
+              </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+            className="w-9 h-9 rounded-full bg-[#F5F5F7] hover:bg-neutral-200 text-neutral-600 hover:text-[#111111] flex items-center justify-center transition cursor-pointer shrink-0"
           >
             <RiCloseLine className="text-xl" />
           </button>
         </div>
 
-        <div className="flex flex-col gap-y-5">
+        <div className="flex flex-col gap-y-4">
           {/* Contest Info Card */}
-          <div className="bg-[#1A1A1A] border border-neutral-800 rounded-2xl p-5 flex flex-col gap-y-3">
-            <div className="flex items-center gap-x-2 text-xs font-black text-white border-b border-neutral-800/80 pb-2">
-              <RiTrophyLine className="text-base text-neutral-300" />
+          <div className="bg-[#F5F5F7] rounded-2xl p-5 flex flex-col gap-y-3">
+            <div className="flex items-center gap-x-2 text-sm font-bold text-[#111111] border-b border-neutral-200/80 pb-2.5">
+              <RiTrophyLine className="text-base text-[#111111]" />
               <span>참가 대회 정보</span>
             </div>
-            <div className="grid grid-cols-1 gap-y-2 text-xs">
-              <div className="flex justify-between items-start">
-                <span className="text-neutral-400 font-medium whitespace-nowrap mr-2">
+            <div className="grid grid-cols-1 gap-y-2.5 text-sm">
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-neutral-500 font-medium shrink-0">
                   대회명
                 </span>
-                <span className="text-white font-bold text-right">
+                <span className="text-[#111111] font-bold text-right break-keep">
                   {invoiceInfo?.contestTitle}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-neutral-400 font-medium">대회일자</span>
-                <span className="text-white font-bold">
+              <div className="flex justify-between items-center gap-4">
+                <span className="text-neutral-500 font-medium shrink-0">
+                  대회일자
+                </span>
+                <span className="text-[#111111] font-semibold">
                   {invoiceInfo?.contestDate}
                 </span>
               </div>
               {invoiceInfo?.contestLocation && (
-                <div className="flex justify-between items-start">
-                  <span className="text-neutral-400 font-medium whitespace-nowrap mr-2">
-                    대회장소
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-neutral-500 font-medium shrink-0">
+                    개최장소
                   </span>
-                  <span className="text-white font-bold text-right">
+                  <span className="text-[#111111] font-semibold text-right break-keep">
                     {invoiceInfo?.contestLocation}
                   </span>
                 </div>
               )}
-              <div className="flex justify-between items-center pt-2 border-t border-neutral-800/80 mt-1">
-                <span className="text-neutral-300 font-bold">최종 참가비</span>
-                <span className="text-lg font-black text-white">
+              <div className="flex justify-between items-center pt-3 border-t border-neutral-200 mt-1">
+                <span className="text-[#111111] font-bold">총 참가비 합계</span>
+                <span className="text-xl font-extrabold text-[#111111]">
                   {invoicePrice?.toLocaleString()} 원
                 </span>
               </div>
@@ -85,41 +89,41 @@ const ConfirmModalLayout = ({
           </div>
 
           {/* Player Info Card */}
-          <div className="bg-[#1A1A1A] border border-neutral-800 rounded-2xl p-5 flex flex-col gap-y-3">
-            <div className="flex items-center gap-x-2 text-xs font-black text-white border-b border-neutral-800/80 pb-2">
-              <RiUserLine className="text-base text-neutral-300" />
-              <span>개인 정보</span>
+          <div className="bg-[#F5F5F7] rounded-2xl p-5 flex flex-col gap-y-3">
+            <div className="flex items-center gap-x-2 text-sm font-bold text-[#111111] border-b border-neutral-200/80 pb-2.5">
+              <RiUserLine className="text-base text-[#111111]" />
+              <span>선수 인적사항</span>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-2 gap-3.5 text-sm">
               <div>
-                <span className="text-neutral-400 font-medium block mb-0.5">
+                <span className="text-neutral-500 text-xs font-medium block mb-0.5">
                   이름
                 </span>
-                <span className="text-white font-bold">
+                <span className="text-[#111111] font-bold">
                   {invoiceInfo?.playerName}
                 </span>
               </div>
               <div>
-                <span className="text-neutral-400 font-medium block mb-0.5">
+                <span className="text-neutral-500 text-xs font-medium block mb-0.5">
                   연락처
                 </span>
-                <span className="text-white font-bold">
+                <span className="text-[#111111] font-bold">
                   {invoiceInfo?.playerTel}
                 </span>
               </div>
               <div>
-                <span className="text-neutral-400 font-medium block mb-0.5">
+                <span className="text-neutral-500 text-xs font-medium block mb-0.5">
                   생년월일
                 </span>
-                <span className="text-white font-bold">
+                <span className="text-[#111111] font-bold">
                   {invoiceInfo?.playerBirth}
                 </span>
               </div>
               <div>
-                <span className="text-neutral-400 font-medium block mb-0.5">
+                <span className="text-neutral-500 text-xs font-medium block mb-0.5">
                   소속
                 </span>
-                <span className="text-white font-bold">
+                <span className="text-[#111111] font-bold">
                   {invoiceInfo?.playerGym || "무소속"}
                 </span>
               </div>
@@ -127,14 +131,14 @@ const ConfirmModalLayout = ({
           </div>
 
           {/* Joins Info Card */}
-          <div className="bg-[#1A1A1A] border border-neutral-800 rounded-2xl p-5 flex flex-col gap-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800/80 pb-2">
-              <span className="text-xs font-black text-white flex items-center gap-x-1.5">
-                <RiCheckDoubleLine className="text-base text-neutral-300" />
+          <div className="bg-[#F5F5F7] rounded-2xl p-5 flex flex-col gap-y-3">
+            <div className="flex items-center justify-between border-b border-neutral-200/80 pb-2.5">
+              <span className="text-sm font-bold text-[#111111] flex items-center gap-x-1.5">
+                <RiCheckDoubleLine className="text-base text-[#111111]" />
                 참가 신청 종목
               </span>
-              <span className="text-xs font-bold text-white bg-neutral-800 px-2.5 py-0.5 rounded-full border border-neutral-700">
-                총 {invoiceInfo.joins?.length || 0}개
+              <span className="text-xs font-bold text-white bg-[#111111] px-2.5 py-1 rounded-full">
+                총 {invoiceInfo.joins?.length || 0}개 종목
               </span>
             </div>
 
@@ -143,32 +147,32 @@ const ConfirmModalLayout = ({
                 {invoiceInfo.joins.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between bg-[#121212] border border-neutral-800 rounded-xl p-3 text-xs"
+                    className="flex items-center justify-between bg-white border border-neutral-200/80 rounded-xl p-3.5 text-sm"
                   >
-                    <div className="flex items-center gap-x-2">
-                      <span className="w-5 h-5 rounded-full bg-neutral-800 text-neutral-300 text-[10px] font-bold flex items-center justify-center">
+                    <div className="flex items-center gap-x-2.5">
+                      <span className="w-5 h-5 rounded-full bg-[#F5F5F7] text-[#111111] text-xs font-bold flex items-center justify-center">
                         {idx + 1}
                       </span>
-                      <span className="font-bold text-white">
+                      <span className="font-bold text-[#111111]">
                         {item.contestCategoryTitle}
                       </span>
                     </div>
-                    <span className="font-bold text-black bg-white px-2 py-0.5 rounded-full text-[11px]">
+                    <span className="font-semibold text-[#111111] bg-[#F5F5F7] px-3 py-1 rounded-full text-xs border border-neutral-200">
                       {item.contestGradeTitle}
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <span className="text-xs text-neutral-500 font-medium text-center py-3 block">
+              <span className="text-sm text-neutral-500 font-medium text-center py-4 block">
                 참가 신청 종목이 없습니다.
               </span>
             )}
           </div>
 
           {/* 참가비 유의사항 안내 박스 */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex items-start gap-x-2.5 text-neutral-300 text-[11px] leading-relaxed">
-            <RiErrorWarningLine className="text-neutral-400 text-base flex-shrink-0 mt-0.5" />
+          <div className="bg-[#F5F5F7] rounded-2xl p-4 flex items-start gap-x-2.5 text-neutral-600 text-xs sm:text-sm leading-relaxed">
+            <RiErrorWarningLine className="text-[#111111] text-base flex-shrink-0 mt-0.5" />
             <span>
               학생부, 피트니스 챌린지와 보디빌딩 중복 출전의 경우 정확한 참가비용은 경기도보디빌딩협회를 통해 안내 받으시기 바랍니다.
             </span>
@@ -177,11 +181,11 @@ const ConfirmModalLayout = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-x-3 mt-6 pt-4 border-t border-neutral-800">
+      <div className="flex items-center gap-x-3 mt-6 pt-4 border-t border-neutral-200">
         {!isLoading && (
           <button
             type="button"
-            className="flex-1 py-3.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-sm rounded-full transition cursor-pointer text-center"
+            className="flex-1 py-4 bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] font-bold text-sm rounded-full transition cursor-pointer text-center"
             onClick={onClose}
           >
             돌아가기
@@ -191,11 +195,11 @@ const ConfirmModalLayout = ({
         {isLoading ? (
           <button
             type="button"
-            className="flex-1 py-3.5 bg-white text-black font-black text-sm rounded-full flex justify-center items-center cursor-not-allowed opacity-90"
+            className="flex-1 py-4 bg-[#111111] text-white font-bold text-sm rounded-full flex justify-center items-center cursor-not-allowed opacity-90"
             disabled
           >
             <RotatingLines
-              strokeColor="black"
+              strokeColor="white"
               strokeWidth="5"
               animationDuration="0.75"
               width="20"
@@ -205,7 +209,7 @@ const ConfirmModalLayout = ({
         ) : (
           <button
             type="button"
-            className="flex-1 py-3.5 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full transition shadow-xl cursor-pointer text-center tracking-tight"
+            className="flex-1 py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-full transition shadow-sm cursor-pointer text-center"
             onClick={onConfirm}
           >
             {confirmButtonText}

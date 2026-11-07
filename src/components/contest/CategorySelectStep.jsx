@@ -1,5 +1,5 @@
 import React from "react";
-import { RiErrorWarningLine } from "react-icons/ri";
+import { RiErrorWarningLine, RiCheckLine } from "react-icons/ri";
 import { getCategoryPriceBadgeText } from "../../utils/formatUtils";
 
 const CategorySelectStep = ({
@@ -14,10 +14,10 @@ const CategorySelectStep = ({
   children,
 }) => {
   return (
-    <div className="bg-[#141414] border border-neutral-800 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col gap-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-800/80 pb-4">
-        <h2 className="text-lg md:text-xl font-black text-white flex items-center gap-x-2.5">
-          <span className="w-7 h-7 rounded-full bg-white text-black text-xs flex items-center justify-center font-black">
+    <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex flex-col gap-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100 pb-4">
+        <h2 className="text-lg sm:text-xl font-extrabold text-[#111111] flex items-center gap-x-2.5 tracking-tight">
+          <span className="w-7 h-7 rounded-full bg-[#111111] text-white text-xs flex items-center justify-center font-bold">
             2
           </span>
           {stepTitle}
@@ -26,28 +26,28 @@ const CategorySelectStep = ({
           <button
             type="button"
             onClick={() => setChkAllItem((prev) => !prev)}
-            className={`text-xs font-bold px-3 py-1.5 rounded-full border transition cursor-pointer ${
+            className={`text-xs sm:text-sm font-semibold px-3.5 py-1.5 rounded-full border transition cursor-pointer ${
               !chkAllItem
-                ? "bg-white text-black border-white"
-                : "bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-neutral-500"
+                ? "bg-[#111111] text-white border-[#111111]"
+                : "bg-[#F5F5F7] text-neutral-700 border-neutral-200 hover:bg-neutral-200/70"
             }`}
           >
-            {!chkAllItem ? "내 성별 종목만 표시 중" : "내 성별 종목만 보기"}
+            {!chkAllItem ? "내 성별 종목만 표시 중" : "전체 성별 종목 표시 중"}
           </button>
-          <span className="text-xs text-neutral-400 font-bold bg-neutral-800 px-3 py-1.5 rounded-full border border-neutral-700">
-            중복 신청 가능
+          <span className="text-xs sm:text-sm text-neutral-600 font-semibold bg-[#F5F5F7] px-3.5 py-1.5 rounded-full border border-neutral-200/80">
+            중복 출전 가능
           </span>
         </div>
       </div>
 
       {/* 참가비 유의사항 안내 박스 */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex items-start gap-x-3 text-neutral-300 text-xs leading-relaxed">
-        <RiErrorWarningLine className="text-neutral-400 text-lg flex-shrink-0 mt-0.5" />
+      <div className="bg-[#F5F5F7] border border-neutral-200/80 rounded-2xl p-4 flex items-start gap-x-3 text-neutral-700 text-sm leading-relaxed">
+        <RiErrorWarningLine className="text-[#111111] text-lg flex-shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold text-white block mb-0.5">
+          <span className="font-bold text-[#111111] block mb-0.5">
             참가비용 관련 유의사항
           </span>
-          <span>
+          <span className="text-neutral-600 text-xs sm:text-sm">
             학생부, 피트니스 챌린지와 보디빌딩 중복 출전의 경우 정확한 참가비용은 경기도보디빌딩협회를 통해 안내 받으시기 바랍니다.
           </span>
         </div>
@@ -74,18 +74,25 @@ const CategorySelectStep = ({
             return (
               <div
                 key={cId}
-                className={`p-4 rounded-2xl border transition flex flex-col justify-between gap-y-3 ${
+                className={`p-4 sm:p-5 rounded-2xl border transition flex flex-col justify-between gap-y-3.5 ${
                   selectedJoinInThisCat
-                    ? "bg-[#1E1E1E] border-white shadow-lg shadow-white/5"
-                    : "bg-[#181818] border-neutral-800 hover:border-neutral-700"
+                    ? "bg-white border-2 border-[#111111] shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
+                    : "bg-[#F5F5F7]/70 border-neutral-200/90 hover:border-neutral-300"
                 }`}
               >
-                <div className="flex items-center justify-between min-h-[36px] gap-x-2">
-                  <span className="text-sm font-black text-white tracking-tight break-keep">
-                    {cTitle}
-                  </span>
+                <div className="flex items-start justify-between gap-x-2">
+                  <div className="flex items-center gap-x-2">
+                    {selectedJoinInThisCat && (
+                      <span className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center shrink-0">
+                        <RiCheckLine className="text-xs" />
+                      </span>
+                    )}
+                    <span className="text-base font-bold text-[#111111] tracking-tight break-keep">
+                      {cTitle}
+                    </span>
+                  </div>
                   {badgeText && (
-                    <span className="shrink-0 text-[10px] font-bold text-neutral-300 bg-neutral-800 px-2.5 py-0.5 rounded-full border border-neutral-700">
+                    <span className="shrink-0 text-xs font-semibold text-neutral-600 bg-white px-2.5 py-1 rounded-full border border-neutral-200">
                       {badgeText}
                     </span>
                   )}
@@ -100,10 +107,19 @@ const CategorySelectStep = ({
                         ? `${selectedJoinInThisCat.contestGradeId},${selectedJoinInThisCat.contestGradeTitle},${cType || ""}`
                         : ""
                     }
-                    className="w-full px-3 py-2.5 bg-[#121212] border border-neutral-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-white cursor-pointer"
+                    className={`w-full h-12 px-3.5 rounded-xl text-[15px] font-semibold focus:outline-none cursor-pointer transition ${
+                      selectedJoinInThisCat
+                        ? "bg-[#111111] text-white border border-[#111111]"
+                        : "bg-white border border-neutral-200 text-neutral-700 focus:border-[#111111]"
+                    }`}
                     onChange={(e) => handleInvoiceInfo(e)}
                   >
-                    <option value="">체급을 선택해 주세요 (미참가)</option>
+                    <option
+                      value=""
+                      className="bg-white text-neutral-500 font-medium"
+                    >
+                      체급을 선택해 주세요 (미참가)
+                    </option>
                     {matchGrades
                       .sort(
                         (a, b) => a.contestGradeIndex - b.contestGradeIndex
@@ -118,6 +134,7 @@ const CategorySelectStep = ({
                           <option
                             key={gId}
                             value={`${gId},${gTitle},${cType || ""}`}
+                            className="bg-white text-[#111111] font-semibold"
                           >
                             {gTitle}
                           </option>
@@ -136,4 +153,3 @@ const CategorySelectStep = ({
 };
 
 export default CategorySelectStep;
-

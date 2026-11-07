@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import { MdArrowForward } from "react-icons/md";
-import { RiTrophyLine, RiShieldStarLine } from "react-icons/ri";
+import { RiUserLine } from "react-icons/ri";
 import BottomMenu from "../components/BottomMenu";
 import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
@@ -34,7 +34,7 @@ const Home = () => {
       body: "대회 참가신청을 하려면 로그인이 필요합니다.",
       body2: "로그인 페이지로 이동하시겠습니까?",
       isButton: true,
-      confirmButtonText: "이동",
+      confirmButtonText: "로그인 이동",
       cancelButtonText: "취소",
     });
     setMessageOpen(true);
@@ -76,8 +76,43 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-neutral-100 font-sans antialiased pb-32">
+    <div className="min-h-screen bg-[#F5F5F7] text-[#111111] font-sans antialiased pb-32">
       <BottomMenu />
+
+      {/* Top Navigation Bar */}
+      <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-neutral-200/90">
+        <div className="max-w-5xl mx-auto h-14 sm:h-16 px-4 sm:px-6 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="text-lg sm:text-xl font-black tracking-tighter text-[#111111] cursor-pointer flex items-center gap-2"
+          >
+            <span>BDBDG</span>
+            <span className="text-xs font-semibold text-neutral-500 hidden sm:inline">
+              공식 대회 참가접수
+            </span>
+          </button>
+
+          {pInfo?.playerUid ? (
+            <button
+              type="button"
+              onClick={() => navigate("/myprofile")}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#F5F5F7] hover:bg-neutral-200/80 border border-neutral-200 text-xs sm:text-sm font-bold text-[#111111] transition cursor-pointer"
+            >
+              <RiUserLine className="text-base" />
+              <span>{pInfo.pName || "선수 회원"} 님 · 내 신청내역</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => navigate("/login")}
+              className="px-4 py-2 rounded-full bg-[#111111] hover:bg-neutral-800 text-white text-xs sm:text-sm font-bold transition cursor-pointer"
+            >
+              로그인 / 회원가입
+            </button>
+          )}
+        </div>
+      </header>
 
       <ConfirmationModal
         isOpen={messageOpen}
@@ -86,99 +121,88 @@ const Home = () => {
         message={message}
       />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10 flex flex-col gap-y-10">
-        {/* NIKE HIGH-IMPACT HERO BANNER */}
-        <div className="relative rounded-3xl overflow-hidden bg-[#141414] border border-neutral-800 p-8 md:p-12 shadow-2xl">
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-            <div className="flex flex-col gap-y-3.5 max-w-xl">
-              <div className="inline-flex items-center gap-2 bg-neutral-900 border border-neutral-700/80 px-3.5 py-1.5 rounded-full text-xs font-black tracking-widest text-neutral-200 uppercase w-fit">
-                <RiShieldStarLine className="text-base text-white" />
-                <span>NIKE ATHLETIC SUITE / OFFICIAL ENTRY</span>
-              </div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase leading-none break-keep">
-                THE ARENA OF <br />
-                <span className="text-white">CHAMPIONS</span>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-7 md:py-10 flex flex-col gap-y-8">
+        {/* Clean Editorial Hero Banner */}
+        <section className="rounded-3xl bg-white border border-neutral-200/90 p-6 sm:p-10 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex flex-col gap-y-3 max-w-2xl">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#F5F5F7] border border-neutral-200/80 text-xs font-bold text-neutral-700 w-fit">
+                공식 협회 주관 대회 통합 접수
+              </span>
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#111111] leading-tight break-keep">
+                보디빌딩 & 피트니스 공식 대회 참가접수
               </h1>
-              <p className="text-xs sm:text-sm text-neutral-400 font-medium leading-relaxed break-keep">
-                보디빌딩 & 피트니스 공식 협회 주관 대회 통합 접수 센터입니다. 한계를 뛰어넘는 당신의 무대를 완성하세요.
+              <p className="text-sm sm:text-base text-neutral-600 font-medium leading-relaxed break-keep">
+                현재 접수 중인 대회의 모집 요강을 확인하고, 온라인 참가신청 및 접수증 출력을 간편하게 진행하세요.
               </p>
             </div>
 
             {pInfo?.playerUid ? (
-              <div className="bg-neutral-900 border border-neutral-800 rounded-full px-5 py-3.5 flex items-center gap-4 shadow-xl w-full sm:w-auto">
-                <div className="w-11 h-11 rounded-full bg-white text-black font-black text-xl flex items-center justify-center shadow-md flex-shrink-0">
-                  <RiTrophyLine />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] text-neutral-400 font-black uppercase tracking-widest">
-                    ATHLETE VERIFIED
-                  </span>
-                  <span className="text-sm font-black text-white">
-                    {pInfo.pName || "선수 회원"} 님
-                  </span>
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={() => navigate("/myprofile")}
+                className="w-full sm:w-auto px-6 py-3.5 bg-[#F5F5F7] hover:bg-neutral-200/80 border border-neutral-200 text-[#111111] font-bold text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
+              >
+                <span>내 신청내역 및 접수증 출력</span>
+                <MdArrowForward className="text-base" />
+              </button>
             ) : (
               <button
+                type="button"
                 onClick={() => navigate("/login")}
-                className="w-full sm:w-auto px-9 py-4 bg-white hover:bg-neutral-200 text-black font-black text-sm tracking-wider uppercase rounded-full shadow-2xl transition duration-200 cursor-pointer flex items-center justify-center gap-2 active:scale-95"
+                className="w-full sm:w-auto px-7 py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-full shadow-sm transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
               >
-                <span>선수 참가 등록</span>
+                <span>선수 로그인 / 참가 등록</span>
                 <MdArrowForward className="text-lg" />
               </button>
             )}
           </div>
-        </div>
+        </section>
 
-        {/* NIKE MINIMAL UNDERLINE TABS */}
-        <div className="w-full border-b border-neutral-800">
-          <div className="flex items-center justify-start sm:justify-center gap-x-2 sm:gap-x-8 overflow-x-auto no-scrollbar pb-px">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative py-4 px-3 sm:px-4 flex items-center gap-x-2 text-xs sm:text-sm tracking-tight transition duration-150 cursor-pointer whitespace-nowrap group ${
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 sm:px-5 py-2.5 rounded-full flex items-center gap-x-2 text-sm font-bold transition cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? "bg-[#111111] text-white shadow-sm"
+                    : "bg-white text-neutral-600 border border-neutral-200 hover:border-neutral-300 hover:text-[#111111]"
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-bold ${
                     isActive
-                      ? "text-white font-black"
-                      : "text-neutral-500 hover:text-neutral-300 font-bold"
+                      ? "bg-white/20 text-white"
+                      : "bg-[#F5F5F7] text-neutral-600"
                   }`}
                 >
-                  <span>{tab.label}</span>
-                  <span
-                    className={`text-[11px] px-2 py-0.5 rounded-full font-black tracking-normal transition duration-150 ${
-                      isActive
-                        ? "bg-white text-black"
-                        : "bg-neutral-900 text-neutral-500 border border-neutral-800 group-hover:text-neutral-300"
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
-
-                  {isActive && (
-                    <div className="absolute -bottom-px left-0 right-0 h-[2.5px] bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.7)]"></div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* DYNAMIC CONTEST CARDS */}
-        <div className="flex flex-col gap-y-8">
+        {/* Contest Cards List */}
+        <div className="flex flex-col gap-y-6">
           {isLoading ? (
             <div className="flex justify-center items-center py-24">
               <RotatingLines
-                strokeColor="#ffffff"
+                strokeColor="#111111"
                 strokeWidth="4"
                 animationDuration="0.75"
-                width="54"
+                width="48"
                 visible={true}
               />
             </div>
           ) : displayedContests.length === 0 ? (
-            <div className="bg-[#141414] border border-neutral-800 rounded-3xl p-16 text-center text-neutral-500 font-bold text-sm shadow-xl">
+            <div className="bg-white border border-neutral-200/90 rounded-3xl p-16 text-center text-neutral-500 font-semibold text-base shadow-sm">
               현재 접수 중인 대회가 없습니다.
             </div>
           ) : (

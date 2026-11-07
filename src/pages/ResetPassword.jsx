@@ -17,16 +17,16 @@ import { formatPhoneNumber, validateEmail } from "../utils/formatUtils";
 
 // Rate Limit 정책 (백그라운드 보안 로직)
 const FIND_LIMIT_KEY = "bdbdg_ratelimit_find";
-const FIND_MAX_ATTEMPTS = 5; // 10분 내 최대 5회 시도 가능
-const FIND_WINDOW_MS = 10 * 60 * 1000; // 10분
-const FIND_LOCK_MS = 5 * 60 * 1000; // 초과 시 5분 락
-const FIND_COOLDOWN_MS = 2500; // 연타 방지 2.5초
+const FIND_MAX_ATTEMPTS = 5;
+const FIND_WINDOW_MS = 10 * 60 * 1000;
+const FIND_LOCK_MS = 5 * 60 * 1000;
+const FIND_COOLDOWN_MS = 2500;
 
 const RESET_LIMIT_KEY = "bdbdg_ratelimit_reset";
-const RESET_MAX_ATTEMPTS = 3; // 10분 내 최대 3회 발송 가능
-const RESET_WINDOW_MS = 10 * 60 * 1000; // 10분
-const RESET_LOCK_MS = 10 * 60 * 1000; // 초과 시 10분 락
-const RESET_COOLDOWN_MS = 60 * 1000; // 재발송 60초 쿨다운
+const RESET_MAX_ATTEMPTS = 3;
+const RESET_WINDOW_MS = 10 * 60 * 1000;
+const RESET_LOCK_MS = 10 * 60 * 1000;
+const RESET_COOLDOWN_MS = 60 * 1000;
 
 const getStorage = (key) => {
   try {
@@ -51,8 +51,10 @@ const maskEmail = (email) => {
   if (local.length === 2) return `${local[0]}*@${domain}`;
   if (local.length === 3) return `${local[0]}*${local[2]}@${domain}`;
   if (local.length === 4) return `${local[0]}**${local[3]}@${domain}`;
-  if (local.length === 5) return `${local.slice(0, 2)}*${local.slice(3)}@${domain}`;
-  if (local.length === 6) return `${local.slice(0, 2)}**${local.slice(4)}@${domain}`;
+  if (local.length === 5)
+    return `${local.slice(0, 2)}*${local.slice(3)}@${domain}`;
+  if (local.length === 6)
+    return `${local.slice(0, 2)}**${local.slice(4)}@${domain}`;
 
   const prefixLen = 2;
   const suffixLen = 2;
@@ -61,7 +63,7 @@ const maskEmail = (email) => {
 };
 
 const ResetPassword = () => {
-  const [activeTab, setActiveTab] = useState("findEmail"); // "findEmail" | "resetPassword"
+  const [activeTab, setActiveTab] = useState("findEmail");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState({});
   const [message, setMessage] = useState("");
@@ -290,51 +292,49 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex w-full min-h-screen justify-center items-center bg-[#0B0B0B] text-white p-4 font-sans antialiased">
+    <div className="flex w-full min-h-screen justify-center items-center bg-[#F5F5F7] text-[#111111] p-4 font-sans antialiased">
       <ConfirmationModal
         isOpen={messageOpen}
         onCancel={handleMessageBox}
         onConfirm={handleMessageBox}
         message={message}
       />
-      <div className="flex w-full flex-col items-center max-w-sm">
+      <div className="flex w-full flex-col items-center max-w-md">
         {isLoading && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-center">
+          <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
             <RotatingLines
-              strokeColor="#ffffff"
+              strokeColor="#111111"
               strokeWidth="4"
               animationDuration="0.75"
-              width="64"
+              width="52"
               visible={true}
             />
           </div>
         )}
 
         {/* Top Header */}
-        <div className="flex w-full justify-center flex-col items-center gap-y-2 mb-6 text-center">
+        <div className="flex w-full justify-center flex-col items-center gap-y-1.5 mb-6 text-center">
           <button
+            type="button"
             onClick={() => navigate("/login")}
-            className="inline-block mb-2 cursor-pointer"
+            className="inline-block mb-1 cursor-pointer"
           >
-            <span className="text-3xl font-black text-white tracking-tighter uppercase">
+            <span className="text-2xl font-black text-[#111111] tracking-tighter">
               BDBDG
             </span>
           </button>
-          <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 tracking-wider uppercase">
-            Account Recovery
-          </span>
-          <h1 className="text-2xl font-black text-white tracking-tight mt-1">
-            계정 찾기
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight">
+            아이디 · 비밀번호 찾기
           </h1>
-          <p className="text-xs text-neutral-400 font-medium">
-            아이디(이메일)를 찾거나 비밀번호를 재설정할 수 있습니다.
+          <p className="text-sm text-neutral-500 font-medium">
+            이메일 계정을 조회하거나 비밀번호 재설정 링크를 받을 수 있습니다.
           </p>
         </div>
 
         {/* Main Box */}
-        <div className="w-full bg-[#141414] border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col">
+        <div className="w-full bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.05)] flex flex-col">
           {/* Tab Bar */}
-          <div className="flex w-full p-1 bg-neutral-900 border border-neutral-800 rounded-2xl mb-6">
+          <div className="flex w-full p-1 bg-[#F5F5F7] rounded-2xl mb-6">
             <button
               type="button"
               onClick={() => {
@@ -342,10 +342,10 @@ const ResetPassword = () => {
                 setIsError({});
                 setFoundEmails(null);
               }}
-              className={`flex-1 py-2.5 text-xs font-black rounded-xl transition cursor-pointer ${
+              className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition cursor-pointer ${
                 activeTab === "findEmail"
-                  ? "bg-white text-black shadow-md"
-                  : "text-neutral-400 hover:text-white"
+                  ? "bg-white text-[#111111] shadow-sm"
+                  : "text-neutral-500 hover:text-[#111111]"
               }`}
             >
               이메일(아이디) 찾기
@@ -357,10 +357,10 @@ const ResetPassword = () => {
                 setIsError({});
                 setFoundEmails(null);
               }}
-              className={`flex-1 py-2.5 text-xs font-black rounded-xl transition cursor-pointer ${
+              className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition cursor-pointer ${
                 activeTab === "resetPassword"
-                  ? "bg-white text-black shadow-md"
-                  : "text-neutral-400 hover:text-white"
+                  ? "bg-white text-[#111111] shadow-sm"
+                  : "text-neutral-500 hover:text-[#111111]"
               }`}
             >
               비밀번호 재설정
@@ -368,8 +368,8 @@ const ResetPassword = () => {
           </div>
 
           {isError.message && (
-            <div className="p-3.5 rounded-2xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2 mb-4">
-              <FiAlertTriangle className="text-sm shrink-0 text-rose-400" />
+            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-medium flex items-center gap-2 mb-4">
+              <FiAlertTriangle className="text-base shrink-0" />
               <span>{isError.message}</span>
             </div>
           )}
@@ -379,11 +379,11 @@ const ResetPassword = () => {
               {foundEmails ? (
                 <div className="flex flex-col gap-y-4">
                   <div className="text-center py-2">
-                    <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 tracking-wider">
+                    <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                       계정 확인 완료 ({foundEmails.length}건)
                     </span>
-                    <p className="text-xs text-neutral-400 font-medium mt-3">
-                      개인정보 보호를 위해 마스킹 처리되었습니다:
+                    <p className="text-xs sm:text-sm text-neutral-500 font-medium mt-3">
+                      개인정보 보호를 위해 일부가 마스킹 처리되었습니다:
                     </p>
                   </div>
 
@@ -393,26 +393,26 @@ const ResetPassword = () => {
                       return (
                         <div
                           key={idx}
-                          className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3.5 flex flex-col gap-y-2.5 hover:border-neutral-700 transition"
+                          className="bg-[#F5F5F7] border border-neutral-200 rounded-2xl p-4 flex flex-col gap-y-3"
                         >
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-x-2 min-w-0">
-                              <div className="w-7 h-7 rounded-full bg-neutral-800 text-neutral-400 flex items-center justify-center shrink-0">
+                              <div className="w-7 h-7 rounded-full bg-white text-[#111111] border border-neutral-200 flex items-center justify-center shrink-0">
                                 <FiMail className="text-xs" />
                               </div>
-                              <span className="font-black text-white text-sm sm:text-base tracking-tight truncate">
+                              <span className="font-bold text-[#111111] text-sm sm:text-base tracking-tight truncate">
                                 {masked}
                               </span>
                             </div>
                             <button
                               type="button"
                               onClick={() => handleCopyEmail(masked)}
-                              className="flex items-center gap-x-1 px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-[11px] font-bold transition cursor-pointer shrink-0"
+                              className="flex items-center gap-x-1 px-2.5 py-1.5 rounded-lg bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 text-xs font-semibold transition cursor-pointer shrink-0"
                             >
                               {copiedEmail === masked ? (
                                 <>
-                                  <FiCheck className="text-emerald-400 text-xs" />
-                                  <span className="text-emerald-400">복사됨</span>
+                                  <FiCheck className="text-emerald-600 text-xs" />
+                                  <span className="text-emerald-600">복사됨</span>
                                 </>
                               ) : (
                                 <>
@@ -426,7 +426,7 @@ const ResetPassword = () => {
                           <button
                             type="button"
                             onClick={() => handleGoToResetWithEmail(email)}
-                            className="w-full py-2 bg-neutral-800 hover:bg-white text-neutral-200 hover:text-black font-bold text-xs rounded-xl transition cursor-pointer flex items-center justify-center gap-x-1.5 active:scale-95"
+                            className="w-full py-2.5 bg-white hover:bg-[#111111] text-[#111111] hover:text-white border border-neutral-200 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center justify-center gap-x-1.5"
                           >
                             <span>이 계정으로 비밀번호 재설정</span>
                             <FiArrowRight className="text-xs" />
@@ -436,22 +436,24 @@ const ResetPassword = () => {
                     })}
                   </div>
 
-                  <div className="flex flex-col gap-y-2 mt-3 pt-3 border-t border-neutral-800">
+                  <div className="flex flex-col gap-y-2 mt-2 pt-4 border-t border-neutral-100">
                     <button
+                      type="button"
                       onClick={() => navigate("/login")}
-                      className="w-full h-14 bg-white hover:bg-neutral-200 text-black font-black text-sm uppercase tracking-wider rounded-full shadow-xl transition cursor-pointer flex items-center justify-center active:scale-95"
+                      className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer flex items-center justify-center"
                     >
                       로그인 화면으로 이동
                     </button>
                     <button
+                      type="button"
                       onClick={() => {
                         setFoundEmails(null);
                         setFindName("");
                         setFindPhone("");
                       }}
-                      className="text-xs text-neutral-500 hover:text-neutral-300 font-medium py-2 transition flex items-center justify-center gap-x-1 cursor-pointer"
+                      className="text-xs sm:text-sm text-neutral-500 hover:text-[#111111] font-medium py-2 transition flex items-center justify-center gap-x-1 cursor-pointer"
                     >
-                      <FiRotateCcw className="text-[11px]" />
+                      <FiRotateCcw className="text-xs" />
                       <span>다른 정보로 다시 찾기</span>
                     </button>
                   </div>
@@ -459,13 +461,13 @@ const ResetPassword = () => {
               ) : (
                 <div className="flex flex-col gap-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-neutral-400 mb-1.5">
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
                       선수 이름 (실명)
                     </label>
                     <input
                       type="text"
-                      className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-4 text-white text-sm focus:border-white focus:outline-none placeholder-neutral-600 transition"
-                      placeholder="홍길동"
+                      className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
+                      placeholder="이름 입력"
                       value={findName}
                       onChange={handleNameChange}
                       onKeyDown={(e) => e.key === "Enter" && handleFindEmail()}
@@ -473,12 +475,13 @@ const ResetPassword = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-neutral-400 mb-1.5">
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
                       휴대폰 번호
                     </label>
                     <input
                       type="tel"
-                      className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-4 text-white text-sm focus:border-white focus:outline-none placeholder-neutral-600 transition"
+                      inputMode="numeric"
+                      className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
                       placeholder="010-1234-5678"
                       value={findPhone}
                       onChange={handlePhoneChange}
@@ -487,11 +490,12 @@ const ResetPassword = () => {
                   </div>
 
                   <button
+                    type="button"
                     onClick={handleFindEmail}
                     disabled={isLoading}
-                    className="w-full h-14 font-black text-sm tracking-wider uppercase rounded-full shadow-xl transition flex items-center justify-center mt-2 bg-white hover:bg-neutral-200 text-black cursor-pointer active:scale-95 disabled:opacity-50"
+                    className="w-full py-4 font-bold text-[15px] rounded-full shadow-sm transition flex items-center justify-center mt-2 bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer disabled:opacity-50"
                   >
-                    {isLoading ? "조회 중..." : "이메일 찾기"}
+                    {isLoading ? "조회 중..." : "이메일 계정 찾기"}
                   </button>
                 </div>
               )}
@@ -501,12 +505,12 @@ const ResetPassword = () => {
           {activeTab === "resetPassword" && (
             <div className="flex flex-col gap-y-4">
               <div>
-                <label className="block text-xs font-bold text-neutral-400 mb-1.5">
-                  이메일 주소
+                <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
+                  가입한 이메일 주소
                 </label>
                 <input
                   type="email"
-                  className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-4 text-white text-sm focus:border-white focus:outline-none placeholder-neutral-600 transition"
+                  className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
                   placeholder="name@example.com"
                   value={emailInfo.email || ""}
                   onChange={handleEmailInput}
@@ -515,20 +519,22 @@ const ResetPassword = () => {
               </div>
 
               <button
+                type="button"
                 onClick={handleSendEmail}
                 disabled={isLoading}
-                className="w-full h-14 font-black text-sm tracking-wider uppercase rounded-full shadow-xl transition flex items-center justify-center mt-2 bg-white hover:bg-neutral-200 text-black cursor-pointer active:scale-95 disabled:opacity-50"
+                className="w-full py-4 font-bold text-[15px] rounded-full shadow-sm transition flex items-center justify-center mt-2 bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer disabled:opacity-50"
               >
-                {isLoading ? "발송 중..." : "재설정 메일 발송"}
+                {isLoading ? "발송 중..." : "비밀번호 재설정 메일 발송"}
               </button>
             </div>
           )}
         </div>
 
-        <div className="flex justify-center items-center mt-8 text-center">
+        <div className="flex justify-center items-center mt-6 text-center">
           <button
+            type="button"
             onClick={() => navigate("/login")}
-            className="text-xs text-neutral-400 hover:text-white underline underline-offset-4 font-semibold cursor-pointer"
+            className="text-sm text-neutral-500 hover:text-[#111111] underline underline-offset-4 font-semibold cursor-pointer"
           >
             로그인 화면으로 돌아가기
           </button>

@@ -150,28 +150,28 @@ const ContestJoin = () => {
   }, [noticeInfo, contests, pInfo]);
 
   return (
-    <div className="flex justify-center items-start align-top bg-[#0B0B0B] min-h-screen">
+    <div className="flex justify-center items-start align-top bg-[#F5F5F7] min-h-screen">
       {isLoading && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="white"
-            strokeWidth="5"
+            strokeColor="#111111"
+            strokeWidth="4"
             animationDuration="0.75"
-            width="64"
+            width="52"
             visible={true}
           />
         </div>
       )}
 
       {!isLoading && error && (
-        <div className="min-h-screen bg-[#0B0B0B] text-white w-full flex flex-col items-center justify-center p-6 text-center gap-4">
-          <p className="text-sm text-neutral-400 font-bold">
+        <div className="min-h-screen bg-[#F5F5F7] text-[#111111] w-full flex flex-col items-center justify-center p-6 text-center gap-4">
+          <p className="text-base text-neutral-600 font-bold">
             대회 정보를 불러올 수 없거나 종료된 공고입니다.
           </p>
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="px-6 py-3 bg-white text-black font-black text-xs rounded-full cursor-pointer"
+            className="px-6 py-3.5 bg-[#111111] text-white font-bold text-sm rounded-full cursor-pointer"
           >
             홈으로 돌아가기
           </button>
@@ -179,18 +179,14 @@ const ContestJoin = () => {
       )}
 
       {!isLoading && !error && noticeInfo.contestTitle && (
-        <div className="min-h-screen bg-[#0B0B0B] text-white w-full pb-28 font-sans antialiased">
+        <div className="min-h-screen bg-[#F5F5F7] text-[#111111] w-full pb-28 font-sans antialiased">
           <BottomMenu />
           <Header title="대회 참가신청" />
-          <AppDrawer
-            open={drawerOpen}
-            onClose={handleCloseDrawer}
-            size="md"
-          >
+          <AppDrawer open={drawerOpen} onClose={handleCloseDrawer} size="md">
             {drawerComponent}
           </AppDrawer>
 
-          <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-10">
+          <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
             <ContestHeaderBanner
               associateName={
                 noticeInfo.contestAssociate ||
@@ -207,10 +203,10 @@ const ContestJoin = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Left Column: Form Steps */}
-              <div className="lg:col-span-8 flex flex-col gap-y-8">
+              <div className="lg:col-span-8 flex flex-col gap-y-6">
                 <PlayerInfoStep
                   stepTitle="선수 정보 입력"
-                  guideText="* 입력 정보 확인 후 아래 버튼을 클릭하면 2단계 종목 선택으로 이동합니다."
+                  guideText="입력 정보를 확인한 뒤 아래 버튼을 누르면 2단계 종목 선택이 열립니다."
                   invoiceInfo={invoiceInfo}
                   playerAge={playerAge}
                   playerValidate={playerValidate}
@@ -235,23 +231,25 @@ const ContestJoin = () => {
                     handleInvoiceInfo={handleInvoiceInfo}
                   >
                     {/* Step 3: Terms Agreement */}
-                    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 mt-4">
-                      <label className="flex items-start gap-x-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          name="m2Apply"
-                          value="m2Apply"
-                          className="mt-1 w-4 h-4 accent-white rounded cursor-pointer"
-                          onChange={handleApply}
-                        />
-                        <div className="flex-1">
-                          <span className="text-xs font-black text-white mr-1.5">
-                            [필수]
-                          </span>
-                          <span className="text-xs font-semibold text-neutral-300">
-                            개인정보 수집 이용 동의 및 초상권 사용 동의서에 동의합니다.
-                          </span>
-                        </div>
+                    <div className="bg-[#F5F5F7] border border-neutral-200/90 rounded-2xl p-5 mt-2">
+                      <div className="flex items-start justify-between gap-x-3">
+                        <label className="flex items-start gap-x-3 cursor-pointer flex-1">
+                          <input
+                            type="checkbox"
+                            name="m2Apply"
+                            value="m2Apply"
+                            className="mt-1 w-4 h-4 accent-[#111111] rounded cursor-pointer shrink-0"
+                            onChange={handleApply}
+                          />
+                          <div>
+                            <span className="text-sm font-bold text-[#111111] mr-1.5">
+                              [필수]
+                            </span>
+                            <span className="text-sm font-medium text-neutral-700">
+                              개인정보 수집·이용 동의 및 초상권 사용 동의서에 동의합니다.
+                            </span>
+                          </div>
+                        </label>
                         <button
                           type="button"
                           onClick={() =>
@@ -261,11 +259,11 @@ const ContestJoin = () => {
                               ),
                             })
                           }
-                          className="text-xs text-neutral-400 hover:text-white underline font-semibold ml-2"
+                          className="text-xs sm:text-sm text-[#111111] hover:underline font-bold shrink-0 cursor-pointer"
                         >
                           약관보기
                         </button>
-                      </label>
+                      </div>
                     </div>
                   </CategorySelectStep>
                 )}
@@ -273,11 +271,11 @@ const ContestJoin = () => {
 
               {/* Right Column: Sticky Summary & Action Card */}
               <div className="lg:col-span-4">
-                <div className="sticky top-20 bg-[#141414] border border-neutral-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-y-6">
-                  <h3 className="text-base font-black text-white border-b border-neutral-800/80 pb-3 flex items-center justify-between">
+                <div className="sticky top-20 bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex flex-col gap-y-5">
+                  <h3 className="text-base sm:text-lg font-extrabold text-[#111111] border-b border-neutral-100 pb-3.5 flex items-center justify-between">
                     <span>선택 종목 및 신청 요약</span>
-                    <span className="text-xs font-bold text-white bg-neutral-800 px-2.5 py-0.5 rounded-full border border-neutral-700">
-                      {invoiceInfo.joins.length}개 선택됨
+                    <span className="text-xs font-bold text-white bg-[#111111] px-3 py-1 rounded-full">
+                      {invoiceInfo.joins.length}개 선택
                     </span>
                   </h3>
 
@@ -286,29 +284,29 @@ const ContestJoin = () => {
                       invoiceInfo.joins.map((item, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between bg-[#1A1A1A] border border-neutral-800 rounded-xl p-3 text-xs"
+                          className="flex items-center justify-between bg-[#F5F5F7] rounded-xl p-3.5 text-sm"
                         >
-                          <span className="font-bold text-white">
+                          <span className="font-bold text-[#111111]">
                             {item.contestCategoryTitle}
                           </span>
-                          <span className="font-bold text-black bg-white px-2 py-0.5 rounded-full">
+                          <span className="font-semibold text-[#111111] bg-white px-3 py-1 rounded-full text-xs border border-neutral-200">
                             {item.contestGradeTitle}
                           </span>
                         </div>
                       ))
                     ) : (
-                      <div className="flex flex-col items-center justify-center py-8 text-center text-xs text-neutral-500 font-medium">
+                      <div className="flex flex-col items-center justify-center py-8 text-center text-sm text-neutral-400 font-medium">
                         선택된 참가 종목이 없습니다.
                       </div>
                     )}
                   </div>
 
                   {invoiceInfo.joins.length > 0 && (
-                    <div className="flex items-center justify-between bg-neutral-900 border border-neutral-800 rounded-2xl px-4 py-3 text-xs">
-                      <span className="font-bold text-neutral-400">
+                    <div className="flex items-center justify-between bg-[#F5F5F7] rounded-2xl px-4 py-3.5 text-sm">
+                      <span className="font-semibold text-neutral-600">
                         예상 참가비 합계
                       </span>
-                      <span className="text-base font-black text-white">
+                      <span className="text-lg font-extrabold text-[#111111]">
                         {calculateContestPrice(
                           invoiceInfo.joins,
                           noticeInfo
@@ -319,14 +317,16 @@ const ContestJoin = () => {
                   )}
 
                   {noticeInfo.contestAccountOwner && (
-                    <div className="bg-[#1A1A1A] border border-neutral-800 rounded-2xl p-4 text-xs flex flex-col gap-y-1.5 text-neutral-300">
-                      <span className="font-black text-white">입금 계좌 안내</span>
-                      <p>
+                    <div className="bg-[#F5F5F7] rounded-2xl p-4 text-sm flex flex-col gap-y-1 text-[#111111]">
+                      <span className="font-bold text-neutral-600 text-xs">
+                        입금 계좌 안내
+                      </span>
+                      <p className="font-bold text-[#111111] mt-0.5">
                         {noticeInfo.contestBankName || ""}{" "}
                         {noticeInfo.contestAccountNumber}
                       </p>
-                      <p className="text-neutral-500">
-                        (예금주: {noticeInfo.contestAccountOwner})
+                      <p className="text-xs text-neutral-500 font-medium">
+                        예금주: {noticeInfo.contestAccountOwner}
                       </p>
                     </div>
                   )}
@@ -336,7 +336,7 @@ const ContestJoin = () => {
                   isValidate ? (
                     <button
                       type="button"
-                      className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full shadow-xl transition cursor-pointer text-center tracking-tight"
+                      className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer text-center"
                       onClick={() =>
                         handleOpenDrawer({
                           component: (
@@ -353,14 +353,14 @@ const ContestJoin = () => {
                   ) : (
                     <button
                       type="button"
-                      className="w-full py-4 bg-neutral-900 border border-neutral-800 text-neutral-600 font-bold text-xs rounded-full cursor-not-allowed text-center"
+                      className="w-full py-4 bg-neutral-100 border border-neutral-200 text-neutral-400 font-semibold text-sm rounded-full cursor-not-allowed text-center"
                       disabled
                     >
                       {!isValidate
-                        ? "1단계 선수정보 확인을 진행해 주세요"
+                        ? "1단계 선수정보 확인을 완료해 주세요"
                         : invoiceInfo.joins.length === 0
                         ? "2단계 참가 종목을 선택해 주세요"
-                        : "약관 동의가 필요합니다"}
+                        : "필수 약관에 동의해 주세요"}
                     </button>
                   )}
                 </div>

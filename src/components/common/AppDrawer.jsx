@@ -35,28 +35,28 @@ const AppDrawer = ({
       PaperProps={{
         sx: isBottom
           ? {
-              backgroundColor: "#141414",
-              color: "#ffffff",
+              backgroundColor: "#ffffff",
+              color: "#111111",
               backgroundImage: "none",
               width: "100%",
               maxHeight: size === "xl" ? "92vh" : "88vh",
               borderTopLeftRadius: "24px",
               borderTopRightRadius: "24px",
-              borderTop: "1px solid #262626",
-              boxShadow: "0 -20px 50px rgba(0, 0, 0, 0.85)",
+              borderTop: "1px solid #e5e5ea",
+              boxShadow: "0 -12px 40px rgba(0, 0, 0, 0.14)",
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
             }
           : {
-              backgroundColor: "#141414",
-              color: "#ffffff",
+              backgroundColor: "#ffffff",
+              color: "#111111",
               backgroundImage: "none",
               width: "100%",
               maxWidth,
               height: "100%",
-              borderLeft: "1px solid #262626",
-              boxShadow: "-20px 0 50px rgba(0, 0, 0, 0.75)",
+              borderLeft: "1px solid #e5e5ea",
+              boxShadow: "-12px 0 40px rgba(0, 0, 0, 0.12)",
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
@@ -65,7 +65,7 @@ const AppDrawer = ({
       slotProps={{
         backdrop: {
           sx: {
-            backgroundColor: "rgba(0, 0, 0, 0.72)",
+            backgroundColor: "rgba(17, 17, 17, 0.45)",
             backdropFilter: "blur(4px)",
           },
         },
@@ -75,9 +75,9 @@ const AppDrawer = ({
       {isBottom && (
         <div
           onClick={onClose}
-          className="w-full pt-3 pb-1 bg-[#141414] flex justify-center items-center shrink-0 cursor-pointer"
+          className="w-full pt-3 pb-1.5 bg-white flex justify-center items-center shrink-0 cursor-pointer"
         >
-          <div className="w-11 h-1.5 rounded-full bg-neutral-700" />
+          <div className="w-10 h-1.5 rounded-full bg-neutral-300" />
         </div>
       )}
 

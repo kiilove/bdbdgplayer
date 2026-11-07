@@ -19,32 +19,33 @@ const StatusResultCard = ({
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-white flex items-center justify-center p-4 font-sans antialiased">
-      <div className="max-w-md w-full bg-[#141414] rounded-3xl p-8 sm:p-10 shadow-2xl border border-neutral-800 text-center flex flex-col items-center gap-y-6">
-        <div className="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center text-4xl shadow-xl">
+    <div className="min-h-screen bg-[#F5F5F7] text-[#111111] flex items-center justify-center p-4 font-sans antialiased">
+      <div className="max-w-md w-full bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.05)] border border-neutral-200/90 text-center flex flex-col items-center gap-y-6">
+        <div className="w-18 h-18 p-4 rounded-full bg-[#111111] text-white flex items-center justify-center text-4xl shadow-sm">
           <RiCheckboxCircleFill />
         </div>
 
         <div className="flex flex-col gap-y-2">
-          <span className="text-xs font-black px-3 py-1 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 self-center uppercase tracking-wider">
+          <span className="text-xs font-bold px-3.5 py-1 rounded-full bg-[#F5F5F7] text-neutral-700 border border-neutral-200 self-center">
             {badgeText}
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight whitespace-pre-line">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111111] leading-tight tracking-tight whitespace-pre-line mt-1">
             {title}
           </h1>
         </div>
 
-        <div className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl p-4 text-left text-xs text-neutral-300 font-medium leading-relaxed flex flex-col gap-y-1.5">
-          <span className="font-black text-white flex items-center gap-x-1.5">
-            <span className="w-2 h-2 rounded-full bg-white"></span>
+        <div className="w-full bg-[#F5F5F7] rounded-2xl p-4 sm:p-5 text-left text-sm text-neutral-700 font-medium leading-relaxed flex flex-col gap-y-1.5">
+          <span className="font-bold text-[#111111] flex items-center gap-x-2">
+            <span className="w-2 h-2 rounded-full bg-[#111111]" />
             {noticeTitle}
           </span>
-          <p className="text-neutral-400 pl-3">{noticeBody}</p>
+          <p className="text-neutral-600 pl-4 text-xs sm:text-sm">{noticeBody}</p>
         </div>
 
-        <div className="w-full flex flex-col gap-y-3 pt-2">
+        <div className="w-full flex flex-col gap-y-2.5 pt-1">
           <button
-            className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full shadow-xl transition flex items-center justify-center gap-x-2 cursor-pointer tracking-tight"
+            type="button"
+            className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition flex items-center justify-center gap-x-2 cursor-pointer"
             onClick={() => navigate(primaryButtonTo)}
           >
             <RiHome4Line className="text-lg" />
@@ -53,7 +54,8 @@ const StatusResultCard = ({
 
           {secondaryButtonText && (
             <button
-              className="w-full py-3.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-xs rounded-full border border-neutral-700 transition flex items-center justify-center gap-x-2 cursor-pointer"
+              type="button"
+              className="w-full py-3.5 bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] font-bold text-sm rounded-full border border-neutral-200 transition flex items-center justify-center gap-x-2 cursor-pointer"
               onClick={() => navigate(secondaryButtonTo)}
             >
               <RiFileList3Line className="text-base" />
@@ -67,4 +69,3 @@ const StatusResultCard = ({
 };
 
 export default StatusResultCard;
-
