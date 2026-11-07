@@ -5,7 +5,15 @@ import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import { useNavigate } from "react-router-dom";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-import { FiCopy, FiCheck, FiArrowRight, FiRotateCcw, FiMail, FiAlertTriangle } from "react-icons/fi";
+import {
+  FiCopy,
+  FiCheck,
+  FiArrowRight,
+  FiRotateCcw,
+  FiMail,
+  FiAlertTriangle,
+} from "react-icons/fi";
+import { formatPhoneNumber, validateEmail } from "../utils/formatUtils";
 
 // Rate Limit 정책 (백그라운드 보안 로직)
 const FIND_LIMIT_KEY = "bdbdg_ratelimit_find";
@@ -35,6 +43,23 @@ const setStorage = (key, val) => {
   } catch {}
 };
 
+const maskEmail = (email) => {
+  if (!email || !email.includes("@")) return email;
+  const [local, domain] = email.split("@");
+
+  if (local.length <= 1) return `*@${domain}`;
+  if (local.length === 2) return `${local[0]}*@${domain}`;
+  if (local.length === 3) return `${local[0]}*${local[2]}@${domain}`;
+  if (local.length === 4) return `${local[0]}**${local[3]}@${domain}`;
+  if (local.length === 5) return `${local.slice(0, 2)}*${local.slice(3)}@${domain}`;
+  if (local.length === 6) return `${local.slice(0, 2)}**${local.slice(4)}@${domain}`;
+
+  const prefixLen = 2;
+  const suffixLen = 2;
+  const maskLen = Math.max(3, local.length - prefixLen - suffixLen);
+  return `${local.slice(0, prefixLen)}${"*".repeat(maskLen)}${local.slice(-suffixLen)}@${domain}`;
+};
+
 const ResetPassword = () => {
   const [activeTab, setActiveTab] = useState("findEmail"); // "findEmail" | "resetPassword"
   const [isLoading, setIsLoading] = useState(false);
@@ -42,65 +67,15 @@ const ResetPassword = () => {
   const [message, setMessage] = useState("");
   const [messageOpen, setMessageOpen] = useState(false);
 
-  // 이메일 찾기 State
   const [findName, setFindName] = useState("");
   const [findPhone, setFindPhone] = useState("");
   const [foundEmails, setFoundEmails] = useState(null);
   const [copiedEmail, setCopiedEmail] = useState("");
 
-  // 비밀번호 재설정 State
   const [emailInfo, setEmailInfo] = useState({});
 
   const { resetPassword } = useFirebaseAuth();
   const navigate = useNavigate();
-
-  // 이메일 마스킹 (개인정보 보호: 앞뒤 일부만 남기고 중간을 마스킹하여 계정 구분 가능하게 처리)
-  const maskEmail = (email) => {
-    if (!email || !email.includes("@")) return email;
-    const [local, domain] = email.split("@");
-
-    if (local.length <= 1) {
-      return `*@${domain}`;
-    }
-    if (local.length === 2) {
-      return `${local[0]}*@${domain}`;
-    }
-    if (local.length === 3) {
-      return `${local[0]}*${local[2]}@${domain}`;
-    }
-    if (local.length === 4) {
-      return `${local[0]}**${local[3]}@${domain}`;
-    }
-    if (local.length === 5) {
-      return `${local.slice(0, 2)}*${local.slice(3)}@${domain}`;
-    }
-    if (local.length === 6) {
-      return `${local.slice(0, 2)}**${local.slice(4)}@${domain}`;
-    }
-    // 7자 이상
-    const prefixLen = 2;
-    const suffixLen = 2;
-    const maskLen = Math.max(3, local.length - prefixLen - suffixLen);
-    return `${local.slice(0, prefixLen)}${"*".repeat(maskLen)}${local.slice(-suffixLen)}@${domain}`;
-  };
-
-  // 전화번호 자동 하이픈 포맷
-  const formatPhoneNumber = (phoneNumber) => {
-    if (!phoneNumber) return "";
-    const cleaned = String(phoneNumber).replace(/[^0-9]/g, "").slice(0, 11);
-
-    if (cleaned.startsWith("02")) {
-      if (cleaned.length <= 2) return cleaned;
-      if (cleaned.length <= 5) return `${cleaned.slice(0, 2)}-${cleaned.slice(2)}`;
-      if (cleaned.length <= 9) return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 5)}-${cleaned.slice(5)}`;
-      return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 6)}-${cleaned.slice(6, 10)}`;
-    } else {
-      if (cleaned.length <= 3) return cleaned;
-      if (cleaned.length <= 7) return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
-      if (cleaned.length <= 10) return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-      return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7, 11)}`;
-    }
-  };
 
   const handlePhoneChange = (e) => {
     const formatted = formatPhoneNumber(e.target.value);
@@ -113,12 +88,10 @@ const ResetPassword = () => {
     if (isError.message) setIsError({});
   };
 
-  // 1. 이메일(아이디) 찾기
   const handleFindEmail = async () => {
     const now = Date.now();
     const fData = getStorage(FIND_LIMIT_KEY);
 
-    // 1-1. 락 여부 확인 (시간 노출 없이 일반 오류 반환)
     if (fData.lockedUntil && fData.lockedUntil > now) {
       setIsError({
         message: "요청 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.",
@@ -126,7 +99,6 @@ const ResetPassword = () => {
       return;
     }
 
-    // 1-2. 쿨다운 확인 (연타 방지)
     if (fData.cooldownUntil && fData.cooldownUntil > now) {
       setIsError({ message: "잠시 후 다시 시도해주세요." });
       return;
@@ -144,10 +116,9 @@ const ResetPassword = () => {
       return;
     }
 
-    // 1-3. 10분 윈도우 내 시도 횟수 검증
     const windowStart = fData.windowStart || now;
     const isWindowExpired = now - windowStart > FIND_WINDOW_MS;
-    const currentAttempts = isWindowExpired ? 0 : (fData.attempts || 0);
+    const currentAttempts = isWindowExpired ? 0 : fData.attempts || 0;
 
     if (currentAttempts >= FIND_MAX_ATTEMPTS) {
       const lockedUntil = now + FIND_LOCK_MS;
@@ -163,7 +134,6 @@ const ResetPassword = () => {
       return;
     }
 
-    // 시도 기록 저장
     setStorage(FIND_LIMIT_KEY, {
       attempts: currentAttempts + 1,
       windowStart: isWindowExpired ? now : windowStart,
@@ -209,7 +179,6 @@ const ResetPassword = () => {
     }
   };
 
-  // 마스킹된 이메일 복사
   const handleCopyEmail = (masked) => {
     navigator.clipboard.writeText(masked);
     setCopiedEmail(masked);
@@ -218,7 +187,6 @@ const ResetPassword = () => {
     }, 2000);
   };
 
-  // 찾은 이메일로 비밀번호 재설정 탭으로 이동
   const handleGoToResetWithEmail = (email) => {
     setEmailInfo({ email });
     setActiveTab("resetPassword");
@@ -226,7 +194,6 @@ const ResetPassword = () => {
     setIsError({});
   };
 
-  // 2. 비밀번호 재설정
   const handleEmailInput = (e) => {
     setEmailInfo({ email: e.target.value.trim() });
     if (isError.message) {
@@ -238,7 +205,6 @@ const ResetPassword = () => {
     const now = Date.now();
     const rData = getStorage(RESET_LIMIT_KEY);
 
-    // 2-1. 락 여부 확인 (시간 노출 없이 일반 오류 반환)
     if (rData.lockedUntil && rData.lockedUntil > now) {
       setIsError({
         message: "요청 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.",
@@ -246,7 +212,6 @@ const ResetPassword = () => {
       return;
     }
 
-    // 2-2. 쿨다운 확인
     if (rData.cooldownUntil && rData.cooldownUntil > now) {
       setIsError({ message: "잠시 후 다시 시도해주세요." });
       return;
@@ -254,19 +219,23 @@ const ResetPassword = () => {
 
     const email = emailInfo.email ? emailInfo.email.trim() : "";
     if (!email) {
-      setIsError({ code: "missing-email", message: "이메일 주소를 입력해주세요." });
+      setIsError({
+        code: "missing-email",
+        message: "이메일 주소를 입력해주세요.",
+      });
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setIsError({ code: "invalid-email", message: "올바른 이메일 주소 형식이 아닙니다." });
+    if (!validateEmail(email)) {
+      setIsError({
+        code: "invalid-email",
+        message: "올바른 이메일 주소 형식이 아닙니다.",
+      });
       return;
     }
 
-    // 2-3. 10분 윈도우 내 시도 횟수 검증 (최대 3회)
     const windowStart = rData.windowStart || now;
     const isWindowExpired = now - windowStart > RESET_WINDOW_MS;
-    const currentAttempts = isWindowExpired ? 0 : (rData.attempts || 0);
+    const currentAttempts = isWindowExpired ? 0 : rData.attempts || 0;
 
     if (currentAttempts >= RESET_MAX_ATTEMPTS) {
       const lockedUntil = now + RESET_LOCK_MS;
@@ -282,7 +251,6 @@ const ResetPassword = () => {
       return;
     }
 
-    // 시도 기록 및 60초 쿨다운 설정
     setStorage(RESET_LIMIT_KEY, {
       attempts: currentAttempts + 1,
       windowStart: isWindowExpired ? now : windowStart,
@@ -307,7 +275,10 @@ const ResetPassword = () => {
         setMessageOpen(true);
       }
     } catch (error) {
-      setIsError({ code: "unknown", message: "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요." });
+      setIsError({
+        code: "unknown",
+        message: "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -341,7 +312,10 @@ const ResetPassword = () => {
 
         {/* Top Header */}
         <div className="flex w-full justify-center flex-col items-center gap-y-2 mb-6 text-center">
-          <button onClick={() => navigate("/login")} className="inline-block mb-2 cursor-pointer">
+          <button
+            onClick={() => navigate("/login")}
+            className="inline-block mb-2 cursor-pointer"
+          >
             <span className="text-3xl font-black text-white tracking-tighter uppercase">
               BDBDG
             </span>
@@ -393,7 +367,6 @@ const ResetPassword = () => {
             </button>
           </div>
 
-          {/* Error Message */}
           {isError.message && (
             <div className="p-3.5 rounded-2xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2 mb-4">
               <FiAlertTriangle className="text-sm shrink-0 text-rose-400" />
@@ -401,11 +374,9 @@ const ResetPassword = () => {
             </div>
           )}
 
-          {/* TAB 1: 이메일 찾기 */}
           {activeTab === "findEmail" && (
             <div>
               {foundEmails ? (
-                /* 이메일 찾기 성공 화면 (마스킹 적용) */
                 <div className="flex flex-col gap-y-4">
                   <div className="text-center py-2">
                     <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 tracking-wider">
@@ -452,7 +423,6 @@ const ResetPassword = () => {
                             </button>
                           </div>
 
-                          {/* 개별 계정 비밀번호 재설정 버튼 */}
                           <button
                             type="button"
                             onClick={() => handleGoToResetWithEmail(email)}
@@ -487,10 +457,11 @@ const ResetPassword = () => {
                   </div>
                 </div>
               ) : (
-                /* 이메일 찾기 입력 폼 */
                 <div className="flex flex-col gap-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-neutral-400 mb-1.5">선수 이름 (실명)</label>
+                    <label className="block text-xs font-bold text-neutral-400 mb-1.5">
+                      선수 이름 (실명)
+                    </label>
                     <input
                       type="text"
                       className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-4 text-white text-sm focus:border-white focus:outline-none placeholder-neutral-600 transition"
@@ -502,7 +473,9 @@ const ResetPassword = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-neutral-400 mb-1.5">휴대폰 번호</label>
+                    <label className="block text-xs font-bold text-neutral-400 mb-1.5">
+                      휴대폰 번호
+                    </label>
                     <input
                       type="tel"
                       className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-4 text-white text-sm focus:border-white focus:outline-none placeholder-neutral-600 transition"
@@ -514,7 +487,7 @@ const ResetPassword = () => {
                   </div>
 
                   <button
-                    onClick={() => handleFindEmail()}
+                    onClick={handleFindEmail}
                     disabled={isLoading}
                     className="w-full h-14 font-black text-sm tracking-wider uppercase rounded-full shadow-xl transition flex items-center justify-center mt-2 bg-white hover:bg-neutral-200 text-black cursor-pointer active:scale-95 disabled:opacity-50"
                   >
@@ -525,23 +498,24 @@ const ResetPassword = () => {
             </div>
           )}
 
-          {/* TAB 2: 비밀번호 재설정 */}
           {activeTab === "resetPassword" && (
             <div className="flex flex-col gap-y-4">
               <div>
-                <label className="block text-xs font-bold text-neutral-400 mb-1.5">이메일 주소</label>
+                <label className="block text-xs font-bold text-neutral-400 mb-1.5">
+                  이메일 주소
+                </label>
                 <input
                   type="email"
                   className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-4 text-white text-sm focus:border-white focus:outline-none placeholder-neutral-600 transition"
                   placeholder="name@example.com"
                   value={emailInfo.email || ""}
-                  onChange={(e) => handleEmailInput(e)}
+                  onChange={handleEmailInput}
                   onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
                 />
               </div>
 
               <button
-                onClick={() => handleSendEmail()}
+                onClick={handleSendEmail}
                 disabled={isLoading}
                 className="w-full h-14 font-black text-sm tracking-wider uppercase rounded-full shadow-xl transition flex items-center justify-center mt-2 bg-white hover:bg-neutral-200 text-black cursor-pointer active:scale-95 disabled:opacity-50"
               >
@@ -551,7 +525,6 @@ const ResetPassword = () => {
           )}
         </div>
 
-        {/* Footer Link */}
         <div className="flex justify-center items-center mt-8 text-center">
           <button
             onClick={() => navigate("/login")}

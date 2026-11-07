@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
 import RequireAuth from "./components/auth/RequireAuth";
@@ -20,8 +20,6 @@ import ContestJoin from "./pages/ContestJoin";
 import Policy3 from "./components/Policy3";
 import ContestJoinEdit from "./pages/ContestJoinEdit";
 import EditSuccessPage from "./pages/EditSuccessPage";
-import JoinCupConfirm from "./modals/JoinCupConfirm";
-import JoinCupEditConfirm from "./modals/JoinCupEditConfirm";
 import ResetPassword from "./pages/ResetPassword";
 import Gbbf from "./pages/Gbbf";
 
@@ -81,8 +79,7 @@ function App() {
         />
 
         <Route path="/policy3" element={<Policy3 />} />
-        <Route path="/joincupconfirm" element={<JoinCupConfirm />} />
-        <Route path="/joincupeditconfirm" element={<JoinCupEditConfirm />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

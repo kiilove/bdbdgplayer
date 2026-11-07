@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex w-full min-h-screen justify-center items-center bg-[#0B0B0B] text-white p-4 font-sans antialiased">
       <div className="flex w-full flex-col items-center max-w-sm">
@@ -25,9 +27,7 @@ const Register = () => {
         <div className="w-full bg-[#141414] border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-y-4">
           <button
             className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-black text-sm rounded-full shadow-xl transition cursor-pointer text-center tracking-tight"
-            onClick={() => {
-              window.location.href = "/registeremail";
-            }}
+            onClick={() => navigate("/registeremail")}
           >
             이메일 아이디로 시작하기
           </button>

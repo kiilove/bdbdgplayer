@@ -1,27 +1,13 @@
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
-import React, { useEffect } from "react";
-import { useRef } from "react";
-import { useContext } from "react";
-import { useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import { PlayerEditContext } from "../context/PlayerContext";
-import { db } from "../firebase";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { UserContext } from "../context/UserContext";
-import {
-  useFirestoreGetDocument,
-  useFirestoreQuery,
-} from "../hooks/useFirestores";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
-  const [existEmail, setExistEmail] = useState(true);
-
   const [message, setMessage] = useState("");
   const [messageOpen, setMessageOpen] = useState(false);
 
@@ -29,10 +15,8 @@ const Login = () => {
   const loginPasswordRef = useRef();
   const navigate = useNavigate();
 
-  const getQuery = useFirestoreQuery();
   const { signInWithEmail, handleSignOut } = useFirebaseAuth();
-  const { setCurrentUid, currentUserInfo, setCurrentUserInfo } =
-    useContext(UserContext);
+  const { setCurrentUid, setCurrentUserInfo } = useContext(UserContext);
 
   const handleLogin = async () => {
     if (loginInfo.email === "" || loginInfo.password === "") {
@@ -45,39 +29,43 @@ const Login = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
       await handleSignOut();
       setCurrentUid("");
       setCurrentUserInfo({});
-      localStorage.setItem(
-        "globalValue",
-        JSON.stringify({ value: "", token: "" })
-      );
-      await signInWithEmail(
+      localStorage.removeItem("globalValue");
+
+      const { user, error } = await signInWithEmail(
         loginInfo.email.trim(),
         loginInfo.password.trim()
-      ).then(({ user, error }) => {
-        if (error) {
-          setMessage({
-            body: error.message,
-            isButton: true,
-            confirmButtonText: "확인",
-          });
-          setMessageOpen(true);
-        }
-        if (user) {
-          setCurrentUid(user.uid);
-          navigate("/");
-        }
-      });
+      );
+      if (error) {
+        setMessage({
+          body: error.message,
+          isButton: true,
+          confirmButtonText: "확인",
+        });
+        setMessageOpen(true);
+      } else if (user) {
+        setCurrentUid(user.uid);
+        navigate("/");
+      }
     } catch (error) {
-      return;
+      setMessage({
+        body: "로그인 중 오류가 발생했습니다.",
+        isButton: true,
+        confirmButtonText: "확인",
+      });
+      setMessageOpen(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
-    setLoginInfo(() => ({ ...loginInfo, [name]: value.trim() }));
+    setLoginInfo((prev) => ({ ...prev, [name]: value.trim() }));
   };
 
   const handleMessageBox = () => {
@@ -106,7 +94,7 @@ const Login = () => {
       )}
 
       <div className="w-full max-w-md bg-[#141414] border border-neutral-800 rounded-3xl p-8 sm:p-10 shadow-2xl relative z-10 flex flex-col items-center">
-        {/* Nike Header */}
+        {/* Header */}
         <div className="flex flex-col items-center text-center gap-y-2 mb-8">
           <span className="text-[10px] font-black tracking-widest text-neutral-400 uppercase bg-neutral-900 border border-neutral-800 px-3 py-1 rounded-full">
             ATHLETE PORTAL / SIGN IN
@@ -122,12 +110,14 @@ const Login = () => {
         {/* Input Form */}
         <div className="w-full flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-1.5">
-            <label className="text-xs font-bold text-neutral-300 px-1">이메일 계정</label>
+            <label className="text-xs font-bold text-neutral-300 px-1">
+              이메일 계정
+            </label>
             <input
               type="text"
               name="email"
               value={loginInfo.email}
-              onChange={(e) => handleInputs(e)}
+              onChange={handleInputs}
               ref={loginEmailRef}
               className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition"
               placeholder="이메일을 입력하세요"
@@ -135,12 +125,14 @@ const Login = () => {
           </div>
 
           <div className="flex flex-col gap-y-1.5">
-            <label className="text-xs font-bold text-neutral-300 px-1">비밀번호</label>
+            <label className="text-xs font-bold text-neutral-300 px-1">
+              비밀번호
+            </label>
             <input
               type="password"
               name="password"
               value={loginInfo.password}
-              onChange={(e) => handleInputs(e)}
+              onChange={handleInputs}
               ref={loginPasswordRef}
               className="w-full h-12 bg-neutral-900 border border-neutral-800 rounded-2xl px-5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition"
               placeholder="비밀번호를 입력하세요"
@@ -150,7 +142,7 @@ const Login = () => {
 
           <button
             className="w-full h-14 mt-4 bg-white hover:bg-neutral-200 text-black font-black text-sm tracking-wider uppercase rounded-full shadow-xl transition cursor-pointer flex items-center justify-center active:scale-95"
-            onClick={() => handleLogin()}
+            onClick={handleLogin}
           >
             로그인
           </button>
@@ -158,15 +150,24 @@ const Login = () => {
 
         {/* Footer Actions */}
         <div className="flex items-center justify-between w-full mt-8 pt-6 border-t border-neutral-800 text-xs">
-          <Link to="/register" className="font-black text-white hover:underline transition">
+          <Link
+            to="/register"
+            className="font-black text-white hover:underline transition"
+          >
             선수 무료 회원가입
           </Link>
           <div className="flex items-center gap-x-3">
-            <Link to="/resetpassword" className="text-neutral-400 hover:text-white transition font-medium">
+            <Link
+              to="/resetpassword"
+              className="text-neutral-400 hover:text-white transition font-medium"
+            >
               아이디 / 비밀번호 찾기
             </Link>
             <span className="text-neutral-700">|</span>
-            <Link to="/" className="text-neutral-400 hover:text-white transition font-medium">
+            <Link
+              to="/"
+              className="text-neutral-400 hover:text-white transition font-medium"
+            >
               홈으로
             </Link>
           </div>
