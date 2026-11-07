@@ -87,7 +87,6 @@ const BottomMenu = () => {
       <AppDrawer
         open={isOpenDrawer}
         onClose={handleDrawer}
-        anchor="right"
         size="sm"
       >
         <DrawMenu setOpen={handleDrawer} />

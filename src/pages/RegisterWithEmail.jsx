@@ -203,7 +203,6 @@ const RegisterWithEmail = () => {
       <AppDrawer
         open={policyDrawerOpen}
         onClose={() => setPolicyDrawerOpen(false)}
-        anchor="right"
         size="md"
       >
         <Policy3 onClose={() => setPolicyDrawerOpen(false)} />

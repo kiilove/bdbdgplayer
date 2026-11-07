@@ -414,7 +414,7 @@ const InvoicePrintModal = ({
   };
 
   return (
-    <AppDrawer open={true} onClose={onClose} anchor="right" size="xl">
+    <AppDrawer open={true} onClose={onClose} size="xl">
       <div className="w-full h-full bg-[#121212] flex flex-col overflow-y-auto">
         {/* Top Sticky Drawer Action Bar */}
         <div className="w-full bg-[#181818] border-b border-neutral-800 px-5 py-4 flex flex-col gap-3 sticky top-0 z-20 shadow-xl">

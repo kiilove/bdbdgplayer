@@ -150,7 +150,6 @@ const ContestJoinEdit = () => {
           <AppDrawer
             open={drawerOpen}
             onClose={handleCloseDrawer}
-            anchor="right"
             size="md"
           >
             {drawerComponent}
