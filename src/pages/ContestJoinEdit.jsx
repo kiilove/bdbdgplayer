@@ -105,8 +105,13 @@ const ContestJoinEdit = () => {
 
       const gradeData = await getGrades.getDocument(gradeListId);
       if (categoryData.id && gradeData.id) {
-        setCategorys([...categoryData.categorys]);
-        setFilteredCategorys([...categoryData.categorys]);
+        // 그랑프리가 아닌 카테고리들만 필터링
+        const filteredCategories = categoryData.categorys.filter(
+          (category) => category.contestCategorySection !== "그랑프리"
+        );
+
+        setCategorys([...filteredCategories]);
+        setFilteredCategorys([...filteredCategories]);
         setGrades([...gradeData.grades]);
       } else {
         return;
@@ -632,21 +637,27 @@ const ContestJoinEdit = () => {
                                   onChange={(e) => handleInvoiceInfo(e)}
                                 >
                                   <option value="">체급을 선택해 주세요 (미참가)</option>
-                                  {matchGrades.map((grade) => {
-                                    const {
-                                      contestGradeTitle: gTitle,
-                                      contestGradeId: gId,
-                                    } = grade;
+                                  {matchGrades
+                                    .sort(
+                                      (a, b) =>
+                                        a.contestGradeIndex -
+                                        b.contestGradeIndex
+                                    )
+                                    .map((grade) => {
+                                      const {
+                                        contestGradeTitle: gTitle,
+                                        contestGradeId: gId,
+                                      } = grade;
 
-                                    return (
-                                      <option
-                                        key={gId}
-                                        value={`${gId},${gTitle},${cType || ""}`}
-                                      >
-                                        {gTitle}
-                                      </option>
-                                    );
-                                  })}
+                                      return (
+                                        <option
+                                          key={gId}
+                                          value={`${gId},${gTitle},${cType || ""}`}
+                                        >
+                                          {gTitle}
+                                        </option>
+                                      );
+                                    })}
                                 </select>
                               )}
                             </div>
