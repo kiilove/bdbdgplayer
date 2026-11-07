@@ -98,7 +98,7 @@ const PlayerInfoStep = ({
               placeholder="예: 1995-05-20"
             />
             <span className="h-12 px-4 flex items-center justify-center text-sm font-bold text-[#111111] whitespace-nowrap bg-[#F5F5F7] rounded-xl border border-neutral-200">
-              만 {playerAge || 0}세
+              {playerAge > 0 ? `만 ${playerAge}세` : "만 -세"}
             </span>
           </div>
         </div>

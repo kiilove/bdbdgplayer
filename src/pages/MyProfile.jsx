@@ -338,7 +338,7 @@ const MyProfile = () => {
                         총 참가비
                       </span>
                       <span className="text-lg font-extrabold text-[#111111]">
-                        {inv.contestPriceSum?.toLocaleString()} 원
+                        {Number(inv.contestPriceSum || 0).toLocaleString()} 원
                       </span>
                     </div>
 

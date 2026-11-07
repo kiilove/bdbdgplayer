@@ -82,7 +82,7 @@ const ConfirmModalLayout = ({
               <div className="flex justify-between items-center pt-3 border-t border-neutral-200 mt-1">
                 <span className="text-[#111111] font-bold">총 참가비 합계</span>
                 <span className="text-xl font-extrabold text-[#111111]">
-                  {invoicePrice?.toLocaleString()} 원
+                  {Number(invoicePrice || 0).toLocaleString()} 원
                 </span>
               </div>
             </div>
