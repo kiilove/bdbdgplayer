@@ -6,10 +6,11 @@ import { Modal } from "@mui/material";
 import { RotatingLines } from "react-loader-spinner";
 import { saveAs } from "file-saver";
 import { MdCreditCard, MdOutlineLocationOn } from "react-icons/md";
-import { RiBankLine, RiCheckDoubleFill, RiTimeLine, RiErrorWarningLine } from "react-icons/ri";
+import { RiBankLine, RiCheckDoubleFill, RiTimeLine, RiErrorWarningLine, RiPrinterLine } from "react-icons/ri";
 import { RxCopy } from "react-icons/rx";
 import { useFirestoreGetDocument } from "../hooks/useFirestores";
 import JoinCupEditConfirm from "../modals/JoinCupEditConfirm";
+import InvoicePrintModal from "../modals/InvoicePrintModal";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { formatBirthDate, formatPhoneNumber, calculateAge } from "../utils/formatUtils";
 import { BsFillQuestionCircleFill } from "react-icons/bs";
@@ -38,6 +39,7 @@ const ContestJoinEdit = () => {
   });
 
   const [optionOpen, setOptionOpen] = useState(false);
+  const [printModalOpen, setPrintModalOpen] = useState(false);
   const [message, setMessage] = useState({});
 
   const getInvoice = useFirestoreGetDocument("invoices_pool");
@@ -388,17 +390,27 @@ const ContestJoinEdit = () => {
                 </div>
               </div>
 
-              {contests.contestCollectionFileLink && (
-                <a
-                  href={contests.contestCollectionFileLink}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-3 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full shadow-lg transition flex items-center justify-center gap-2 cursor-pointer w-full md:w-auto text-center"
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full md:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setPrintModalOpen(true)}
+                  className="px-5 py-3 bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-600 font-black text-xs rounded-full shadow-lg transition flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto text-center"
                 >
-                  모집 요강 다운로드
-                </a>
-              )}
+                  <RiPrinterLine className="text-sm" />
+                  <span>접수증 출력 / PDF</span>
+                </button>
+                {contests.contestCollectionFileLink && (
+                  <a
+                    href={contests.contestCollectionFileLink}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-3 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full shadow-lg transition flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto text-center"
+                  >
+                    모집 요강 다운로드
+                  </a>
+                )}
+              </div>
             </div>
 
             {/* Main 2-Column Responsive Layout */}
@@ -719,11 +731,26 @@ const ContestJoinEdit = () => {
                     >
                       신청 정보 수정 완료
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setPrintModalOpen(true)}
+                      className="w-full py-3.5 bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 font-bold text-xs rounded-full transition flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <RiPrinterLine className="text-base" />
+                      <span>접수증 A4 인쇄 / PDF 저장</span>
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </main>
+          {printModalOpen && (
+            <InvoicePrintModal
+              invoiceInfo={invoiceInfo}
+              contestInfo={contests}
+              onClose={() => setPrintModalOpen(false)}
+            />
+          )}
         </>
       )}
     </div>

@@ -12,7 +12,8 @@ import Header from "../components/Header";
 import { RotatingLines } from "react-loader-spinner";
 import { UserContext } from "../context/UserContext";
 import { useFirestoreQuery } from "../hooks/useFirestores";
-import { RiTrophyLine, RiCalendarLine } from "react-icons/ri";
+import { RiTrophyLine, RiCalendarLine, RiPrinterLine } from "react-icons/ri";
+import InvoicePrintModal from "../modals/InvoicePrintModal";
 
 const makeFileName = (filename, salt) => {
   const currentDate = new Date();
@@ -34,6 +35,7 @@ const MyProfile = () => {
   const fetchInvoicesQuery = useFirestoreQuery();
   const [userInvoices, setUserInvoices] = useState([]);
   const [invoicesLoading, setInvoicesLoading] = useState(true);
+  const [selectedPrintInvoice, setSelectedPrintInvoice] = useState(null);
 
   const navigate = useNavigate();
 
@@ -285,7 +287,7 @@ const MyProfile = () => {
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-neutral-800 mt-1">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-neutral-800 mt-1">
                     <div className="flex flex-col">
                       <span className="text-[11px] font-semibold text-neutral-400">총 참가비</span>
                       <span className="text-base font-black text-white">
@@ -293,12 +295,23 @@ const MyProfile = () => {
                       </span>
                     </div>
 
-                    <button
-                      onClick={() => navigate(`/contestjoinedit/${inv.id}`)}
-                      className="px-4 py-2 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full transition shadow-md cursor-pointer active:scale-95"
-                    >
-                      신청내역 수정 &gt;
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPrintInvoice(inv)}
+                        className="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 font-bold text-xs rounded-full transition shadow-md cursor-pointer flex items-center gap-1.5 active:scale-95"
+                      >
+                        <RiPrinterLine className="text-sm" />
+                        <span>접수증 출력 / PDF</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/contestjoinedit/${inv.id}`)}
+                        className="px-4 py-2 bg-white hover:bg-neutral-200 text-black font-black text-xs rounded-full transition shadow-md cursor-pointer active:scale-95"
+                      >
+                        신청내역 수정 &gt;
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -316,6 +329,12 @@ const MyProfile = () => {
           )}
         </div>
       </main>
+      {selectedPrintInvoice && (
+        <InvoicePrintModal
+          invoiceInfo={selectedPrintInvoice}
+          onClose={() => setSelectedPrintInvoice(null)}
+        />
+      )}
     </div>
   );
 };
