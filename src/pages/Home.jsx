@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import { MdArrowForward } from "react-icons/md";
@@ -8,6 +8,12 @@ import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
 
+const isGbbfDirectContest = (item) =>
+  Boolean(
+    item?.contestPromoter?.includes("경기도") ||
+      item?.contestAssociate?.includes("경기도")
+  );
+
 const Home = () => {
   const {
     contests: allContests,
@@ -15,9 +21,10 @@ const Home = () => {
     isLoading,
     playerInfo: pInfo,
   } = useActiveContests();
-  const [activeTab, setActiveTab] = useState("all"); // 'all', 'gbbf', 'yongin'
+  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'gbbf' | 'sub'
   const [message, setMessage] = useState({});
   const [messageOpen, setMessageOpen] = useState(false);
+  const tabRefs = useRef({});
   const navigate = useNavigate();
 
   const redirectLogin = () => {
@@ -40,39 +47,37 @@ const Home = () => {
     setMessageOpen(true);
   };
 
+  const handleTabSelect = (tabId) => {
+    setActiveTab(tabId);
+    const targetEl = tabRefs.current[tabId];
+    if (targetEl && typeof targetEl.scrollIntoView === "function") {
+      targetEl.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  };
+
   // 탭 필터링에 따른 동적 카드 목록
   const displayedContests = allContests.filter((item) => {
-    if (activeTab === "yongin") {
-      return (
-        item.contestPromoter?.includes("용인") ||
-        item.contestTitle?.includes("용인")
-      );
-    }
     if (activeTab === "gbbf") {
-      return (
-        item.contestPromoter?.includes("경기도") ||
-        item.contestAssociate?.includes("경기도")
-      );
+      return isGbbfDirectContest(item);
+    }
+    if (activeTab === "sub") {
+      return !isGbbfDirectContest(item);
     }
     return true;
   });
 
   const totalCount = allContests.length;
-  const gbbfCount = allContests.filter(
-    (item) =>
-      item.contestPromoter?.includes("경기도") ||
-      item.contestAssociate?.includes("경기도")
-  ).length;
-  const yonginCount = allContests.filter(
-    (item) =>
-      item.contestPromoter?.includes("용인") ||
-      item.contestTitle?.includes("용인")
-  ).length;
+  const gbbfCount = allContests.filter(isGbbfDirectContest).length;
+  const subCount = allContests.filter((item) => !isGbbfDirectContest(item)).length;
 
   const tabs = [
     { id: "all", label: "전체 접수대회", count: totalCount },
     { id: "gbbf", label: "경기도보디빌딩협회", count: gbbfCount },
-    { id: "yongin", label: "용인시보디빌딩협회", count: yonginCount },
+    { id: "sub", label: "경기도 산하 보디빌딩협회", count: subCount },
   ];
 
   return (
@@ -159,34 +164,39 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Filter Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 sm:px-5 py-2.5 rounded-full flex items-center gap-x-2 text-sm font-bold transition cursor-pointer whitespace-nowrap ${
-                  isActive
-                    ? "bg-[#111111] text-white shadow-sm"
-                    : "bg-white text-neutral-600 border border-neutral-200 hover:border-neutral-300 hover:text-[#111111]"
-                }`}
-              >
-                <span>{tab.label}</span>
-                <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+        {/* Filter Tabs (모바일 좌우 여백 클리핑 방지 및 탭 클릭 시 자동 중앙 스크롤) */}
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex items-center gap-2 w-max sm:w-full pb-1 pr-4 sm:pr-0">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  ref={(el) => {
+                    tabRefs.current[tab.id] = el;
+                  }}
+                  type="button"
+                  onClick={() => handleTabSelect(tab.id)}
+                  className={`px-4 sm:px-5 py-2.5 rounded-full flex items-center gap-x-2 text-[13px] sm:text-sm font-bold transition cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
-                      ? "bg-white/20 text-white"
-                      : "bg-[#F5F5F7] text-neutral-600"
+                      ? "bg-[#111111] text-white shadow-sm"
+                      : "bg-white text-neutral-600 border border-neutral-200 hover:border-neutral-300 hover:text-[#111111]"
                   }`}
                 >
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
+                  <span>{tab.label}</span>
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                      isActive
+                        ? "bg-white/20 text-white"
+                        : "bg-[#F5F5F7] text-neutral-600"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Contest Cards List */}
@@ -203,7 +213,7 @@ const Home = () => {
             </div>
           ) : displayedContests.length === 0 ? (
             <div className="bg-white border border-neutral-200/90 rounded-3xl p-16 text-center text-neutral-500 font-semibold text-base shadow-sm">
-              현재 접수 중인 대회가 없습니다.
+              현재 해당 부문에 접수 중인 대회가 없습니다.
             </div>
           ) : (
             displayedContests.map((item) => {

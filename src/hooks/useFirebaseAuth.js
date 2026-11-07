@@ -14,8 +14,8 @@ const useFirebaseAuth = () => {
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
       setIsLoading(false);
     });
 
@@ -36,19 +36,29 @@ const useFirebaseAuth = () => {
       let errorMessage;
       switch (error.code) {
         case "auth/too-many-requests":
-          errorMessage = "비밀번호 입력횟수가 초과되었습니다.";
+          errorMessage =
+            "로그인 시도 횟수가 초과되었습니다. 잠시 후 다시 시도해 주세요.";
           break;
         case "auth/user-not-found":
-          errorMessage = "사용자를 찾을 수 없습니다.";
+          errorMessage = "등록되지 않은 이메일 계정입니다.";
           break;
         case "auth/wrong-password":
-          errorMessage = "잘못된 비밀번호입니다.";
+        case "auth/invalid-credential":
+        case "auth/invalid-login-credentials":
+          errorMessage = "이메일 또는 비밀번호가 일치하지 않습니다.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "올바른 이메일 주소 형식이 아닙니다.";
+          break;
+        case "auth/user-disabled":
+          errorMessage = "이용이 제한된 계정입니다. 협회로 문의해 주세요.";
           break;
         case "auth/network-request-failed":
-          errorMessage = "네트워크 오류가 발생했습니다.";
+          errorMessage = "네트워크 연결 상태를 확인해 주세요.";
           break;
         default:
-          errorMessage = error.message;
+          errorMessage =
+            "로그인 중 오류가 발생했습니다. 입력 정보를 다시 확인해 주세요.";
           break;
       }
       return { user: null, error: { message: errorMessage } };
@@ -75,13 +85,13 @@ const useFirebaseAuth = () => {
           errorMessage = "유효하지 않은 이메일 주소입니다.";
           break;
         case "auth/weak-password":
-          errorMessage = "보안 수준이 낮은 비밀번호입니다.";
+          errorMessage = "비밀번호는 6자리 이상이어야 합니다.";
           break;
         case "auth/network-request-failed":
           errorMessage = "네트워크 오류가 발생했습니다.";
           break;
         default:
-          errorMessage = error.message;
+          errorMessage = "회원가입 중 오류가 발생했습니다.";
           break;
       }
       return { user: null, error: { message: errorMessage } };
@@ -103,7 +113,13 @@ const useFirebaseAuth = () => {
     const auth = getAuth();
     auth.languageCode = "ko";
     if (!email || !email.trim()) {
-      return { success: null, error: { code: "auth/missing-email", message: "이메일 주소를 입력해주세요." } };
+      return {
+        success: null,
+        error: {
+          code: "auth/missing-email",
+          message: "이메일 주소를 입력해주세요.",
+        },
+      };
     }
     try {
       await sendPasswordResetEmail(auth, email.trim());
@@ -117,7 +133,8 @@ const useFirebaseAuth = () => {
       let errorMessage;
       switch (error.code) {
         case "auth/user-not-found":
-          errorMessage = "가입되지 않은 이메일 주소입니다. 이메일을 다시 확인해주세요.";
+          errorMessage =
+            "가입되지 않은 이메일 주소입니다. 이메일을 다시 확인해주세요.";
           break;
         case "auth/invalid-email":
           errorMessage = "올바른 이메일 주소 형식이 아닙니다.";
@@ -126,16 +143,21 @@ const useFirebaseAuth = () => {
           errorMessage = "이메일 주소를 입력해주세요.";
           break;
         case "auth/too-many-requests":
-          errorMessage = "요청 횟수가 초과되었습니다. 잠시 후 다시 시도해주세요.";
+          errorMessage =
+            "요청 횟수가 초과되었습니다. 잠시 후 다시 시도해주세요.";
           break;
         case "auth/network-request-failed":
           errorMessage = "네트워크 연결 상태를 확인해주세요.";
           break;
         default:
-          errorMessage = error.message || "비밀번호 재설정 메일 발송 중 오류가 발생했습니다.";
+          errorMessage =
+            "비밀번호 재설정 메일 발송 중 오류가 발생했습니다.";
           break;
       }
-      return { success: null, error: { code: error.code || "error", message: errorMessage } };
+      return {
+        success: null,
+        error: { code: error.code || "error", message: errorMessage },
+      };
     }
   };
 

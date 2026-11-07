@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import ConfirmModalLayout from "../components/contest/ConfirmModalLayout";
+import { handleToast } from "../components/HandleToast";
 import {
   useFirestoreDeleteData,
   useFirestoreQuery,
@@ -72,7 +73,8 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
     } catch (error) {
       console.error("Update Error:", error);
       setIsLoading(false);
-      alert(
+      handleToast(
+        "error",
         "신청 정보 수정 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
       );
     }
@@ -82,7 +84,7 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
     <ConfirmModalLayout
       title="변경내용 확인"
       subtitle="수정된 신청 정보를 최종 확인해 주세요"
-      confirmButtonText="변경신청"
+      confirmButtonText="변경신청 완료"
       invoiceInfo={invoiceInfo}
       invoicePrice={invoicePrice}
       isLoading={isLoading}

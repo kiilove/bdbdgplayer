@@ -9,6 +9,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { ThreeDots } from "react-loader-spinner";
 import dayjs from "dayjs";
 import Policy3 from "../components/Policy3";
+import { handleToast } from "../components/HandleToast";
 import AppDrawer from "../components/common/AppDrawer";
 import { db } from "../firebase";
 import {
@@ -189,7 +190,10 @@ const RegisterWithEmail = () => {
           email: { code: "exist", message: "이미 사용 중인 이메일입니다." },
         }));
       } else {
-        alert("회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
+        handleToast(
+          "error",
+          "회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요."
+        );
       }
     } finally {
       setIsLoading(false);
