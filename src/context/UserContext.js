@@ -1,183 +1,140 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
-import { Decrypt, Encrypt } from "../components/Encrypt";
 import { fetchPlayerByUid } from "../services/playerService";
 import { invalidateContestCache } from "../services/contestService";
 
 export const UserContext = createContext();
 
-const STORAGE_KEY = "globalValue";
-const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-
-const saveEncryptedSession = (uid) => {
-  if (!uid) return;
-  const expirationTimestamp = Date.now() + SESSION_TTL_MS;
-  const encryptedCurrentId = Encrypt(uid);
-  const encryptedToken = Encrypt(String(expirationTimestamp));
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({ value: encryptedCurrentId, token: encryptedToken })
-  );
-};
-
-export const readEncryptedSessionUid = () => {
-  const storedValue = localStorage.getItem(STORAGE_KEY);
-  if (!storedValue) return "";
-
-  try {
-    const { value, token } = JSON.parse(storedValue);
-    const decryptedUid = Decrypt(value);
-    const decryptedToken = Decrypt(token);
-    const expirationTimestamp = parseInt(decryptedToken, 10);
-
-    if (
-      !decryptedUid ||
-      Number.isNaN(expirationTimestamp) ||
-      expirationTimestamp <= Date.now()
-    ) {
-      localStorage.removeItem(STORAGE_KEY);
-      return "";
-    }
-    return decryptedUid;
-  } catch {
-    localStorage.removeItem(STORAGE_KEY);
-    return "";
-  }
-};
-
 export const UserContextProvider = ({ children }) => {
-  const [currentUid, setCurrentUid] = useState(() => readEncryptedSessionUid());
-  const [currentUserInfo, setCurrentUserInfo] = useState(() => {
-    const initialUid = readEncryptedSessionUid();
-    return initialUid ? { playerUid: initialUid } : {};
-  });
-  const [isAuthLoading, setIsAuthLoading] = useState(() =>
-    Boolean(readEncryptedSessionUid())
+  const [currentUid, setCurrentUid] = useState(
+    () => auth.currentUser?.uid || ""
   );
+  const [currentUserInfo, setCurrentUserInfo] = useState(() =>
+    auth.currentUser?.uid
+      ? {
+          playerUid: auth.currentUser.uid,
+          pEmail: auth.currentUser.email || "",
+        }
+      : {}
+  );
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  // 레거시 localStorage("globalValue") 잔여 데이터가 있다면 초기 1회 완전히 정리
+  useEffect(() => {
+    try {
+      localStorage.removeItem("globalValue");
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
 
   const clearUserSession = useCallback(() => {
     setCurrentUid("");
     setCurrentUserInfo({});
     setIsAuthLoading(false);
-    localStorage.removeItem(STORAGE_KEY);
     invalidateContestCache();
   }, []);
 
   /**
-   * 로그인 또는 회원가입 직후 호출하여 Firebase Auth 유저와 Firestore 프로필을 동기화하고
-   * 완료된 프로필 객체를 반환 (페이지 이동 직전 프로필 로드 보장)
+   * 로그인 또는 회원가입 직후 호출하여 Firebase Auth 유저와 Firestore 프로필을 즉시 동기화
    */
-  const loginSession = useCallback(async (firebaseUser, initialProfile = null) => {
-    const uid = firebaseUser?.uid;
-    if (!uid) return null;
+  const loginSession = useCallback(
+    async (firebaseUser, initialProfile = null) => {
+      const uid = firebaseUser?.uid;
+      if (!uid) return null;
 
-    saveEncryptedSession(uid);
-    setCurrentUid(uid);
-    invalidateContestCache();
+      setCurrentUid(uid);
+      invalidateContestCache();
 
-    if (initialProfile) {
-      const merged = {
-        ...initialProfile,
-        playerUid: uid,
-        pEmail: initialProfile.pEmail || firebaseUser.email || "",
-      };
-      setCurrentUserInfo(merged);
-      setIsAuthLoading(false);
-      return merged;
-    }
-
-    // 네트워크 응답 전에도 로그인 상태(playerUid)가 끊기지 않도록 즉시 반영
-    setCurrentUserInfo((prev) => ({
-      ...prev,
-      playerUid: uid,
-      pEmail: prev?.pEmail || firebaseUser.email || "",
-    }));
-
-    try {
-      const playerDoc = await fetchPlayerByUid(uid, firebaseUser.email || "");
-      const resolvedProfile = playerDoc || {
-        playerUid: uid,
-        pEmail: firebaseUser.email || "",
-      };
-      setCurrentUserInfo(resolvedProfile);
-      return resolvedProfile;
-    } catch (err) {
-      console.error("Failed to load player profile on login:", err);
-      const fallback = {
-        playerUid: uid,
-        pEmail: firebaseUser.email || "",
-      };
-      setCurrentUserInfo(fallback);
-      return fallback;
-    } finally {
-      setIsAuthLoading(false);
-    }
-  }, []);
-
-  // Firebase Auth 세션과 로컬 암호화 세션(7일 만료) 동기화
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      const storedUid = readEncryptedSessionUid();
-
-      if (firebaseUser?.uid) {
-        // 로컬 스토리지가 만료되어 삭제된 상태인데 Firebase Auth만 남아있다면 로그아웃 동기화
-        if (!storedUid && !currentUid) {
-          signOut(auth).catch(() => {});
-          return;
-        }
-        if (storedUid && storedUid !== firebaseUser.uid) {
-          saveEncryptedSession(firebaseUser.uid);
-          setCurrentUid(firebaseUser.uid);
-        } else if (!currentUid && storedUid) {
-          setCurrentUid(storedUid);
-        }
+      if (initialProfile) {
+        const merged = {
+          ...initialProfile,
+          playerUid: uid,
+          pEmail: initialProfile.pEmail || firebaseUser.email || "",
+        };
+        setCurrentUserInfo(merged);
+        setIsAuthLoading(false);
+        return merged;
       }
-    });
 
-    return () => unsubscribe();
-  }, [currentUid]);
+      setCurrentUserInfo((prev) => ({
+        ...prev,
+        playerUid: uid,
+        pEmail: prev?.pEmail || firebaseUser.email || "",
+      }));
 
-  // 새로고침 또는 UID 변경 시 Firestore 선수 프로필 로드
+      try {
+        const playerDoc = await fetchPlayerByUid(uid, firebaseUser.email || "");
+        const resolvedProfile = playerDoc || {
+          playerUid: uid,
+          pEmail: firebaseUser.email || "",
+        };
+        setCurrentUserInfo(resolvedProfile);
+        return resolvedProfile;
+      } catch (err) {
+        console.error("Failed to load player profile on login:", err);
+        const fallback = {
+          playerUid: uid,
+          pEmail: firebaseUser.email || "",
+        };
+        setCurrentUserInfo(fallback);
+        return fallback;
+      } finally {
+        setIsAuthLoading(false);
+      }
+    },
+    []
+  );
+
+  // 오직 Firebase Authentication(onAuthStateChanged)만을 단일 인증 소스로 사용
   useEffect(() => {
     let isMounted = true;
 
-    if (!currentUid) {
-      setIsAuthLoading(false);
-      return undefined;
-    }
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!isMounted) return;
 
-    saveEncryptedSession(currentUid);
-    setIsAuthLoading(true);
+      if (!firebaseUser?.uid) {
+        setCurrentUid("");
+        setCurrentUserInfo({});
+        setIsAuthLoading(false);
+        return;
+      }
 
-    fetchPlayerByUid(currentUid, auth.currentUser?.email || "")
-      .then((playerDoc) => {
+      const uid = firebaseUser.uid;
+      setCurrentUid(uid);
+      setCurrentUserInfo((prev) => ({
+        ...prev,
+        playerUid: uid,
+        pEmail: prev?.pEmail || firebaseUser.email || "",
+      }));
+
+      try {
+        const playerDoc = await fetchPlayerByUid(uid, firebaseUser.email || "");
         if (!isMounted) return;
         if (playerDoc) {
           setCurrentUserInfo(playerDoc);
         } else {
-          // players_pool 문서가 없더라도 로그인 세션(playerUid)이 풀리지 않도록 기본값 보장
           setCurrentUserInfo((prev) => ({
             ...prev,
-            playerUid: currentUid,
-            pEmail: prev?.pEmail || auth.currentUser?.email || "",
+            playerUid: uid,
+            pEmail: prev?.pEmail || firebaseUser.email || "",
           }));
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Failed to load player profile:", err);
-      })
-      .finally(() => {
+      } finally {
         if (isMounted) {
           setIsAuthLoading(false);
         }
-      });
+      }
+    });
 
     return () => {
       isMounted = false;
+      unsubscribe();
     };
-  }, [currentUid]);
+  }, []);
 
   const isLoggedIn = Boolean(currentUid || currentUserInfo?.playerUid);
 
