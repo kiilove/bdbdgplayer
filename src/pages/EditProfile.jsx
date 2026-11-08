@@ -92,12 +92,15 @@ const EditProfile = () => {
   };
 
   const handleSave = async () => {
-    if (!isValid() || !pInfo?.id) return;
+    if (!isValid() || (!pInfo?.id && !pInfo?.playerUid)) return;
     setIsLoading(true);
 
-    const updatedFields = { [editType]: value.trim() };
+    const trimmedVal = value.trim();
+    const updatedFields = { [editType]: trimmedVal };
     if (editType === "pBirth") {
-      updatedFields.playerAge = calculateAge(value.trim());
+      updatedFields.playerAge = calculateAge(trimmedVal);
+    } else if (editType === "pGender") {
+      updatedFields.gender = trimmedVal;
     }
 
     const nextUserInfo = {
@@ -106,8 +109,8 @@ const EditProfile = () => {
     };
 
     try {
-      await savePlayerProfile(pInfo.id, nextUserInfo);
-      setCurrentUserInfo(nextUserInfo);
+      const savedDoc = await savePlayerProfile(pInfo.id, nextUserInfo);
+      setCurrentUserInfo(savedDoc?.id ? { ...nextUserInfo, id: savedDoc.id } : nextUserInfo);
       handleToast("success", "프로필 정보가 저장되었습니다.");
       navigate("/myprofile", { replace: true });
     } catch {

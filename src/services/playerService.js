@@ -14,14 +14,63 @@ const createStorageFileName = (filename, prefix = "P") => {
 };
 
 /**
- * playerUid로 선수 프로필 조회 (players_pool)
+ * 선수 프로필 객체를 일관된 스키마로 정규화 (playerUid 보장)
  */
-export const fetchPlayerByUid = async (playerUid) => {
+const normalizePlayerProfile = (doc, fallbackUid = "", fallbackEmail = "") => {
+  if (!doc) return null;
+  const resolvedUid = doc.playerUid || doc.pUid || fallbackUid || "";
+  return {
+    ...doc,
+    playerUid: resolvedUid,
+    pEmail: doc.pEmail || fallbackEmail || "",
+  };
+};
+
+/**
+ * playerUid(또는 보조 이메일)로 선수 프로필 조회 (players_pool)
+ */
+export const fetchPlayerByUid = async (playerUid, fallbackEmail = "") => {
   if (!playerUid) return null;
+
   const docs = await queryDocuments("players_pool", [
     where("playerUid", "==", playerUid),
   ]);
-  return docs && docs.length > 0 ? docs[0] : null;
+  if (docs && docs.length > 0) {
+    return normalizePlayerProfile(docs[0], playerUid, fallbackEmail);
+  }
+
+  // 레거시 데이터 호환: pUid 필드로 저장된 문서 조회
+  const legacyDocs = await queryDocuments("players_pool", [
+    where("pUid", "==", playerUid),
+  ]);
+  if (legacyDocs && legacyDocs.length > 0) {
+    return normalizePlayerProfile(legacyDocs[0], playerUid, fallbackEmail);
+  }
+
+  // 보조 조회: Firebase Auth에는 계정이 있으나 UID 매핑이 누락된 경우 이메일로 조회
+  if (fallbackEmail) {
+    const emailDocs = await queryDocuments("players_pool", [
+      where("pEmail", "==", fallbackEmail.trim()),
+    ]);
+    if (emailDocs && emailDocs.length > 0) {
+      return normalizePlayerProfile(emailDocs[0], playerUid, fallbackEmail);
+    }
+  }
+
+  return null;
+};
+
+/**
+ * players_pool 내 이메일 중복 여부 확인
+ * (Firebase 이메일 열거 보호 정책으로 fetchSignInMethodsForEmail이 빈 배열을 반환하는 문제 보완)
+ */
+export const checkPlayerEmailInPool = async (email) => {
+  const trimmed = (email || "").trim();
+  if (!trimmed) return false;
+  const docs = await queryDocuments("players_pool", [
+    where("pEmail", "==", trimmed),
+  ]);
+  return Boolean(docs && docs.length > 0);
 };
 
 /**
@@ -51,7 +100,9 @@ export const createPlayerProfile = async ({
  * 선수 프로필 병합 저장 (players_pool)
  */
 export const savePlayerProfile = async (docId, updatedProfile) => {
-  if (!docId) throw new Error("선수 문서 ID가 없습니다.");
+  if (!docId) {
+    return await createDocument("players_pool", updatedProfile);
+  }
   return await mergeDocumentById("players_pool", docId, updatedProfile);
 };
 

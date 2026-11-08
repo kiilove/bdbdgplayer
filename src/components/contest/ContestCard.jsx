@@ -33,7 +33,7 @@ const ContestCard = ({
     } else if (isLoggedIn) {
       navigate(`/contestjoin/${contestId}`);
     } else if (onRequireLogin) {
-      onRequireLogin();
+      onRequireLogin(`/contestjoin/${contestId}`);
     }
   };
 

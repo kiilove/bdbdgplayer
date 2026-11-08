@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { UserContext } from "../context/UserContext";
@@ -14,12 +14,25 @@ const Login = () => {
   const loginEmailRef = useRef();
   const loginPasswordRef = useRef();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { signInWithEmail, handleSignOut } = useFirebaseAuth();
-  const { setCurrentUid, clearUserSession } = useContext(UserContext);
+  const { loginSession, clearUserSession } = useContext(UserContext);
 
-  const handleLogin = async () => {
-    if (loginInfo.email === "" || loginInfo.password === "") {
+  const redirectTo =
+    location.state?.from && location.state.from !== "/login"
+      ? location.state.from
+      : "/";
+
+  const handleLogin = async (e) => {
+    if (e && typeof e.preventDefault === "function") {
+      e.preventDefault();
+    }
+
+    const trimmedEmail = loginInfo.email.trim();
+    const rawPassword = loginInfo.password;
+
+    if (!trimmedEmail || !rawPassword) {
       setMessage({
         body: "이메일 아이디와 비밀번호를 입력해주세요.",
         isButton: true,
@@ -34,10 +47,7 @@ const Login = () => {
       await handleSignOut();
       clearUserSession();
 
-      const { user, error } = await signInWithEmail(
-        loginInfo.email.trim(),
-        loginInfo.password.trim()
-      );
+      const { user, error } = await signInWithEmail(trimmedEmail, rawPassword);
       if (error) {
         setMessage({
           body: error.message,
@@ -46,8 +56,8 @@ const Login = () => {
         });
         setMessageOpen(true);
       } else if (user) {
-        setCurrentUid(user.uid);
-        navigate("/");
+        await loginSession(user);
+        navigate(redirectTo, { replace: true });
       }
     } catch {
       setMessage({
@@ -63,7 +73,10 @@ const Login = () => {
 
   const handleInputs = (e) => {
     const { name, value } = e.target;
-    setLoginInfo((prev) => ({ ...prev, [name]: value.trim() }));
+    setLoginInfo((prev) => ({
+      ...prev,
+      [name]: name === "email" ? value.trim() : value,
+    }));
   };
 
   const handleMessageBox = () => {
@@ -108,15 +121,20 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Input Form */}
-        <div className="w-full flex flex-col gap-y-4">
+        {/* Semantic Login Form (모바일·브라우저 패스워드 자동완성 지원) */}
+        <form onSubmit={handleLogin} className="w-full flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-1.5">
-            <label className="text-sm font-semibold text-neutral-700 px-0.5">
+            <label
+              htmlFor="login-email"
+              className="text-sm font-semibold text-neutral-700 px-0.5"
+            >
               이메일 계정
             </label>
             <input
+              id="login-email"
               type="email"
               name="email"
+              autoComplete="email"
               value={loginInfo.email}
               onChange={handleInputs}
               ref={loginEmailRef}
@@ -126,29 +144,33 @@ const Login = () => {
           </div>
 
           <div className="flex flex-col gap-y-1.5">
-            <label className="text-sm font-semibold text-neutral-700 px-0.5">
+            <label
+              htmlFor="login-password"
+              className="text-sm font-semibold text-neutral-700 px-0.5"
+            >
               비밀번호
             </label>
             <input
+              id="login-password"
               type="password"
               name="password"
+              autoComplete="current-password"
               value={loginInfo.password}
               onChange={handleInputs}
               ref={loginPasswordRef}
               className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-base text-[#111111] placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111] transition"
               placeholder="비밀번호를 입력하세요"
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
           </div>
 
           <button
-            type="button"
-            className="w-full h-13 py-3.5 mt-3 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer flex items-center justify-center active:scale-[0.99]"
-            onClick={handleLogin}
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-13 py-3.5 mt-3 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer flex items-center justify-center active:scale-[0.99] disabled:opacity-60"
           >
             로그인
           </button>
-        </div>
+        </form>
 
         {/* Footer Actions */}
         <div className="flex flex-wrap items-center justify-between gap-2 w-full mt-8 pt-6 border-t border-neutral-100 text-xs sm:text-sm">

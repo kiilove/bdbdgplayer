@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ThreeDots } from "react-loader-spinner";
 import dayjs from "dayjs";
 import Policy3 from "../components/Policy3";
 import { handleToast } from "../components/HandleToast";
 import AppDrawer from "../components/common/AppDrawer";
+import { UserContext } from "../context/UserContext";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
-import { createPlayerProfile } from "../services/playerService";
+import {
+  checkPlayerEmailInPool,
+  createPlayerProfile,
+} from "../services/playerService";
 import {
   formatPhoneNumber,
   validateEmail,
@@ -16,6 +20,7 @@ import {
 const RegisterWithEmail = () => {
   const navigate = useNavigate();
   const { signUpWithEmail, checkEmailExists } = useFirebaseAuth();
+  const { loginSession } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
   const [chkEmail, setChkEmail] = useState(false);
   const [policyDrawerOpen, setPolicyDrawerOpen] = useState(false);
@@ -113,7 +118,11 @@ const RegisterWithEmail = () => {
     }
 
     try {
-      const exists = await checkEmailExists(trimmedEmail);
+      const [existsInAuth, existsInPool] = await Promise.all([
+        checkEmailExists(trimmedEmail).catch(() => false),
+        checkPlayerEmailInPool(trimmedEmail).catch(() => false),
+      ]);
+      const exists = existsInAuth || existsInPool;
       if (exists) {
         setChkEmail(false);
         setAlertMessage((prev) => ({
@@ -176,7 +185,7 @@ const RegisterWithEmail = () => {
         return;
       }
 
-      await createPlayerProfile({
+      const createdProfile = await createPlayerProfile({
         pName: form.pName,
         pEmail: form.pEmail,
         pTel: form.pTel,
@@ -184,6 +193,9 @@ const RegisterWithEmail = () => {
         license,
         playerUid: user.uid,
       });
+
+      // 회원가입 직후 Firebase Auth와 UserContext 세션을 즉시 동기화하여 재로그인 불필요
+      await loginSession(user, createdProfile);
 
       navigate("/regsuccess");
     } catch {
