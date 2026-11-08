@@ -17,19 +17,19 @@ const PlayerInfoStep = ({
 
   const getInputClass = (hasError) => {
     if (isConfirmedInfo) {
-      return "bg-neutral-100 text-neutral-500 cursor-not-allowed border-neutral-200";
+      return "bg-slate-100 text-slate-500 cursor-not-allowed border-slate-200";
     }
     if (hasError) {
-      return "bg-rose-50/50 border-rose-500 text-[#111111] focus:outline-none focus:ring-2 focus:ring-rose-500/20";
+      return "bg-rose-50/50 border-rose-500 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-rose-500/20";
     }
-    return "bg-[#F5F5F7] border-neutral-200 text-[#111111] placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-[#111111] focus:ring-1 focus:ring-[#111111]";
+    return "bg-[#F8FAFC] border-slate-200 text-[#0F172A] placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15";
   };
 
   return (
-    <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex flex-col gap-y-6">
-      <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
-        <h2 className="text-lg sm:text-xl font-extrabold text-[#191F28] flex items-center gap-x-2.5 tracking-tight">
-          <span className="w-7 h-7 rounded-full bg-[#2563EB] text-white text-xs flex items-center justify-center font-bold shadow-sm">
+    <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <h2 className="text-lg sm:text-xl font-extrabold text-[#0F172A] flex items-center gap-x-2.5 tracking-tight">
+          <span className="w-7 h-7 rounded-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white text-xs flex items-center justify-center font-bold shadow-sm">
             1
           </span>
           {stepTitle}
@@ -164,10 +164,10 @@ const PlayerInfoStep = ({
             <button
               type="button"
               onClick={handlePlayerValidateButtonClick}
-              className="px-6 py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm rounded-full transition shadow-[0_4px_14px_rgba(37,99,235,0.25)] cursor-pointer flex items-center justify-center gap-x-2 shrink-0"
+              className="px-6 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-full transition shadow-[0_6px_18px_rgba(99,102,241,0.28)] cursor-pointer flex items-center justify-center gap-x-2 shrink-0"
             >
               <span>선수 정보 확인 완료</span>
-              <span className="text-xs text-blue-100 font-semibold">
+              <span className="text-xs text-indigo-100 font-semibold">
                 → 2단계
               </span>
             </button>

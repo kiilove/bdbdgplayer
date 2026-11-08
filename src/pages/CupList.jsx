@@ -25,12 +25,12 @@ const CupList = () => {
   } = useLoginPrompt();
 
   return (
-    <div className="relative min-h-screen bg-[#F6F8FB] text-[#191F28] w-full pb-32 font-sans antialiased">
+    <div className="relative min-h-screen bg-[#F4F5FA] text-[#0F172A] w-full pb-32 font-sans antialiased">
       <PosterWallBackground />
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="#2563EB"
+            strokeColor="#4F46E5"
             strokeWidth="4"
             animationDuration="0.75"
             width="52"
@@ -55,15 +55,17 @@ const CupList = () => {
             message={message}
           />
           <main className="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
-            <section className="rounded-[28px] bg-white/92 backdrop-blur-md bg-gradient-to-br from-white/95 via-white/92 to-blue-50/75 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
+            <section className="rounded-[28px] bg-white/92 backdrop-blur-md bg-gradient-to-br from-indigo-50/60 via-white/95 to-rose-50/55 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
               <div className="flex flex-col gap-y-3 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 text-[#2563EB] border border-blue-200/80 text-xs font-bold w-fit">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse" />
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 text-[#FF2E54] border border-rose-200/90 text-xs font-extrabold w-fit shadow-[0_2px_8px_rgba(255,46,84,0.10)]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF2E54] animate-pulse" />
                   <span>LIVE SCHEDULE · 현재 접수 중 총 {noticeList?.length || 0}건</span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#191F28] tracking-tight leading-[1.3] break-keep">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight leading-[1.3] break-keep">
                   보디빌딩 & 피트니스 <br className="sm:hidden" />
-                  공식 대회 접수 일정
+                  <span className="bg-gradient-to-r from-[#4F46E5] via-[#7C3AED] to-[#FF2E54] bg-clip-text text-transparent">
+                    공식 대회 접수 일정
+                  </span>
                 </h1>
                 <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed break-keep">
                   참가신청이 진행 중인 공식 대회의 개최 일자와 장소,{" "}
@@ -74,7 +76,7 @@ const CupList = () => {
             </section>
 
             {noticeList?.length === 0 ? (
-              <div className="bg-white border border-neutral-200/90 rounded-3xl p-16 text-center text-neutral-500 font-semibold text-base shadow-sm">
+              <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-3xl p-16 text-center text-slate-500 font-semibold text-base shadow-sm">
                 현재 접수 중인 대회가 없습니다.
               </div>
             ) : (

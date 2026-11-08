@@ -30,8 +30,8 @@ const resolveModalTheme = (message = {}) => {
     return {
       badge: message.title || "로그인 안내",
       icon: FiLock,
-      iconWrapClass: "bg-blue-50 text-[#2563EB] border-blue-200/80",
-      badgeClass: "bg-blue-50 text-[#2563EB] border-blue-200/80",
+      iconWrapClass: "bg-indigo-50 text-indigo-600 border-indigo-200/80",
+      badgeClass: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
     };
   }
 
@@ -43,16 +43,16 @@ const resolveModalTheme = (message = {}) => {
     return {
       badge: message.title || "확인 필요",
       icon: FiAlertCircle,
-      iconWrapClass: "bg-rose-50 text-rose-600 border-rose-200",
-      badgeClass: "bg-rose-50 text-rose-600 border-rose-200",
+      iconWrapClass: "bg-rose-50 text-[#FF2E54] border-rose-200",
+      badgeClass: "bg-rose-50 text-[#FF2E54] border-rose-200",
     };
   }
 
   return {
     badge: message.title || "안내",
     icon: FiInfo,
-    iconWrapClass: "bg-blue-50 text-[#2563EB] border-blue-200/80",
-    badgeClass: "bg-blue-50 text-[#2563EB] border-blue-200/80",
+    iconWrapClass: "bg-indigo-50 text-indigo-600 border-indigo-200/80",
+    badgeClass: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
   };
 };
 
@@ -166,7 +166,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
             <button
               type="button"
               autoFocus
-              className="flex-1 py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] rounded-full text-sm font-bold text-white transition active:scale-[0.98] shadow-[0_4px_14px_rgba(37,99,235,0.25)] cursor-pointer"
+              className="flex-1 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] rounded-full text-sm font-bold text-white transition active:scale-[0.98] shadow-[0_6px_18px_rgba(99,102,241,0.28)] cursor-pointer"
               onClick={handleConfirmClick}
             >
               {message?.confirmButtonText || "확인"}

@@ -120,11 +120,11 @@ const Login = () => {
         <div className="flex flex-col items-center text-center gap-y-2 mb-8">
           <Link
             to="/"
-            className="text-2xl font-black tracking-tighter text-[#2563EB]"
+            className="text-2xl font-black tracking-tighter bg-gradient-to-r from-[#4F46E5] via-[#7C3AED] to-[#FF2E54] bg-clip-text text-transparent"
           >
             BDBDG
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#191F28] mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A] mt-1">
             선수 로그인
           </h1>
           <p className="text-sm text-slate-500 font-medium">
@@ -149,7 +149,7 @@ const Login = () => {
               value={loginInfo.email}
               onChange={handleInputs}
               ref={loginEmailRef}
-              className="w-full h-12 bg-[#F8FAFC] border border-slate-200 rounded-xl px-4 text-base text-[#191F28] placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition"
+              className="w-full h-12 bg-[#F8FAFC] border border-slate-200 rounded-xl px-4 text-base text-[#0F172A] placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 transition"
               placeholder="name@example.com"
             />
           </div>
@@ -169,7 +169,7 @@ const Login = () => {
               value={loginInfo.password}
               onChange={handleInputs}
               ref={loginPasswordRef}
-              className="w-full h-12 bg-[#F8FAFC] border border-slate-200 rounded-xl px-4 text-base text-[#191F28] placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition"
+              className="w-full h-12 bg-[#F8FAFC] border border-slate-200 rounded-xl px-4 text-base text-[#0F172A] placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 transition"
               placeholder="비밀번호를 입력하세요"
             />
           </div>
@@ -177,7 +177,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-13 py-3.5 mt-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[15px] rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition cursor-pointer flex items-center justify-center active:scale-[0.99] disabled:opacity-60"
+            className="w-full h-13 py-3.5 mt-3 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-[15px] rounded-full shadow-[0_6px_18px_rgba(99,102,241,0.30)] transition cursor-pointer flex items-center justify-center active:scale-[0.99] disabled:opacity-60"
           >
             로그인
           </button>
@@ -187,7 +187,7 @@ const Login = () => {
         <div className="flex flex-wrap items-center justify-between gap-2 w-full mt-8 pt-6 border-t border-slate-100 text-xs sm:text-sm">
           <Link
             to="/register"
-            className="font-bold text-[#2563EB] hover:underline transition"
+            className="font-bold text-indigo-600 hover:underline transition"
           >
             신규 선수 회원가입
           </Link>

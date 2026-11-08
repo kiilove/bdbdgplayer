@@ -40,7 +40,7 @@ const ContestCard = ({
 
   if (variant === "grid") {
     return (
-      <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-blue-300 rounded-[28px] p-5 sm:p-6 shadow-[0_6px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_38px_rgba(37,99,235,0.10)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-y-5 group">
+      <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-indigo-300 rounded-[28px] p-5 sm:p-6 shadow-[0_6px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_38px_rgba(99,102,241,0.12)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-y-5 group">
         <div className="flex flex-col gap-y-5">
           {/* Clean Edge-to-Edge Poster */}
           <div
@@ -60,8 +60,8 @@ const ContestCard = ({
           <div className="flex flex-col gap-y-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="inline-flex items-center gap-1.5 bg-blue-50 text-[#2563EB] border border-blue-200/80 text-xs font-bold px-3 py-1 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 bg-rose-50 text-[#FF2E54] border border-rose-200/90 text-xs font-extrabold px-3 py-1 rounded-full shadow-[0_2px_8px_rgba(255,46,84,0.10)]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF2E54] animate-pulse" />
                   {statusLabel}
                 </span>
 
@@ -69,15 +69,15 @@ const ContestCard = ({
                   <span
                     className={`inline-flex items-center text-xs font-extrabold px-2.5 py-1 rounded-full border tabular-nums ${
                       dDayBadge.isUrgent
-                        ? "bg-rose-50 text-rose-600 border-rose-200"
-                        : "bg-indigo-50/70 text-indigo-600 border-indigo-200/70"
+                        ? "bg-gradient-to-r from-[#FF2E54] to-[#FF6B00] text-white border-transparent shadow-[0_2px_8px_rgba(255,46,84,0.25)]"
+                        : "bg-violet-50 text-violet-700 border-violet-200/80"
                     }`}
                   >
                     {dDayBadge.label}
                   </span>
                 )}
 
-                <span className="text-xs font-bold text-slate-600 bg-slate-100/80 border border-slate-200/70 px-3 py-1 rounded-full">
+                <span className="text-xs font-bold text-amber-800 bg-amber-50/90 border border-amber-200/80 px-3 py-1 rounded-full">
                   {associateLabel}
                 </span>
               </div>
@@ -92,7 +92,7 @@ const ContestCard = ({
 
             <h3
               onClick={handleJoinClick}
-              className="text-xl font-extrabold text-[#191F28] group-hover:text-[#2563EB] transition-colors tracking-tight leading-snug break-keep cursor-pointer"
+              className="text-xl font-extrabold text-[#0F172A] group-hover:text-[#4F46E5] transition-colors tracking-tight leading-snug break-keep cursor-pointer"
             >
               {contest.contestTitle}
             </h3>
@@ -101,12 +101,12 @@ const ContestCard = ({
             <div className="grid grid-cols-1 gap-2">
               <div className="bg-[#F8FAFC] border border-slate-100 rounded-2xl p-3.5 flex items-center justify-between gap-3">
                 <span className="text-slate-500 text-xs sm:text-sm font-semibold flex items-center gap-2 shrink-0">
-                  <span className="w-7 h-7 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                     <MdOutlineCalendarToday className="text-sm" />
                   </span>
                   대회 일자
                 </span>
-                <span className="font-bold text-sm text-[#191F28] text-right tabular-nums">
+                <span className="font-bold text-sm text-[#0F172A] text-right tabular-nums">
                   {dayjs(contest.contestDate).format("YYYY. MM. DD")}
                 </span>
               </div>
@@ -114,12 +114,12 @@ const ContestCard = ({
               {contest.contestLocation && (
                 <div className="bg-[#F8FAFC] border border-slate-100 rounded-2xl p-3.5 flex items-center justify-between gap-3">
                   <span className="text-slate-500 text-xs sm:text-sm font-semibold flex items-center gap-2 shrink-0">
-                    <span className="w-7 h-7 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                    <span className="w-7 h-7 rounded-xl bg-rose-50 text-[#FF2E54] flex items-center justify-center">
                       <MdOutlineLocationOn className="text-sm" />
                     </span>
                     개최 장소
                   </span>
-                  <span className="font-bold text-sm text-[#191F28] text-right break-keep">
+                  <span className="font-bold text-sm text-[#0F172A] text-right break-keep">
                     {contest.contestLocation}
                   </span>
                 </div>
@@ -128,12 +128,12 @@ const ContestCard = ({
               {contest.contestAccountOwner && contest.contestAccountNumber && (
                 <div className="bg-[#F8FAFC] border border-slate-100 rounded-2xl p-3.5 flex items-center justify-between gap-3">
                   <span className="text-slate-500 text-xs sm:text-sm font-semibold flex items-center gap-2 shrink-0">
-                    <span className="w-7 h-7 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
+                    <span className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                       <MdCreditCard className="text-sm" />
                     </span>
                     입금 계좌
                   </span>
-                  <span className="font-bold text-xs sm:text-sm text-[#191F28] text-right break-keep tabular-nums">
+                  <span className="font-bold text-xs sm:text-sm text-[#0F172A] text-right break-keep tabular-nums">
                     {contest.contestBankName || ""}{" "}
                     {contest.contestAccountNumber} ({contest.contestAccountOwner}
                     )
@@ -149,7 +149,7 @@ const ContestCard = ({
           <button
             type="button"
             onClick={handleJoinClick}
-            className="flex-1 w-full font-bold text-sm py-3.5 px-5 rounded-full transition cursor-pointer text-center flex items-center justify-center gap-1.5 active:scale-[0.99] bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)]"
+            className="flex-1 w-full font-bold text-sm py-3.5 px-5 rounded-full transition cursor-pointer text-center flex items-center justify-center gap-1.5 active:scale-[0.99] bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:via-[#4F46E5] hover:to-[#6D28D9] text-white shadow-[0_6px_18px_rgba(99,102,241,0.28)]"
           >
             <span>
               {userInvoiceId ? "신청정보 확인 및 변경" : "참가신청 하기"}
@@ -176,7 +176,7 @@ const ContestCard = ({
 
   // Default: Horizontal 12-col layout (Home & Gbbf)
   return (
-    <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-blue-300 rounded-[28px] p-5 sm:p-7 md:p-8 shadow-[0_6px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_38px_rgba(37,99,235,0.10)] hover:-translate-y-0.5 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-center group">
+    <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-indigo-300 rounded-[28px] p-5 sm:p-7 md:p-8 shadow-[0_6px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_38px_rgba(99,102,241,0.12)] hover:-translate-y-0.5 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-center group">
       {/* Poster Left */}
       <div className="lg:col-span-5">
         <div
@@ -199,8 +199,8 @@ const ContestCard = ({
           {/* Unified Status, D-Day & Association Badge Row */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="inline-flex items-center gap-1.5 bg-blue-50 text-[#2563EB] border border-blue-200/80 text-xs font-bold px-3 py-1.5 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 bg-rose-50 text-[#FF2E54] border border-rose-200/90 text-xs font-extrabold px-3 py-1.5 rounded-full shadow-[0_2px_8px_rgba(255,46,84,0.10)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF2E54] animate-pulse" />
                 {statusLabel}
               </span>
 
@@ -208,15 +208,15 @@ const ContestCard = ({
                 <span
                   className={`inline-flex items-center text-xs font-extrabold px-3 py-1.5 rounded-full border tabular-nums ${
                     dDayBadge.isUrgent
-                      ? "bg-rose-50 text-rose-600 border-rose-200"
-                      : "bg-indigo-50/70 text-indigo-600 border-indigo-200/70"
+                      ? "bg-gradient-to-r from-[#FF2E54] to-[#FF6B00] text-white border-transparent shadow-[0_2px_8px_rgba(255,46,84,0.25)]"
+                      : "bg-violet-50 text-violet-700 border-violet-200/80"
                   }`}
                 >
                   {dDayBadge.label}
                 </span>
               )}
 
-              <span className="text-xs font-bold text-slate-600 bg-slate-100/80 border border-slate-200/70 px-3.5 py-1.5 rounded-full">
+              <span className="text-xs font-bold text-amber-800 bg-amber-50/90 border border-amber-200/80 px-3.5 py-1.5 rounded-full">
                 {associateLabel}
               </span>
             </div>
@@ -231,7 +231,7 @@ const ContestCard = ({
 
           <h2
             onClick={handleJoinClick}
-            className="text-2xl sm:text-3xl font-extrabold text-[#191F28] group-hover:text-[#2563EB] transition-colors tracking-tight leading-snug break-keep cursor-pointer"
+            className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] group-hover:text-[#4F46E5] transition-colors tracking-tight leading-snug break-keep cursor-pointer"
           >
             {contest.contestTitle}
           </h2>
@@ -240,14 +240,14 @@ const ContestCard = ({
         {/* Modular Bento Metadata Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div className="bg-[#F8FAFC] border border-slate-100 rounded-2xl p-4 flex items-center gap-3.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
               <MdOutlineCalendarToday className="text-base" />
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 대회 일자 · SCHEDULE
               </span>
-              <span className="text-sm sm:text-[15px] font-extrabold text-[#191F28] mt-0.5 tabular-nums">
+              <span className="text-sm sm:text-[15px] font-extrabold text-[#0F172A] mt-0.5 tabular-nums">
                 {dayjs(contest.contestDate).format("YYYY년 MM월 DD일")}
               </span>
             </div>
@@ -255,14 +255,14 @@ const ContestCard = ({
 
           {contest.contestLocation && (
             <div className="bg-[#F8FAFC] border border-slate-100 rounded-2xl p-4 flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-rose-50 text-[#FF2E54] flex items-center justify-center shrink-0">
                 <MdOutlineLocationOn className="text-base" />
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   개최 장소 · VENUE
                 </span>
-                <span className="text-sm sm:text-[15px] font-extrabold text-[#191F28] mt-0.5 break-keep">
+                <span className="text-sm sm:text-[15px] font-extrabold text-[#0F172A] mt-0.5 break-keep">
                   {contest.contestLocation}
                 </span>
               </div>
@@ -271,14 +271,14 @@ const ContestCard = ({
 
           {contest.contestAccountOwner && contest.contestAccountNumber && (
             <div className="sm:col-span-2 bg-[#F8FAFC] border border-slate-100 rounded-2xl p-4 flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                 <MdCreditCard className="text-base" />
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   참가비 입금 계좌 · ACCOUNT
                 </span>
-                <span className="text-sm sm:text-[15px] font-extrabold text-[#191F28] mt-0.5 break-keep tabular-nums">
+                <span className="text-sm sm:text-[15px] font-extrabold text-[#0F172A] mt-0.5 break-keep tabular-nums">
                   {contest.contestBankName || ""}{" "}
                   {contest.contestAccountNumber} (예금주:{" "}
                   {contest.contestAccountOwner})
@@ -292,7 +292,7 @@ const ContestCard = ({
           <button
             type="button"
             onClick={handleJoinClick}
-            className="flex-1 py-4 px-6 font-bold text-[15px] rounded-full transition cursor-pointer text-center flex items-center justify-center gap-2 active:scale-[0.99] bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)]"
+            className="flex-1 py-4 px-6 font-bold text-[15px] rounded-full transition cursor-pointer text-center flex items-center justify-center gap-2 active:scale-[0.99] bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:via-[#4F46E5] hover:to-[#6D28D9] text-white shadow-[0_6px_20px_rgba(99,102,241,0.30)]"
           >
             <span>
               {userInvoiceId ? "신청정보 확인 및 변경" : "참가신청 하기"}

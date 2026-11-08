@@ -75,9 +75,12 @@ const PosterWallBackground = () => {
         ))}
       </div>
 
-      {/* 포스터가 튀지 않고 은은한 배경 질감으로만 느껴지도록 감싸는 라이트 베일 & 비네팅 */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(246,248,251,0.45)_0%,rgba(246,248,251,0.82)_65%,rgba(246,248,251,0.94)_100%)]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#F6F8FB]/30 via-[#F6F8FB]/70 to-[#F6F8FB]/92" />
+      {/* 포스터가 튀지 않고 은은한 배경 질감으로만 느껴지도록 감싸는 라이트 베일 & 무대 조명 오로라 글로우 */}
+      <div className="absolute -top-32 -left-24 w-[460px] h-[460px] rounded-full bg-violet-500/12 blur-[110px]" />
+      <div className="absolute top-12 -right-24 w-[420px] h-[420px] rounded-full bg-rose-500/10 blur-[110px]" />
+      <div className="absolute bottom-0 left-1/3 w-[500px] h-[360px] rounded-full bg-indigo-500/8 blur-[120px]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(244,245,250,0.42)_0%,rgba(244,245,250,0.82)_65%,rgba(244,245,250,0.94)_100%)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#F4F5FA]/25 via-[#F4F5FA]/70 to-[#F4F5FA]/92" />
     </div>
   );
 };

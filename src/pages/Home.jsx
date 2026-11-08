@@ -64,7 +64,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="relative min-h-screen bg-[#F6F8FB] text-[#191F28] font-sans antialiased pb-32">
+    <div className="relative min-h-screen bg-[#F4F5FA] text-[#0F172A] font-sans antialiased pb-32">
       <PosterWallBackground />
       <BottomMenu />
 
@@ -74,11 +74,13 @@ const Home = () => {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="text-lg sm:text-xl font-black tracking-tighter text-[#191F28] cursor-pointer flex items-center gap-2"
+            className="text-lg sm:text-xl font-black tracking-tighter cursor-pointer flex items-center gap-2"
           >
-            <span className="text-[#2563EB]">BDBDG</span>
-            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 border border-blue-200/70 px-2.5 py-0.5 rounded-full hidden sm:inline">
-              OFFICIAL ATHLETE PORTAL
+            <span className="bg-gradient-to-r from-[#4F46E5] via-[#7C3AED] to-[#FF2E54] bg-clip-text text-transparent">
+              BDBDG
+            </span>
+            <span className="text-[11px] font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-200/80 px-2.5 py-0.5 rounded-full hidden sm:inline">
+              SPORT & STAGE PORTAL
             </span>
           </button>
 
@@ -86,16 +88,16 @@ const Home = () => {
             <button
               type="button"
               onClick={() => navigate("/myprofile")}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50/90 hover:bg-blue-100/80 border border-blue-200/80 text-xs sm:text-sm font-bold text-[#2563EB] transition cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50/90 hover:bg-indigo-100/80 border border-indigo-200/80 text-xs sm:text-sm font-bold text-indigo-700 transition cursor-pointer"
             >
-              <RiUserLine className="text-base" />
+              <RiUserLine className="text-base text-indigo-600" />
               <span>{pInfo.pName || "선수 회원"} 님 · 마이페이지</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="px-4 py-2 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-bold shadow-[0_2px_10px_rgba(37,99,235,0.22)] transition cursor-pointer"
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white text-xs sm:text-sm font-bold shadow-[0_4px_14px_rgba(99,102,241,0.30)] transition cursor-pointer"
             >
               로그인 / 회원가입
             </button>
@@ -111,17 +113,19 @@ const Home = () => {
       />
 
       <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
-        {/* Bright Editorial Bento Hero Section */}
-        <section className="rounded-[28px] bg-white/92 backdrop-blur-md bg-gradient-to-br from-white/95 via-white/92 to-blue-50/75 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)] flex flex-col gap-6">
+        {/* Sportainment Stage Hero Section */}
+        <section className="rounded-[28px] bg-white/92 backdrop-blur-md bg-gradient-to-br from-indigo-50/60 via-white/95 to-rose-50/55 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)] flex flex-col gap-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex flex-col gap-y-3 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 text-[#2563EB] border border-blue-200/80 text-xs font-bold w-fit">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse" />
-                <span>LIVE REGISTRATION · 공식 대회 통합 접수</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 text-[#FF2E54] border border-rose-200/90 text-xs font-extrabold w-fit shadow-[0_2px_8px_rgba(255,46,84,0.10)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF2E54] animate-pulse" />
+                <span>LIVE STAGE · 공식 대회 통합 접수</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#191F28] leading-[1.28] break-keep">
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#0F172A] leading-[1.28] break-keep">
                 보디빌딩 & 피트니스 <br className="sm:hidden" />
-                공식 대회 참가접수
+                <span className="bg-gradient-to-r from-[#4F46E5] via-[#7C3AED] to-[#FF2E54] bg-clip-text text-transparent">
+                  공식 대회 참가접수
+                </span>
               </h1>
               <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed break-keep">
                 현재 접수 중인 대회의 모집 요강을 확인하고,{" "}
@@ -134,7 +138,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => navigate("/myprofile")}
-                className="w-full sm:w-auto px-6 py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-full shadow-[0_6px_20px_rgba(99,102,241,0.32)] transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
               >
                 <span>내 신청내역 및 접수증 출력</span>
                 <MdArrowForward className="text-base" />
@@ -143,7 +147,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
-                className="w-full sm:w-auto px-7 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                className="w-full sm:w-auto px-7 py-4 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-full shadow-[0_6px_20px_rgba(99,102,241,0.32)] transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
               >
                 <span>선수 로그인 / 참가 등록</span>
                 <MdArrowForward className="text-lg" />
@@ -151,20 +155,20 @@ const Home = () => {
             )}
           </div>
 
-          {/* Interactive Bento Summary Strip (Soft & Bright Tones) */}
+          {/* Multi-Tone Sportainment Bento Summary Strip */}
           <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-5 border-t border-slate-100">
             <button
               type="button"
               onClick={() => handleTabSelect("all")}
               className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
                 activeTab === "all"
-                  ? "bg-blue-50/90 text-[#2563EB] border-blue-200 shadow-sm"
-                  : "bg-[#F8FAFC] text-[#191F28] border-slate-100 hover:border-blue-200"
+                  ? "bg-gradient-to-br from-indigo-50 to-violet-50 text-indigo-700 border-indigo-200 shadow-sm"
+                  : "bg-[#F8FAFC] text-[#0F172A] border-slate-100 hover:border-indigo-200"
               }`}
             >
               <span
                 className={`text-[11px] font-bold block ${
-                  activeTab === "all" ? "text-blue-600" : "text-slate-500"
+                  activeTab === "all" ? "text-indigo-600" : "text-slate-500"
                 }`}
               >
                 전체 접수중
@@ -180,13 +184,13 @@ const Home = () => {
               onClick={() => handleTabSelect("gbbf")}
               className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
                 activeTab === "gbbf"
-                  ? "bg-blue-50/90 text-[#2563EB] border-blue-200 shadow-sm"
-                  : "bg-[#F8FAFC] text-[#191F28] border-slate-100 hover:border-blue-200"
+                  ? "bg-gradient-to-br from-amber-50 to-orange-50/70 text-amber-800 border-amber-200 shadow-sm"
+                  : "bg-[#F8FAFC] text-[#0F172A] border-slate-100 hover:border-amber-200"
               }`}
             >
               <span
                 className={`text-[11px] font-bold block truncate ${
-                  activeTab === "gbbf" ? "text-blue-600" : "text-slate-500"
+                  activeTab === "gbbf" ? "text-amber-700" : "text-slate-500"
                 }`}
               >
                 경기도협회
@@ -201,7 +205,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => navigate("/myprofile")}
-                className="rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer bg-emerald-50/80 hover:bg-emerald-100/70 border border-emerald-200/80 text-emerald-900"
+                className="rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer bg-gradient-to-br from-emerald-50 to-teal-50/70 hover:from-emerald-100/80 border border-emerald-200/80 text-emerald-900"
               >
                 <span className="text-[11px] font-bold text-emerald-700 block truncate">
                   내 신청완료
@@ -217,13 +221,13 @@ const Home = () => {
                 onClick={() => handleTabSelect("sub")}
                 className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
                   activeTab === "sub"
-                    ? "bg-blue-50/90 text-[#2563EB] border-blue-200 shadow-sm"
-                    : "bg-[#F8FAFC] text-[#191F28] border-slate-100 hover:border-blue-200"
+                    ? "bg-gradient-to-br from-rose-50 to-pink-50/70 text-[#FF2E54] border-rose-200 shadow-sm"
+                    : "bg-[#F8FAFC] text-[#0F172A] border-slate-100 hover:border-rose-200"
                 }`}
               >
                 <span
                   className={`text-[11px] font-bold block truncate ${
-                    activeTab === "sub" ? "text-blue-600" : "text-slate-500"
+                    activeTab === "sub" ? "text-[#FF2E54]" : "text-slate-500"
                   }`}
                 >
                   시·군 산하 협회
@@ -237,7 +241,7 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Filter Tabs (Bright Royal Blue Active Pill) */}
+        {/* Filter Tabs (Electric Stage Gradient Active Pill) */}
         <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto no-scrollbar scroll-smooth">
           <div className="flex items-center gap-2 w-max sm:w-full pb-1 pr-4 sm:pr-0">
             {tabs.map((tab) => {
@@ -252,8 +256,8 @@ const Home = () => {
                   onClick={() => handleTabSelect(tab.id)}
                   className={`px-4 sm:px-5 py-2.5 rounded-full flex items-center gap-x-2 text-[13px] sm:text-sm font-bold transition cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
-                      ? "bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.24)]"
-                      : "bg-white text-slate-600 border border-slate-200/90 hover:border-blue-300 hover:text-[#2563EB]"
+                      ? "bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] text-white shadow-[0_4px_14px_rgba(99,102,241,0.32)]"
+                      : "bg-white/95 backdrop-blur-sm text-slate-600 border border-slate-200/90 hover:border-indigo-300 hover:text-indigo-600"
                   }`}
                 >
                   <span>{tab.label}</span>
@@ -277,7 +281,7 @@ const Home = () => {
           {isLoading ? (
             <div className="flex justify-center items-center py-24">
               <RotatingLines
-                strokeColor="#2563EB"
+                strokeColor="#4F46E5"
                 strokeWidth="4"
                 animationDuration="0.75"
                 width="48"
@@ -285,7 +289,7 @@ const Home = () => {
               />
             </div>
           ) : displayedContests.length === 0 ? (
-            <div className="bg-white border border-slate-200/80 rounded-[28px] p-16 text-center text-slate-500 font-semibold text-base shadow-sm">
+            <div className="bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-[28px] p-16 text-center text-slate-500 font-semibold text-base shadow-sm">
               현재 해당 부문에 접수 중인 대회가 없습니다.
             </div>
           ) : (
