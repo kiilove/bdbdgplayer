@@ -1,6 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 import { BsFillCameraFill } from "react-icons/bs";
-import { RiTrophyLine, RiCalendarLine, RiPrinterLine } from "react-icons/ri";
+import {
+  RiTrophyLine,
+  RiCalendarLine,
+  RiPrinterLine,
+  RiLogoutBoxRLine,
+} from "react-icons/ri";
 import { IoChevronForward } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
@@ -10,19 +15,35 @@ import { handleToast } from "../components/HandleToast";
 import InvoicePrintModal from "../modals/InvoicePrintModal";
 import { DEFAULT_AVATAR } from "../consts";
 import { UserContext } from "../context/UserContext";
+import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import { fetchUserInvoices } from "../services/contestService";
 import { uploadPlayerAvatar } from "../services/playerService";
 import { calculateAge } from "../utils/formatUtils";
 
 const MyProfile = () => {
-  const { currentUserInfo: pInfo, setCurrentUserInfo } =
-    useContext(UserContext);
+  const {
+    currentUserInfo: pInfo,
+    setCurrentUserInfo,
+    clearUserSession,
+  } = useContext(UserContext);
+  const { handleSignOut } = useFirebaseAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [userInvoices, setUserInvoices] = useState([]);
   const [invoicesLoading, setInvoicesLoading] = useState(true);
   const [selectedPrintInvoice, setSelectedPrintInvoice] = useState(null);
 
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await handleSignOut();
+    } catch {
+      // ignore signOut errors
+    }
+    clearUserSession();
+    handleToast("info", "로그아웃 되었습니다.");
+    navigate("/", { replace: true });
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -78,7 +99,19 @@ const MyProfile = () => {
   return (
     <div className="min-h-screen bg-[#F5F5F7] text-[#111111] w-full pb-32 font-sans antialiased">
       <BottomMenu />
-      <Header title="내 정보 및 참가신청 내역" />
+      <Header
+        title="마이페이지"
+        rightElement={
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-x-1.5 text-neutral-700 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/60 transition text-xs sm:text-sm font-bold cursor-pointer px-3.5 py-2 rounded-full border border-neutral-200 bg-white active:scale-95"
+          >
+            <RiLogoutBoxRLine className="text-base" />
+            <span>로그아웃</span>
+          </button>
+        }
+      />
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
