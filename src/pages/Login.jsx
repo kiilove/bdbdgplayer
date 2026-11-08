@@ -34,7 +34,10 @@ const Login = () => {
 
     if (!trimmedEmail || !rawPassword) {
       setMessage({
+        type: "warn",
+        title: "입력 확인",
         body: "이메일 아이디와 비밀번호를 입력해주세요.",
+        body2: "가입하신 이메일 주소와 비밀번호를 모두 입력해야 로그인이 가능합니다.",
         isButton: true,
         confirmButtonText: "확인",
       });
@@ -50,9 +53,12 @@ const Login = () => {
       const { user, error } = await signInWithEmail(trimmedEmail, rawPassword);
       if (error) {
         setMessage({
+          type: "error",
+          title: "로그인 안내",
           body: error.message,
+          body2: "계정 정보가 기억나지 않으시면 하단의 '아이디 · 비밀번호 찾기'를 이용해 주세요.",
           isButton: true,
-          confirmButtonText: "확인",
+          confirmButtonText: "다시 입력하기",
         });
         setMessageOpen(true);
       } else if (user) {
@@ -61,7 +67,10 @@ const Login = () => {
       }
     } catch {
       setMessage({
-        body: "로그인 중 오류가 발생했습니다.",
+        type: "error",
+        title: "오류 안내",
+        body: "로그인 중 일시적인 오류가 발생했습니다.",
+        body2: "네트워크 연결을 확인하신 후 다시 시도해 주세요.",
         isButton: true,
         confirmButtonText: "확인",
       });

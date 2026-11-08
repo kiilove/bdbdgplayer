@@ -17,11 +17,13 @@ export const useLoginPrompt = () => {
       typeof desiredPath === "string" && desiredPath ? desiredPath : ""
     );
     setMessage({
+      type: "lock",
+      title: "로그인 필요",
       body: "대회 참가신청을 하려면 로그인이 필요합니다.",
-      body2: "로그인 페이지로 이동하시겠습니까?",
+      body2: "로그인 후 선택하신 대회 신청 화면으로 바로 이어집니다.",
       isButton: true,
-      confirmButtonText: "로그인 이동",
-      cancelButtonText: "취소",
+      confirmButtonText: "로그인하러 가기",
+      cancelButtonText: "닫기",
     });
     setMessageOpen(true);
   }, []);

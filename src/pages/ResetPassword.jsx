@@ -137,6 +137,8 @@ const ResetPassword = () => {
     }
     if (isPreviewMode) {
       setMessage({
+        type: "success",
+        title: "비밀번호 변경 완료",
         body: "새 비밀번호가 설정되었습니다",
         body2: "변경된 비밀번호로 즉시 로그인하실 수 있습니다.",
         isButton: true,
@@ -157,6 +159,8 @@ const ResetPassword = () => {
         });
       } else {
         setMessage({
+          type: "success",
+          title: "비밀번호 변경 완료",
           body: "새 비밀번호가 설정되었습니다",
           body2: "변경된 비밀번호로 즉시 로그인하실 수 있습니다.",
           isButton: true,
