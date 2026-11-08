@@ -158,3 +158,35 @@ export const calculateContestPrice = (joins = [], priceInfo = {}) => {
 
   return basePrice + extraPrice;
 };
+
+/**
+ * 대회 개최일 기준 D-Day 배지 정보 반환 (Kream / Luma 스타일 긴박감 표시)
+ */
+export const getContestDDayBadge = (contestDateStr) => {
+  if (!contestDateStr) return null;
+  const parsed = new Date(contestDateStr);
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(
+    parsed.getFullYear(),
+    parsed.getMonth(),
+    parsed.getDate()
+  );
+
+  const diffDays = Math.round(
+    (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffDays === 0) {
+    return { label: "D-DAY", isUrgent: true };
+  }
+  if (diffDays > 0) {
+    return {
+      label: `D-${diffDays}`,
+      isUrgent: diffDays <= 7,
+    };
+  }
+  return null;
+};

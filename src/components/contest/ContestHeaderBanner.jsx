@@ -6,6 +6,7 @@ import {
   MdFileDownload,
 } from "react-icons/md";
 import { RiBankLine, RiPrinterLine, RiTimeLine } from "react-icons/ri";
+import { getContestDDayBadge } from "../../utils/formatUtils";
 
 const ContestHeaderBanner = ({
   associateName = "보디빌딩협회",
@@ -18,15 +19,28 @@ const ContestHeaderBanner = ({
   collectionFileLink = "",
   onOpenPrintModal = null,
 }) => {
+  const dDayBadge = getContestDDayBadge(contestDate);
+
   return (
-    <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(0,0,0,0.04)] mb-7 flex flex-col gap-6">
+    <div className="bg-white border border-neutral-200/90 rounded-[28px] p-6 sm:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] mb-7 flex flex-col gap-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
         <div className="flex flex-col gap-y-2.5">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-[#111111] text-white">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               {badgeSubtitle}
             </span>
+            {dDayBadge && (
+              <span
+                className={`inline-flex items-center text-xs font-extrabold px-2.5 py-1 rounded-full border tabular-nums ${
+                  dDayBadge.isUrgent
+                    ? "bg-rose-50 text-rose-600 border-rose-200"
+                    : "bg-[#F5F5F7] text-[#111111] border-neutral-200"
+                }`}
+              >
+                {dDayBadge.label}
+              </span>
+            )}
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#F5F5F7] text-neutral-700 border border-neutral-200/80">
               {associateName || "보디빌딩협회"}
             </span>
@@ -64,51 +78,51 @@ const ContestHeaderBanner = ({
         )}
       </div>
 
-      {/* Structured Metadata Strip */}
-      <div className="bg-[#F5F5F7] rounded-2xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-sm">
+      {/* Modular Bento Metadata Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-sm">
         {contestDate && (
-          <div className="flex sm:flex-col justify-between sm:justify-start gap-1">
-            <span className="text-xs font-semibold text-neutral-500 flex items-center gap-1.5">
-              <RiTimeLine className="text-neutral-700 text-sm" />
-              대회 일자
+          <div className="bg-[#F5F5F7] rounded-2xl p-4 flex flex-col justify-between gap-1.5">
+            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+              <RiTimeLine className="text-[#111111] text-sm" />
+              대회 일자 · DATE
             </span>
-            <span className="font-bold text-[#111111] text-right sm:text-left">
+            <span className="font-extrabold text-[#111111] tabular-nums">
               {dayjs(contestDate).format("YYYY년 MM월 DD일")}
             </span>
           </div>
         )}
 
         {contestLocation && (
-          <div className="flex sm:flex-col justify-between sm:justify-start gap-1 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-neutral-200/70">
-            <span className="text-xs font-semibold text-neutral-500 flex items-center gap-1.5 shrink-0">
-              <MdOutlineLocationOn className="text-neutral-700 text-sm" />
-              개최 장소
+          <div className="bg-[#F5F5F7] rounded-2xl p-4 flex flex-col justify-between gap-1.5">
+            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+              <MdOutlineLocationOn className="text-[#111111] text-sm" />
+              개최 장소 · VENUE
             </span>
-            <span className="font-bold text-[#111111] text-right sm:text-left break-keep">
+            <span className="font-extrabold text-[#111111] break-keep">
               {contestLocation}
             </span>
           </div>
         )}
 
         {Boolean(contestPriceBasic) && (
-          <div className="flex sm:flex-col justify-between sm:justify-start gap-1 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-neutral-200/70">
-            <span className="text-xs font-semibold text-neutral-500 flex items-center gap-1.5">
-              <MdCreditCard className="text-neutral-700 text-sm" />
-              기본 참가비
+          <div className="bg-[#F5F5F7] rounded-2xl p-4 flex flex-col justify-between gap-1.5">
+            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+              <MdCreditCard className="text-[#111111] text-sm" />
+              기본 참가비 · FEE
             </span>
-            <span className="font-bold text-[#111111] text-right sm:text-left">
+            <span className="font-extrabold text-[#111111] tabular-nums">
               {Number(contestPriceBasic).toLocaleString()}원
             </span>
           </div>
         )}
 
         {bankInfo?.bankName && (
-          <div className="flex sm:flex-col justify-between sm:justify-start gap-1 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-neutral-200/70">
-            <span className="text-xs font-semibold text-neutral-500 flex items-center gap-1.5 shrink-0">
-              <RiBankLine className="text-neutral-700 text-sm" />
-              입금 계좌
+          <div className="bg-[#F5F5F7] rounded-2xl p-4 flex flex-col justify-between gap-1.5">
+            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+              <RiBankLine className="text-[#111111] text-sm" />
+              입금 계좌 · ACCOUNT
             </span>
-            <span className="font-bold text-[#111111] text-right sm:text-left break-keep">
+            <span className="font-extrabold text-[#111111] break-keep tabular-nums">
               {bankInfo.bankName} {bankInfo.accountNumber} (
               {bankInfo.accountOwner})
             </span>

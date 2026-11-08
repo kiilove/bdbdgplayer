@@ -27,13 +27,13 @@ const BottomMenu = () => {
   const navItems = [
     { to: "/", label: "홈", icon: RxHome },
     { to: "/gbbf", label: "경기도협회", icon: RxSketchLogo },
-    { to: "/cuplist", label: "대회일정", icon: RxCalendar },
+    { to: "/cuplist", label: "전체일정", icon: RxCalendar },
   ];
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-neutral-200 shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
-        <div className="max-w-lg mx-auto h-16 px-2 flex justify-around items-center">
+      <div className="fixed bottom-4 left-0 right-0 z-40 px-4 pointer-events-none">
+        <nav className="max-w-md mx-auto h-15 p-1.5 rounded-full bg-white/90 backdrop-blur-2xl border border-neutral-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.12)] flex items-center justify-between gap-1 pointer-events-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.to);
@@ -41,14 +41,16 @@ const BottomMenu = () => {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                className={`flex-1 h-12 rounded-full flex items-center justify-center gap-1.5 transition-all duration-200 ${
                   active
-                    ? "text-[#111111] font-bold"
-                    : "text-neutral-400 hover:text-neutral-700 font-medium"
+                    ? "bg-[#111111] text-white font-bold shadow-sm"
+                    : "text-neutral-500 hover:text-[#111111] hover:bg-neutral-100/70 font-semibold"
                 }`}
               >
-                <Icon className="text-[21px]" />
-                <span className="text-xs mt-1 tracking-tight">{item.label}</span>
+                <Icon className="text-[18px] shrink-0" />
+                <span className="text-xs tracking-tight whitespace-nowrap">
+                  {item.label}
+                </span>
               </Link>
             );
           })}
@@ -56,13 +58,15 @@ const BottomMenu = () => {
           <button
             type="button"
             onClick={handleDrawer}
-            className="flex flex-col items-center justify-center flex-1 h-full text-neutral-400 hover:text-[#111111] font-medium transition-colors cursor-pointer"
+            className="flex-1 h-12 rounded-full flex items-center justify-center gap-1.5 text-neutral-500 hover:text-[#111111] hover:bg-neutral-100/70 font-semibold transition-all duration-200 cursor-pointer"
           >
-            <RxHamburgerMenu className="text-[21px]" />
-            <span className="text-xs mt-1 tracking-tight">전체메뉴</span>
+            <RxHamburgerMenu className="text-[18px] shrink-0" />
+            <span className="text-xs tracking-tight whitespace-nowrap">
+              메뉴
+            </span>
           </button>
-        </div>
-      </nav>
+        </nav>
+      </div>
 
       <AppDrawer open={isOpenDrawer} onClose={handleDrawer} size="sm">
         <DrawMenu setOpen={handleDrawer} />

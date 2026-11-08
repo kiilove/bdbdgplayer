@@ -54,6 +54,7 @@ const Home = () => {
   const totalCount = allContests.length;
   const gbbfCount = allContests.filter(isGbbfContest).length;
   const subCount = allContests.filter((item) => !isGbbfContest(item)).length;
+  const myAppliedCount = Object.keys(invoices || {}).length;
 
   const tabs = [
     { id: "all", label: "전체 접수대회", count: totalCount },
@@ -74,8 +75,8 @@ const Home = () => {
             className="text-lg sm:text-xl font-black tracking-tighter text-[#111111] cursor-pointer flex items-center gap-2"
           >
             <span>BDBDG</span>
-            <span className="text-xs font-semibold text-neutral-500 hidden sm:inline">
-              공식 대회 참가접수
+            <span className="text-[11px] font-bold text-neutral-500 bg-[#F5F5F7] border border-neutral-200/80 px-2.5 py-0.5 rounded-full hidden sm:inline">
+              OFFICIAL ATHLETE PORTAL
             </span>
           </button>
 
@@ -86,7 +87,7 @@ const Home = () => {
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#F5F5F7] hover:bg-neutral-200/80 border border-neutral-200 text-xs sm:text-sm font-bold text-[#111111] transition cursor-pointer"
             >
               <RiUserLine className="text-base" />
-              <span>{pInfo.pName || "선수 회원"} 님 · 내 신청내역</span>
+              <span>{pInfo.pName || "선수 회원"} 님 · 마이페이지</span>
             </button>
           ) : (
             <button
@@ -108,15 +109,15 @@ const Home = () => {
       />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
-        {/* Clean Editorial Hero Banner */}
-        <section className="rounded-3xl bg-white border border-neutral-200/90 p-6 sm:p-10 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
+        {/* Editorial Bento Hero Section */}
+        <section className="rounded-[28px] bg-white border border-neutral-200/90 p-6 sm:p-9 shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col gap-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex flex-col gap-y-3 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111111] text-white text-xs font-bold w-fit">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span>공식 협회 주관 대회 통합 접수</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>LIVE REGISTRATION · 공식 대회 통합 접수</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#111111] leading-[1.3] break-keep">
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#111111] leading-[1.28] break-keep">
                 보디빌딩 & 피트니스 <br className="sm:hidden" />
                 공식 대회 참가접수
               </h1>
@@ -131,7 +132,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => navigate("/myprofile")}
-                className="w-full sm:w-auto px-6 py-3.5 bg-[#F5F5F7] hover:bg-neutral-200/80 border border-neutral-200 text-[#111111] font-bold text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                className="w-full sm:w-auto px-6 py-3.5 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-full shadow-sm transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
               >
                 <span>내 신청내역 및 접수증 출력</span>
                 <MdArrowForward className="text-base" />
@@ -144,6 +145,93 @@ const Home = () => {
               >
                 <span>선수 로그인 / 참가 등록</span>
                 <MdArrowForward className="text-lg" />
+              </button>
+            )}
+          </div>
+
+          {/* Interactive Bento Summary Strip */}
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-5 border-t border-neutral-100">
+            <button
+              type="button"
+              onClick={() => handleTabSelect("all")}
+              className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
+                activeTab === "all"
+                  ? "bg-[#111111] text-white border-[#111111]"
+                  : "bg-[#F5F5F7] text-[#111111] border-transparent hover:border-neutral-300"
+              }`}
+            >
+              <span
+                className={`text-[11px] font-bold block ${
+                  activeTab === "all" ? "text-neutral-400" : "text-neutral-500"
+                }`}
+              >
+                전체 접수중
+              </span>
+              <span className="text-lg sm:text-2xl font-extrabold tracking-tight mt-0.5 block tabular-nums">
+                {totalCount}
+                <span className="text-xs font-bold ml-0.5">건</span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleTabSelect("gbbf")}
+              className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
+                activeTab === "gbbf"
+                  ? "bg-[#111111] text-white border-[#111111]"
+                  : "bg-[#F5F5F7] text-[#111111] border-transparent hover:border-neutral-300"
+              }`}
+            >
+              <span
+                className={`text-[11px] font-bold block truncate ${
+                  activeTab === "gbbf" ? "text-neutral-400" : "text-neutral-500"
+                }`}
+              >
+                경기도협회
+              </span>
+              <span className="text-lg sm:text-2xl font-extrabold tracking-tight mt-0.5 block tabular-nums">
+                {gbbfCount}
+                <span className="text-xs font-bold ml-0.5">건</span>
+              </span>
+            </button>
+
+            {pInfo?.playerUid ? (
+              <button
+                type="button"
+                onClick={() => navigate("/myprofile")}
+                className="rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer bg-emerald-50/80 hover:bg-emerald-100/70 border border-emerald-200/80 text-emerald-900"
+              >
+                <span className="text-[11px] font-bold text-emerald-700 block truncate">
+                  내 신청완료
+                </span>
+                <span className="text-lg sm:text-2xl font-extrabold tracking-tight mt-0.5 block tabular-nums">
+                  {myAppliedCount}
+                  <span className="text-xs font-bold ml-0.5">건</span>
+                </span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => handleTabSelect("sub")}
+                className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
+                  activeTab === "sub"
+                    ? "bg-[#111111] text-white border-[#111111]"
+                    : "bg-[#F5F5F7] text-[#111111] border-transparent hover:border-neutral-300"
+                }`}
+              >
+                <span
+                  className={`text-[11px] font-bold block truncate ${
+                    activeTab === "sub"
+                      ? "text-neutral-400"
+                      : "text-neutral-500"
+                  }`}
+                >
+                  시·군 산하 협회
+                </span>
+                <span className="text-lg sm:text-2xl font-extrabold tracking-tight mt-0.5 block tabular-nums">
+                  {subCount}
+                  <span className="text-xs font-bold ml-0.5">건</span>
+                </span>
               </button>
             )}
           </div>
@@ -170,7 +258,7 @@ const Home = () => {
                 >
                   <span>{tab.label}</span>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                    className={`text-xs px-2 py-0.5 rounded-full font-bold tabular-nums ${
                       isActive
                         ? "bg-white/20 text-white"
                         : "bg-[#F5F5F7] text-neutral-600"
@@ -197,7 +285,7 @@ const Home = () => {
               />
             </div>
           ) : displayedContests.length === 0 ? (
-            <div className="bg-white border border-neutral-200/90 rounded-3xl p-16 text-center text-neutral-500 font-semibold text-base shadow-sm">
+            <div className="bg-white border border-neutral-200/90 rounded-[28px] p-16 text-center text-neutral-500 font-semibold text-base shadow-sm">
               현재 해당 부문에 접수 중인 대회가 없습니다.
             </div>
           ) : (

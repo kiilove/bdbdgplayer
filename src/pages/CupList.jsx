@@ -53,11 +53,11 @@ const CupList = () => {
             message={message}
           />
           <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
-            <section className="rounded-3xl bg-white border border-neutral-200/90 p-6 sm:p-9 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
+            <section className="rounded-[28px] bg-white border border-neutral-200/90 p-6 sm:p-9 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
               <div className="flex flex-col gap-y-3 max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111111] text-white text-xs font-bold w-fit">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span>현재 접수 진행 중 · 총 {noticeList?.length || 0}건</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>LIVE SCHEDULE · 현재 접수 중 총 {noticeList?.length || 0}건</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight leading-[1.3] break-keep">
                   보디빌딩 & 피트니스 <br className="sm:hidden" />
