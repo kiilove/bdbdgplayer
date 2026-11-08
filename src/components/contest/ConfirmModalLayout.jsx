@@ -19,16 +19,16 @@ const ConfirmModalLayout = ({
   onConfirm,
 }) => {
   return (
-    <div className="w-full h-full bg-white p-6 sm:p-8 flex flex-col justify-between text-[#191F28] overflow-y-auto">
+    <div className="w-full h-full bg-white p-6 sm:p-8 flex flex-col justify-between text-[#0F172A] overflow-y-auto">
       <div>
         {/* Drawer Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
           <div className="flex items-center gap-x-3">
-            <div className="w-10 h-10 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-[0_3px_8px_rgba(37,99,235,0.22)]">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-[0_3px_10px_rgba(79,70,229,0.24)]">
               <RiCheckDoubleLine />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-extrabold text-[#191F28] tracking-tight">
+              <h2 className="text-lg sm:text-xl font-extrabold text-[#0F172A] tracking-tight">
                 {title}
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
@@ -39,7 +39,7 @@ const ConfirmModalLayout = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-[#191F28] flex items-center justify-center transition cursor-pointer shrink-0"
+            className="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-[#0F172A] flex items-center justify-center transition cursor-pointer shrink-0"
           >
             <RiCloseLine className="text-xl" />
           </button>
@@ -47,9 +47,9 @@ const ConfirmModalLayout = ({
 
         <div className="flex flex-col gap-y-4">
           {/* Contest Info Card */}
-          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col gap-y-3">
-            <div className="flex items-center gap-x-2 text-sm font-bold text-[#191F28] border-b border-slate-200/80 pb-2.5">
-              <RiTrophyLine className="text-base text-[#2563EB]" />
+          <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 flex flex-col gap-y-3">
+            <div className="flex items-center gap-x-2 text-sm font-bold text-[#0F172A] border-b border-slate-200/80 pb-2.5">
+              <RiTrophyLine className="text-base text-[#4F46E5]" />
               <span>참가 대회 정보</span>
             </div>
             <div className="grid grid-cols-1 gap-y-2.5 text-sm">
@@ -57,7 +57,7 @@ const ConfirmModalLayout = ({
                 <span className="text-slate-500 font-medium shrink-0">
                   대회명
                 </span>
-                <span className="text-[#191F28] font-bold text-right break-keep">
+                <span className="text-[#0F172A] font-bold text-right break-keep">
                   {invoiceInfo?.contestTitle}
                 </span>
               </div>
@@ -65,7 +65,7 @@ const ConfirmModalLayout = ({
                 <span className="text-slate-500 font-medium shrink-0">
                   대회일자
                 </span>
-                <span className="text-[#191F28] font-semibold">
+                <span className="text-[#0F172A] font-semibold">
                   {invoiceInfo?.contestDate}
                 </span>
               </div>
@@ -74,14 +74,14 @@ const ConfirmModalLayout = ({
                   <span className="text-slate-500 font-medium shrink-0">
                     개최장소
                   </span>
-                  <span className="text-[#191F28] font-semibold text-right break-keep">
+                  <span className="text-[#0F172A] font-semibold text-right break-keep">
                     {invoiceInfo?.contestLocation}
                   </span>
                 </div>
               )}
               <div className="flex justify-between items-center pt-3 border-t border-slate-200 mt-1">
-                <span className="text-[#191F28] font-bold">총 참가비 합계</span>
-                <span className="text-xl font-extrabold text-[#2563EB]">
+                <span className="text-[#0F172A] font-bold">총 참가비 합계</span>
+                <span className="text-xl font-extrabold text-[#4F46E5]">
                   {Number(invoicePrice || 0).toLocaleString()} 원
                 </span>
               </div>
@@ -89,9 +89,9 @@ const ConfirmModalLayout = ({
           </div>
 
           {/* Player Info Card */}
-          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col gap-y-3">
-            <div className="flex items-center gap-x-2 text-sm font-bold text-[#191F28] border-b border-slate-200/80 pb-2.5">
-              <RiUserLine className="text-base text-[#2563EB]" />
+          <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 flex flex-col gap-y-3">
+            <div className="flex items-center gap-x-2 text-sm font-bold text-[#0F172A] border-b border-slate-200/80 pb-2.5">
+              <RiUserLine className="text-base text-[#4F46E5]" />
               <span>선수 인적사항</span>
             </div>
             <div className="grid grid-cols-2 gap-3.5 text-sm">
@@ -99,7 +99,7 @@ const ConfirmModalLayout = ({
                 <span className="text-slate-500 text-xs font-medium block mb-0.5">
                   이름
                 </span>
-                <span className="text-[#191F28] font-bold">
+                <span className="text-[#0F172A] font-bold">
                   {invoiceInfo?.playerName}
                 </span>
               </div>
@@ -107,7 +107,7 @@ const ConfirmModalLayout = ({
                 <span className="text-slate-500 text-xs font-medium block mb-0.5">
                   연락처
                 </span>
-                <span className="text-[#191F28] font-bold">
+                <span className="text-[#0F172A] font-bold">
                   {invoiceInfo?.playerTel}
                 </span>
               </div>
@@ -115,7 +115,7 @@ const ConfirmModalLayout = ({
                 <span className="text-slate-500 text-xs font-medium block mb-0.5">
                   생년월일
                 </span>
-                <span className="text-[#191F28] font-bold">
+                <span className="text-[#0F172A] font-bold">
                   {invoiceInfo?.playerBirth}
                 </span>
               </div>
@@ -123,7 +123,7 @@ const ConfirmModalLayout = ({
                 <span className="text-slate-500 text-xs font-medium block mb-0.5">
                   소속
                 </span>
-                <span className="text-[#191F28] font-bold">
+                <span className="text-[#0F172A] font-bold">
                   {invoiceInfo?.playerGym || "무소속"}
                 </span>
               </div>
@@ -131,13 +131,13 @@ const ConfirmModalLayout = ({
           </div>
 
           {/* Joins Info Card */}
-          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col gap-y-3">
+          <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 flex flex-col gap-y-3">
             <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
-              <span className="text-sm font-bold text-[#191F28] flex items-center gap-x-1.5">
-                <RiCheckDoubleLine className="text-base text-[#2563EB]" />
+              <span className="text-sm font-bold text-[#0F172A] flex items-center gap-x-1.5">
+                <RiCheckDoubleLine className="text-base text-[#4F46E5]" />
                 참가 신청 종목
               </span>
-              <span className="text-xs font-bold text-[#2563EB] bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-bold text-[#4F46E5] bg-indigo-50 border border-indigo-200/80 px-2.5 py-0.5 rounded-[5px]">
                 총 {invoiceInfo.joins?.length || 0}개 종목
               </span>
             </div>
@@ -147,17 +147,17 @@ const ConfirmModalLayout = ({
                 {invoiceInfo.joins.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between bg-white border border-slate-200/80 rounded-xl p-3.5 text-sm"
+                    className="flex items-center justify-between bg-white border border-slate-200/80 rounded-lg p-3.5 text-sm"
                   >
                     <div className="flex items-center gap-x-2.5">
-                      <span className="w-5 h-5 rounded-full bg-blue-50 text-[#2563EB] text-xs font-bold flex items-center justify-center">
+                      <span className="w-5 h-5 rounded-[5px] bg-indigo-50 text-[#4F46E5] text-xs font-bold flex items-center justify-center">
                         {idx + 1}
                       </span>
-                      <span className="font-bold text-[#191F28]">
+                      <span className="font-bold text-[#0F172A]">
                         {item.contestCategoryTitle}
                       </span>
                     </div>
-                    <span className="font-semibold text-[#2563EB] bg-blue-50/70 px-3 py-1 rounded-full text-xs border border-blue-100">
+                    <span className="font-semibold text-[#4F46E5] bg-indigo-50/70 px-2.5 py-0.5 rounded-[5px] text-xs border border-indigo-100">
                       {item.contestGradeTitle}
                     </span>
                   </div>
@@ -171,8 +171,8 @@ const ConfirmModalLayout = ({
           </div>
 
           {/* 참가비 유의사항 안내 박스 */}
-          <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-start gap-x-2.5 text-slate-600 text-xs sm:text-sm leading-relaxed">
-            <RiErrorWarningLine className="text-[#2563EB] text-base flex-shrink-0 mt-0.5" />
+          <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex items-start gap-x-2.5 text-slate-600 text-xs sm:text-sm leading-relaxed">
+            <RiErrorWarningLine className="text-[#4F46E5] text-base flex-shrink-0 mt-0.5" />
             <span>
               학생부, 피트니스 챌린지와 보디빌딩 중복 출전의 경우 정확한 참가비용은 경기도보디빌딩협회를 통해 안내 받으시기 바랍니다.
             </span>
@@ -185,7 +185,7 @@ const ConfirmModalLayout = ({
         {!isLoading && (
           <button
             type="button"
-            className="flex-1 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-full transition cursor-pointer text-center"
+            className="flex-1 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition cursor-pointer text-center"
             onClick={onClose}
           >
             돌아가기
@@ -195,7 +195,7 @@ const ConfirmModalLayout = ({
         {isLoading ? (
           <button
             type="button"
-            className="flex-1 py-4 bg-[#2563EB] text-white font-bold text-sm rounded-full flex justify-center items-center cursor-not-allowed opacity-90"
+            className="flex-1 py-4 bg-[#4F46E5] text-white font-bold text-sm rounded-xl flex justify-center items-center cursor-not-allowed opacity-90"
             disabled
           >
             <RotatingLines
@@ -209,7 +209,7 @@ const ConfirmModalLayout = ({
         ) : (
           <button
             type="button"
-            className="flex-1 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm rounded-full transition shadow-[0_4px_14px_rgba(37,99,235,0.25)] cursor-pointer text-center"
+            className="flex-1 py-4 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-xl transition shadow-[0_6px_18px_rgba(79,70,229,0.28)] cursor-pointer text-center"
             onClick={onConfirm}
           >
             {confirmButtonText}

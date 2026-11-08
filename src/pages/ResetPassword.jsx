@@ -376,7 +376,7 @@ const ResetPassword = () => {
   const isCustomResetView = Boolean(oobCode || isPreviewMode);
 
   return (
-    <div className="flex w-full min-h-screen justify-center items-center bg-[#F6F8FB] text-[#191F28] p-4 font-sans antialiased">
+    <div className="flex w-full min-h-screen justify-center items-center bg-[#F4F5FA] text-[#0F172A] p-4 font-sans antialiased">
       <ConfirmationModal
         isOpen={messageOpen}
         onCancel={handleMessageBox}
@@ -387,7 +387,7 @@ const ResetPassword = () => {
         {isLoading && (
           <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
             <RotatingLines
-              strokeColor="#2563EB"
+              strokeColor="#4F46E5"
               strokeWidth="4"
               animationDuration="0.75"
               width="52"
@@ -403,11 +403,11 @@ const ResetPassword = () => {
             onClick={() => navigate("/login")}
             className="inline-block mb-1 cursor-pointer"
           >
-            <span className="text-2xl font-black text-[#191F28] tracking-tighter">
-              BDBDG<span className="text-[#2563EB]">.</span>
+            <span className="text-2xl font-black text-[#0F172A] tracking-tighter">
+              BDBDG<span className="text-[#FF2E54]">.</span>
             </span>
           </button>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#191F28] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
             {isCustomResetView
               ? "새 비밀번호 설정"
               : "아이디 · 비밀번호 찾기"}
@@ -420,36 +420,36 @@ const ResetPassword = () => {
         </div>
 
         {/* Main Card */}
-        <div className="w-full bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(15,23,42,0.05)] flex flex-col">
+        <div className="w-full bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(15,23,42,0.05)] flex flex-col">
           {isCustomResetView ? (
             /* ===== 우리 사이트 전용 커스텀 새 비밀번호 설정 폼 (이메일 링크 클릭 시 진입) ===== */
             <form
               onSubmit={handleConfirmOobReset}
               className="flex flex-col gap-y-5"
             >
-              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-center justify-between gap-3">
+              <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-[#2563EB] text-white flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-[#4F46E5] text-white flex items-center justify-center shrink-0">
                     <FiLock className="text-base" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-xs font-semibold text-slate-500">
                       비밀번호 재설정 대상 계정
                     </span>
-                    <span className="text-sm sm:text-base font-extrabold text-[#191F28] truncate">
+                    <span className="text-sm sm:text-base font-extrabold text-[#0F172A] truncate">
                       {oobTargetEmail || "인증 링크 확인 중..."}
                     </span>
                   </div>
                 </div>
                 {oobVerified && (
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full shrink-0">
+                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-[5px] shrink-0">
                     인증됨
                   </span>
                 )}
               </div>
 
               {isError.message && (
-                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-semibold flex flex-col gap-3">
+                <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-semibold flex flex-col gap-3">
                   <div className="flex items-start gap-2">
                     <FiAlertTriangle className="text-base shrink-0 mt-0.5" />
                     <span>{isError.message}</span>
@@ -462,7 +462,7 @@ const ResetPassword = () => {
                         setActiveTab("resetPassword");
                         setIsError({});
                       }}
-                      className="w-full py-2.5 bg-white hover:bg-slate-50 text-[#191F28] border border-rose-200 rounded-xl font-bold text-xs cursor-pointer transition"
+                      className="w-full py-2.5 bg-white hover:bg-slate-50 text-[#0F172A] border border-rose-200 rounded-xl font-bold text-xs cursor-pointer transition"
                     >
                       비밀번호 재설정 메일 다시 받기
                     </button>
@@ -472,7 +472,7 @@ const ResetPassword = () => {
 
               <div className="flex flex-col gap-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-[#191F28] mb-1.5">
+                  <label className="block text-sm font-bold text-[#0F172A] mb-1.5">
                     새 비밀번호
                   </label>
                   <div className="relative flex items-center">
@@ -480,7 +480,7 @@ const ResetPassword = () => {
                       type={showNewPwd ? "text" : "password"}
                       autoComplete="new-password"
                       disabled={!oobVerified}
-                      className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-11 text-[#191F28] text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none placeholder-slate-400 transition disabled:opacity-50"
+                      className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-11 text-[#0F172A] text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none placeholder-slate-400 transition disabled:opacity-50"
                       placeholder="새 비밀번호 (6자리 이상)"
                       value={newPassword}
                       onChange={(e) => {
@@ -492,7 +492,7 @@ const ResetPassword = () => {
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowNewPwd((prev) => !prev)}
-                      className="absolute right-3.5 text-slate-400 hover:text-[#191F28] cursor-pointer p-1"
+                      className="absolute right-3.5 text-slate-400 hover:text-[#0F172A] cursor-pointer p-1"
                     >
                       {showNewPwd ? (
                         <FiEyeOff className="text-lg" />
@@ -504,7 +504,7 @@ const ResetPassword = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#191F28] mb-1.5">
+                  <label className="block text-sm font-bold text-[#0F172A] mb-1.5">
                     새 비밀번호 확인
                   </label>
                   <div className="relative flex items-center">
@@ -512,7 +512,7 @@ const ResetPassword = () => {
                       type={showConfirmPwd ? "text" : "password"}
                       autoComplete="new-password"
                       disabled={!oobVerified}
-                      className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-11 text-[#191F28] text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none placeholder-slate-400 transition disabled:opacity-50"
+                      className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-11 text-[#0F172A] text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none placeholder-slate-400 transition disabled:opacity-50"
                       placeholder="새 비밀번호 다시 입력"
                       value={confirmPasswordVal}
                       onChange={(e) => {
@@ -524,7 +524,7 @@ const ResetPassword = () => {
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowConfirmPwd((prev) => !prev)}
-                      className="absolute right-3.5 text-slate-400 hover:text-[#191F28] cursor-pointer p-1"
+                      className="absolute right-3.5 text-slate-400 hover:text-[#0F172A] cursor-pointer p-1"
                     >
                       {showConfirmPwd ? (
                         <FiEyeOff className="text-lg" />
@@ -536,7 +536,7 @@ const ResetPassword = () => {
                 </div>
 
                 {/* 실시간 조건 체크리스트 */}
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3.5 flex flex-col gap-y-2 text-xs font-semibold">
+                <div className="bg-slate-50 border border-slate-100 rounded-xl p-3.5 flex flex-col gap-y-2 text-xs font-semibold">
                   <div
                     className={`flex items-center gap-2 ${
                       isLengthValid ? "text-emerald-700" : "text-slate-400"
@@ -559,9 +559,9 @@ const ResetPassword = () => {
               <button
                 type="submit"
                 disabled={isLoading || !isOobFormValid}
-                className={`w-full py-4 font-bold text-[15px] rounded-full transition flex items-center justify-center ${
+                className={`w-full py-4 font-bold text-[15px] rounded-xl transition flex items-center justify-center ${
                   isOobFormValid
-                    ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)] cursor-pointer"
+                    ? "bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white shadow-[0_6px_18px_rgba(79,70,229,0.28)] cursor-pointer"
                     : "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed"
                 }`}
               >
@@ -571,7 +571,7 @@ const ResetPassword = () => {
           ) : (
             <>
               {/* Tab Bar */}
-              <div className="flex w-full p-1 bg-slate-100 rounded-2xl mb-6">
+              <div className="flex w-full p-1 bg-slate-100 rounded-xl mb-6">
                 <button
                   type="button"
                   onClick={() => {
@@ -580,10 +580,10 @@ const ResetPassword = () => {
                     setFoundEmails(null);
                     setSentSuccessEmail("");
                   }}
-                  className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition cursor-pointer ${
+                  className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition cursor-pointer ${
                     activeTab === "findEmail"
-                      ? "bg-white text-[#2563EB] shadow-sm"
-                      : "text-slate-500 hover:text-[#191F28]"
+                      ? "bg-white text-[#4F46E5] shadow-sm"
+                      : "text-slate-500 hover:text-[#0F172A]"
                   }`}
                 >
                   이메일(아이디) 찾기
@@ -596,10 +596,10 @@ const ResetPassword = () => {
                     setFoundEmails(null);
                     setSentSuccessEmail("");
                   }}
-                  className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition cursor-pointer ${
+                  className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition cursor-pointer ${
                     activeTab === "resetPassword"
-                      ? "bg-white text-[#2563EB] shadow-sm"
-                      : "text-slate-500 hover:text-[#191F28]"
+                      ? "bg-white text-[#4F46E5] shadow-sm"
+                      : "text-slate-500 hover:text-[#0F172A]"
                   }`}
                 >
                   비밀번호 재설정
@@ -607,7 +607,7 @@ const ResetPassword = () => {
               </div>
 
               {isError.message && (
-                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-medium flex items-center gap-2 mb-4">
+                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-medium flex items-center gap-2 mb-4">
                   <FiAlertTriangle className="text-base shrink-0" />
                   <span>{isError.message}</span>
                 </div>
@@ -618,7 +618,7 @@ const ResetPassword = () => {
                   {foundEmails ? (
                     <div className="flex flex-col gap-y-4">
                       <div className="text-center py-2">
-                        <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="text-xs font-bold px-3 py-1 rounded-[5px] bg-emerald-50 text-emerald-700 border border-emerald-200">
                           계정 확인 완료 ({foundEmails.length}건)
                         </span>
                         <p className="text-xs sm:text-sm text-slate-500 font-medium mt-3">
@@ -632,14 +632,14 @@ const ResetPassword = () => {
                           return (
                             <div
                               key={idx}
-                              className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col gap-y-3"
+                              className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-y-3"
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-x-2 min-w-0">
-                                  <div className="w-7 h-7 rounded-full bg-blue-50 text-[#2563EB] border border-blue-100 flex items-center justify-center shrink-0">
+                                  <div className="w-7 h-7 rounded-md bg-indigo-50 text-[#4F46E5] border border-indigo-100 flex items-center justify-center shrink-0">
                                     <FiMail className="text-xs" />
                                   </div>
-                                  <span className="font-bold text-[#191F28] text-sm sm:text-base tracking-tight truncate">
+                                  <span className="font-bold text-[#0F172A] text-sm sm:text-base tracking-tight truncate">
                                     {masked}
                                   </span>
                                 </div>
@@ -667,7 +667,7 @@ const ResetPassword = () => {
                               <button
                                 type="button"
                                 onClick={() => handleGoToResetWithEmail(email)}
-                                className="w-full py-2.5 bg-white hover:bg-[#2563EB] text-[#2563EB] hover:text-white border border-blue-200 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center justify-center gap-x-1.5"
+                                className="w-full py-2.5 bg-white hover:bg-[#4F46E5] text-[#4F46E5] hover:text-white border border-indigo-200 font-bold text-xs sm:text-sm rounded-lg transition cursor-pointer flex items-center justify-center gap-x-1.5"
                               >
                                 <span>이 계정으로 비밀번호 재설정</span>
                                 <FiArrowRight className="text-xs" />
@@ -681,7 +681,7 @@ const ResetPassword = () => {
                         <button
                           type="button"
                           onClick={() => navigate("/login")}
-                          className="w-full py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[15px] rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition cursor-pointer flex items-center justify-center"
+                          className="w-full py-4 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-[15px] rounded-xl shadow-[0_6px_18px_rgba(79,70,229,0.28)] transition cursor-pointer flex items-center justify-center"
                         >
                           로그인 화면으로 이동
                         </button>
@@ -692,7 +692,7 @@ const ResetPassword = () => {
                             setFindName("");
                             setFindPhone("");
                           }}
-                          className="text-xs sm:text-sm text-slate-500 hover:text-[#2563EB] font-medium py-2 transition flex items-center justify-center gap-x-1 cursor-pointer"
+                          className="text-xs sm:text-sm text-slate-500 hover:text-[#4F46E5] font-medium py-2 transition flex items-center justify-center gap-x-1 cursor-pointer"
                         >
                           <FiRotateCcw className="text-xs" />
                           <span>다른 정보로 다시 찾기</span>
@@ -710,7 +710,7 @@ const ResetPassword = () => {
                         </label>
                         <input
                           type="text"
-                          className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-[#191F28] text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none placeholder-slate-400 transition"
+                          className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-[#0F172A] text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none placeholder-slate-400 transition"
                           placeholder="이름 입력"
                           value={findName}
                           onChange={handleNameChange}
@@ -724,7 +724,7 @@ const ResetPassword = () => {
                         <input
                           type="tel"
                           inputMode="numeric"
-                          className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-[#191F28] text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none placeholder-slate-400 transition"
+                          className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-[#0F172A] text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none placeholder-slate-400 transition"
                           placeholder="010-1234-5678"
                           value={findPhone}
                           onChange={handlePhoneChange}
@@ -734,7 +734,7 @@ const ResetPassword = () => {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full py-4 font-bold text-[15px] rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition flex items-center justify-center mt-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer disabled:opacity-50"
+                        className="w-full py-4 font-bold text-[15px] rounded-xl shadow-[0_6px_18px_rgba(79,70,229,0.28)] transition flex items-center justify-center mt-2 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white cursor-pointer disabled:opacity-50"
                       >
                         {isLoading ? "조회 중..." : "이메일 계정 찾기"}
                       </button>
@@ -748,17 +748,17 @@ const ResetPassword = () => {
                   {sentSuccessEmail ? (
                     /* 발송 완료 상태 카드 */
                     <div className="flex flex-col items-center text-center gap-y-4 py-2">
-                      <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center">
                         <FiMail className="text-2xl" />
                       </div>
                       <div className="flex flex-col gap-y-1.5">
-                        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full w-fit mx-auto">
+                        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-[5px] w-fit mx-auto">
                           재설정 링크 발송 완료
                         </span>
-                        <h3 className="text-lg font-extrabold text-[#191F28] mt-1">
+                        <h3 className="text-lg font-extrabold text-[#0F172A] mt-1">
                           메일함을 확인해 주세요
                         </h3>
-                        <p className="text-sm font-bold text-[#2563EB]">
+                        <p className="text-sm font-bold text-[#4F46E5]">
                           {sentSuccessEmail}
                         </p>
                         <p className="text-xs sm:text-sm text-slate-500 leading-relaxed break-keep mt-1">
@@ -770,14 +770,14 @@ const ResetPassword = () => {
                         <button
                           type="button"
                           onClick={() => navigate("/login")}
-                          className="w-full py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[15px] rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition cursor-pointer"
+                          className="w-full py-4 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-[15px] rounded-xl shadow-[0_6px_18px_rgba(79,70,229,0.28)] transition cursor-pointer"
                         >
                           로그인 화면으로 이동
                         </button>
                         <button
                           type="button"
                           onClick={() => setSentSuccessEmail("")}
-                          className="text-xs sm:text-sm text-slate-500 hover:text-[#2563EB] font-semibold py-2 cursor-pointer"
+                          className="text-xs sm:text-sm text-slate-500 hover:text-[#4F46E5] font-semibold py-2 cursor-pointer"
                         >
                           이메일 주소 다시 입력하기
                         </button>
@@ -788,12 +788,12 @@ const ResetPassword = () => {
                       onSubmit={handleSendEmail}
                       className="flex flex-col gap-y-4"
                     >
-                      <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white border border-blue-100 text-[#2563EB] flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="bg-indigo-50/60 border border-indigo-100 rounded-xl p-4 flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white border border-indigo-100 text-[#4F46E5] flex items-center justify-center shrink-0 mt-0.5">
                           <FiMail className="text-sm" />
                         </div>
                         <div className="flex flex-col gap-0.5 text-xs sm:text-[13px] text-slate-600 leading-relaxed break-keep">
-                          <span className="font-bold text-[#191F28]">
+                          <span className="font-bold text-[#0F172A]">
                             이메일 인증을 통한 안전한 비밀번호 재설정
                           </span>
                           <span>
@@ -803,13 +803,13 @@ const ResetPassword = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-bold text-[#191F28] mb-1.5">
+                        <label className="block text-sm font-bold text-[#0F172A] mb-1.5">
                           가입한 이메일 주소
                         </label>
                         <input
                           type="email"
                           autoComplete="email"
-                          className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-[#191F28] text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none placeholder-slate-400 transition"
+                          className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-[#0F172A] text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none placeholder-slate-400 transition"
                           placeholder="name@example.com"
                           value={emailInfo.email || ""}
                           onChange={handleEmailInput}
@@ -819,7 +819,7 @@ const ResetPassword = () => {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full py-4 font-bold text-[15px] rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition flex items-center justify-center mt-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer disabled:opacity-50"
+                        className="w-full py-4 font-bold text-[15px] rounded-xl shadow-[0_6px_18px_rgba(79,70,229,0.28)] transition flex items-center justify-center mt-1 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white cursor-pointer disabled:opacity-50"
                       >
                         {isLoading ? "발송 중..." : "비밀번호 재설정 링크 받기"}
                       </button>
@@ -835,7 +835,7 @@ const ResetPassword = () => {
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="text-sm text-slate-500 hover:text-[#2563EB] underline underline-offset-4 font-semibold cursor-pointer"
+            className="text-sm text-slate-500 hover:text-[#4F46E5] underline underline-offset-4 font-semibold cursor-pointer"
           >
             로그인 화면으로 돌아가기
           </button>

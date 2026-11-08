@@ -33,7 +33,7 @@ const BottomMenu = () => {
   return (
     <>
       <div className="fixed bottom-4 left-0 right-0 z-40 px-4 pointer-events-none">
-        <nav className="max-w-md mx-auto h-15 p-1.5 rounded-full bg-white/95 backdrop-blur-2xl border border-indigo-100/90 shadow-[0_12px_34px_rgba(79,70,229,0.14)] flex items-center justify-between gap-1 pointer-events-auto">
+        <nav className="max-w-md mx-auto h-15 p-1.5 rounded-2xl bg-white/95 backdrop-blur-2xl border border-indigo-100/90 shadow-[0_12px_34px_rgba(79,70,229,0.14)] flex items-center justify-between gap-1 pointer-events-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.to);
@@ -41,7 +41,7 @@ const BottomMenu = () => {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex-1 h-12 rounded-full flex items-center justify-center gap-1.5 transition-all duration-200 ${
+                className={`flex-1 h-12 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-200 ${
                   active
                     ? "bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] text-white font-bold shadow-[0_4px_14px_rgba(99,102,241,0.35)]"
                     : "text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/60 font-semibold"
@@ -58,7 +58,7 @@ const BottomMenu = () => {
           <button
             type="button"
             onClick={handleDrawer}
-            className="flex-1 h-12 rounded-full flex items-center justify-center gap-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/60 font-semibold transition-all duration-200 cursor-pointer"
+            className="flex-1 h-12 rounded-xl flex items-center justify-center gap-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/60 font-semibold transition-all duration-200 cursor-pointer"
           >
             <RxHamburgerMenu className="text-[18px] shrink-0" />
             <span className="text-xs tracking-tight whitespace-nowrap">

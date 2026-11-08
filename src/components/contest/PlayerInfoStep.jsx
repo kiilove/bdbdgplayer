@@ -26,10 +26,10 @@ const PlayerInfoStep = ({
   };
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
+    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
       <div className="flex items-center justify-between border-b border-slate-100 pb-4">
         <h2 className="text-lg sm:text-xl font-extrabold text-[#0F172A] flex items-center gap-x-2.5 tracking-tight">
-          <span className="w-7 h-7 rounded-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white text-xs flex items-center justify-center font-bold shadow-sm">
+          <span className="w-7 h-7 rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white text-xs flex items-center justify-center font-bold shadow-sm">
             1
           </span>
           {stepTitle}
@@ -144,14 +144,14 @@ const PlayerInfoStep = ({
       <div className="pt-4 border-t border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {isConfirmedInfo ? (
           <>
-            <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-4 py-2.5 rounded-full border border-emerald-200 flex items-center gap-x-1.5 w-fit">
+            <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-3.5 py-2 rounded-lg border border-emerald-200 flex items-center gap-x-1.5 w-fit">
               <RiCheckDoubleFill className="text-lg" />
               선수 정보 확인 완료
             </span>
             <button
               type="button"
               onClick={() => setIsConfirmedInfo(false)}
-              className="px-5 py-2.5 bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] font-semibold text-sm rounded-full border border-neutral-200 transition cursor-pointer"
+              className="px-5 py-2.5 bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] font-semibold text-sm rounded-xl border border-neutral-200 transition cursor-pointer"
             >
               선수 정보 다시 수정하기
             </button>
@@ -164,7 +164,7 @@ const PlayerInfoStep = ({
             <button
               type="button"
               onClick={handlePlayerValidateButtonClick}
-              className="px-6 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-full transition shadow-[0_6px_18px_rgba(99,102,241,0.28)] cursor-pointer flex items-center justify-center gap-x-2 shrink-0"
+              className="px-6 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-xl transition shadow-[0_6px_18px_rgba(99,102,241,0.28)] cursor-pointer flex items-center justify-center gap-x-2 shrink-0"
             >
               <span>선수 정보 확인 완료</span>
               <span className="text-xs text-indigo-100 font-semibold">

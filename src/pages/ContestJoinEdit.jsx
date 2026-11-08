@@ -207,10 +207,10 @@ const ContestJoinEdit = () => {
 
               {/* Right Column: Sticky Summary & Action Card */}
               <div className="lg:col-span-4">
-                <div className="sticky top-20 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-5">
+                <div className="sticky top-20 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-5">
                   <h3 className="text-base sm:text-lg font-extrabold text-[#0F172A] border-b border-slate-100 pb-3.5 flex items-center justify-between">
                     <span>선택 종목 내역</span>
-                    <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-200/80 px-3 py-1 rounded-full">
+                    <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-200/80 px-2.5 py-1 rounded-md">
                       총 {invoiceInfo.joins?.length || 0}개 선택
                     </span>
                   </h3>
@@ -229,7 +229,7 @@ const ContestJoinEdit = () => {
                           <span className="font-bold text-[#0F172A]">
                             {join.contestCategoryTitle}
                           </span>
-                          <span className="font-semibold text-indigo-600 bg-white px-3 py-1 rounded-full text-xs border border-indigo-200/80">
+                          <span className="font-semibold text-indigo-600 bg-white px-2.5 py-0.5 rounded-[5px] text-xs border border-indigo-200/80">
                             {join.contestGradeTitle}
                           </span>
                         </div>
@@ -238,7 +238,7 @@ const ContestJoinEdit = () => {
                   )}
 
                   {invoiceInfo.joins?.length > 0 && (
-                    <div className="flex items-center justify-between bg-indigo-50/60 border border-indigo-100 rounded-2xl px-4 py-3.5 text-sm">
+                    <div className="flex items-center justify-between bg-indigo-50/60 border border-indigo-100 rounded-xl px-4 py-3.5 text-sm">
                       <span className="font-semibold text-slate-600">
                         예상 참가비 합계
                       </span>
@@ -259,7 +259,7 @@ const ContestJoinEdit = () => {
                       disabled={
                         !invoiceInfo.joins || invoiceInfo.joins.length === 0
                       }
-                      className={`w-full py-4 rounded-full font-bold text-[15px] transition cursor-pointer ${
+                      className={`w-full py-4 rounded-xl font-bold text-[15px] transition cursor-pointer ${
                         invoiceInfo.joins?.length > 0
                           ? "bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white shadow-[0_6px_18px_rgba(99,102,241,0.28)]"
                           : "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed"
@@ -270,7 +270,7 @@ const ContestJoinEdit = () => {
                     <button
                       type="button"
                       onClick={() => setPrintDrawerOpen(true)}
-                      className="w-full py-3.5 bg-[#F8FAFC] hover:bg-indigo-50/50 text-[#0F172A] border border-slate-200 hover:border-indigo-200 font-bold text-sm rounded-full transition flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3.5 bg-[#F8FAFC] hover:bg-indigo-50/50 text-[#0F172A] border border-slate-200 hover:border-indigo-200 font-bold text-sm rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <RiPrinterLine className="text-base text-indigo-600" />
                       <span>접수증 A4 인쇄 / PDF 저장</span>

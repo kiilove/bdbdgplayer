@@ -221,11 +221,11 @@ const RegisterWithEmail = () => {
       <div className="flex flex-col w-full max-w-md items-center">
         <div className="flex w-full justify-center flex-col items-center gap-y-1.5 mb-6 text-center">
           <Link to="/" className="inline-block mb-1">
-            <span className="text-2xl font-black text-[#191F28] tracking-tighter">
-              BDBDG<span className="text-[#2563EB]">.</span>
+            <span className="text-2xl font-black text-[#0F172A] tracking-tighter">
+              BDBDG<span className="text-[#FF2E54]">.</span>
             </span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#191F28] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
             선수 회원가입
           </h1>
           <p className="text-sm text-slate-500 font-medium">
@@ -233,14 +233,14 @@ const RegisterWithEmail = () => {
           </p>
         </div>
 
-        <div className="w-full bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(15,23,42,0.05)] flex flex-col gap-y-4">
+        <div className="w-full bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(15,23,42,0.05)] flex flex-col gap-y-4">
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1.5">
               이름 (실명)
             </label>
             <input
               type="text"
-              className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 text-[#191F28] placeholder-slate-400 px-4 text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none transition"
+              className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 text-[#0F172A] placeholder-slate-400 px-4 text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none transition"
               name="pName"
               value={form.pName}
               onChange={handleFieldChange}
@@ -255,7 +255,7 @@ const RegisterWithEmail = () => {
             <div className="flex w-full gap-x-2">
               <input
                 type="email"
-                className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 text-[#191F28] placeholder-slate-400 px-4 text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none transition"
+                className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 text-[#0F172A] placeholder-slate-400 px-4 text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none transition"
                 name="pEmail"
                 value={form.pEmail}
                 onChange={handleFieldChange}
@@ -263,7 +263,7 @@ const RegisterWithEmail = () => {
               />
               <button
                 type="button"
-                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap cursor-pointer transition shadow-sm"
+                className="bg-[#4F46E5] hover:bg-[#4338CA] text-white px-4 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap cursor-pointer transition shadow-sm"
                 onClick={handleChkEmail}
               >
                 중복확인
@@ -289,7 +289,7 @@ const RegisterWithEmail = () => {
             <input
               type="tel"
               inputMode="numeric"
-              className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 text-[#191F28] placeholder-slate-400 px-4 text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none transition"
+              className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 text-[#0F172A] placeholder-slate-400 px-4 text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none transition"
               name="pTel"
               value={form.pTel}
               onChange={handleFieldChange}
@@ -303,7 +303,7 @@ const RegisterWithEmail = () => {
             </label>
             <input
               type="password"
-              className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 text-[#191F28] placeholder-slate-400 px-4 text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none transition"
+              className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 text-[#0F172A] placeholder-slate-400 px-4 text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none transition"
               name="password"
               value={form.password}
               onChange={handlePasswordChange}
@@ -324,8 +324,8 @@ const RegisterWithEmail = () => {
               type="password"
               className={`w-full h-12 rounded-xl bg-slate-50 border px-4 text-base focus:outline-none transition ${
                 alertMessage.pwd.code === "wrong"
-                  ? "border-rose-500 text-[#191F28] bg-rose-50/40"
-                  : "border-slate-200 text-[#191F28] placeholder-slate-400 focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15"
+                  ? "border-rose-500 text-[#0F172A] bg-rose-50/40"
+                  : "border-slate-200 text-[#0F172A] placeholder-slate-400 focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15"
               }`}
               name="confirmPassword"
               value={form.confirmPassword}
@@ -344,7 +344,7 @@ const RegisterWithEmail = () => {
               성별
             </label>
             <select
-              className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 px-4 text-[#191F28] text-base focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none cursor-pointer"
+              className="w-full h-12 rounded-xl bg-slate-50 border border-slate-200 px-4 text-[#0F172A] text-base focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none cursor-pointer"
               name="pGender"
               value={form.pGender}
               onChange={handleFieldChange}
@@ -358,13 +358,13 @@ const RegisterWithEmail = () => {
           </div>
 
           {/* Terms Section */}
-          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex flex-col gap-y-3 mt-1 text-sm">
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 flex flex-col gap-y-3 mt-1 text-sm">
             <div className="flex flex-col border-b border-slate-200 pb-3">
-              <label className="flex items-center gap-x-2.5 font-bold text-[#191F28] cursor-pointer">
+              <label className="flex items-center gap-x-2.5 font-bold text-[#0F172A] cursor-pointer">
                 <input
                   type="checkbox"
                   name="allApply"
-                  className="w-4 h-4 accent-[#2563EB] rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#4F46E5] rounded cursor-pointer"
                   checked={licenseAll}
                   onChange={(e) => handleLicenseAll(e.target.checked)}
                 />
@@ -380,21 +380,21 @@ const RegisterWithEmail = () => {
                 <input
                   type="checkbox"
                   name="m1Apply"
-                  className="w-4 h-4 accent-[#2563EB] rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#4F46E5] rounded cursor-pointer"
                   checked={license.m1Apply.value}
                   onChange={(e) =>
                     handleSingleLicense("m1Apply", e.target.checked)
                   }
                 />
                 <span>
-                  <strong className="font-bold text-[#2563EB]">[필수]</strong>{" "}
+                  <strong className="font-bold text-[#4F46E5]">[필수]</strong>{" "}
                   이용약관 동의
                 </span>
               </label>
               <button
                 type="button"
                 onClick={() => setPolicyDrawerOpen(true)}
-                className="text-xs text-slate-500 hover:text-[#2563EB] underline font-semibold cursor-pointer p-1"
+                className="text-xs text-slate-500 hover:text-[#4F46E5] underline font-semibold cursor-pointer p-1"
               >
                 보기
               </button>
@@ -405,21 +405,21 @@ const RegisterWithEmail = () => {
                 <input
                   type="checkbox"
                   name="m2Apply"
-                  className="w-4 h-4 accent-[#2563EB] rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#4F46E5] rounded cursor-pointer"
                   checked={license.m2Apply.value}
                   onChange={(e) =>
                     handleSingleLicense("m2Apply", e.target.checked)
                   }
                 />
                 <span>
-                  <strong className="font-bold text-[#2563EB]">[필수]</strong>{" "}
+                  <strong className="font-bold text-[#4F46E5]">[필수]</strong>{" "}
                   개인정보 수집 및 이용 동의
                 </span>
               </label>
               <button
                 type="button"
                 onClick={() => setPolicyDrawerOpen(true)}
-                className="text-xs text-slate-500 hover:text-[#2563EB] underline font-semibold cursor-pointer p-1"
+                className="text-xs text-slate-500 hover:text-[#4F46E5] underline font-semibold cursor-pointer p-1"
               >
                 보기
               </button>
@@ -430,7 +430,7 @@ const RegisterWithEmail = () => {
                 <input
                   type="checkbox"
                   name="s1Apply"
-                  className="w-4 h-4 accent-[#2563EB] rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#4F46E5] rounded cursor-pointer"
                   checked={license.s1Apply.value}
                   onChange={(e) =>
                     handleSingleLicense("s1Apply", e.target.checked)
@@ -446,7 +446,7 @@ const RegisterWithEmail = () => {
               <button
                 type="button"
                 onClick={() => setPolicyDrawerOpen(true)}
-                className="text-xs text-slate-500 hover:text-[#2563EB] underline font-semibold cursor-pointer p-1"
+                className="text-xs text-slate-500 hover:text-[#4F46E5] underline font-semibold cursor-pointer p-1"
               >
                 보기
               </button>
@@ -458,7 +458,7 @@ const RegisterWithEmail = () => {
             isLoading ? (
               <button
                 type="button"
-                className="w-full py-4 bg-[#2563EB] text-white font-bold text-[15px] rounded-full flex justify-center items-center opacity-90 cursor-not-allowed mt-2"
+                className="w-full py-4 bg-[#4F46E5] text-white font-bold text-[15px] rounded-xl flex justify-center items-center opacity-90 cursor-not-allowed mt-2"
               >
                 <ThreeDots
                   height="20"
@@ -472,7 +472,7 @@ const RegisterWithEmail = () => {
             ) : (
               <button
                 type="button"
-                className="w-full py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[15px] rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition cursor-pointer text-center mt-2"
+                className="w-full py-4 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-[15px] rounded-xl shadow-[0_6px_18px_rgba(79,70,229,0.28)] transition cursor-pointer text-center mt-2"
                 onClick={handleRegister}
               >
                 회원가입 완료
@@ -482,7 +482,7 @@ const RegisterWithEmail = () => {
             <button
               type="button"
               disabled
-              className="w-full py-4 bg-slate-100 border border-slate-200 text-slate-400 font-semibold text-sm rounded-full cursor-not-allowed text-center mt-2"
+              className="w-full py-4 bg-slate-100 border border-slate-200 text-slate-400 font-semibold text-sm rounded-xl cursor-not-allowed text-center mt-2"
             >
               {chkEmail
                 ? "필수 항목을 모두 입력해 주세요"
@@ -495,7 +495,7 @@ const RegisterWithEmail = () => {
           <p className="text-sm text-slate-500 font-medium">
             이미 계정이 있으신가요?
             <Link to="/login">
-              <span className="text-[#2563EB] font-bold ml-2 underline underline-offset-4">
+              <span className="text-[#4F46E5] font-bold ml-2 underline underline-offset-4">
                 로그인하기
               </span>
             </Link>

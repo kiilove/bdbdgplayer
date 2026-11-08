@@ -74,12 +74,13 @@ const Home = () => {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="text-lg sm:text-xl font-black tracking-tighter cursor-pointer flex items-center gap-2"
+            className="text-lg sm:text-xl font-black tracking-tighter cursor-pointer flex items-center gap-2.5"
           >
             <span className="bg-gradient-to-r from-[#4F46E5] via-[#7C3AED] to-[#FF2E54] bg-clip-text text-transparent">
               BDBDG
             </span>
-            <span className="text-[11px] font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-200/80 px-2.5 py-0.5 rounded-full hidden sm:inline">
+            <span className="w-px h-3.5 bg-slate-300 hidden sm:inline-block" />
+            <span className="text-[11px] font-bold text-slate-500 tracking-wider uppercase hidden sm:inline">
               SPORT & STAGE PORTAL
             </span>
           </button>
@@ -88,7 +89,7 @@ const Home = () => {
             <button
               type="button"
               onClick={() => navigate("/myprofile")}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50/90 hover:bg-indigo-100/80 border border-indigo-200/80 text-xs sm:text-sm font-bold text-indigo-700 transition cursor-pointer"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-indigo-50/90 hover:bg-indigo-100/80 border border-indigo-200/80 text-xs sm:text-sm font-bold text-indigo-700 transition cursor-pointer"
             >
               <RiUserLine className="text-base text-indigo-600" />
               <span>{pInfo.pName || "선수 회원"} 님 · 마이페이지</span>
@@ -97,7 +98,7 @@ const Home = () => {
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="px-4 py-2 rounded-full bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white text-xs sm:text-sm font-bold shadow-[0_4px_14px_rgba(99,102,241,0.30)] transition cursor-pointer"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white text-xs sm:text-sm font-bold shadow-[0_4px_14px_rgba(99,102,241,0.30)] transition cursor-pointer"
             >
               로그인 / 회원가입
             </button>
@@ -114,10 +115,10 @@ const Home = () => {
 
       <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
         {/* Sportainment Stage Hero Section */}
-        <section className="rounded-[28px] bg-white/92 backdrop-blur-md bg-gradient-to-br from-indigo-50/60 via-white/95 to-rose-50/55 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)] flex flex-col gap-6">
+        <section className="rounded-2xl bg-white/92 backdrop-blur-md bg-gradient-to-br from-indigo-50/60 via-white/95 to-rose-50/55 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)] flex flex-col gap-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex flex-col gap-y-3 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 text-[#FF2E54] border border-rose-200/90 text-xs font-extrabold w-fit shadow-[0_2px_8px_rgba(255,46,84,0.10)]">
+            <div className="flex flex-col gap-y-2.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 border-l-2 border-[#FF2E54] pl-2.5 text-xs font-extrabold text-[#FF2E54] tracking-wider uppercase w-fit">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#FF2E54] animate-pulse" />
                 <span>LIVE STAGE · 공식 대회 통합 접수</span>
               </div>
@@ -138,7 +139,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => navigate("/myprofile")}
-                className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-full shadow-[0_6px_20px_rgba(99,102,241,0.32)] transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-xl shadow-[0_6px_20px_rgba(99,102,241,0.32)] transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
               >
                 <span>내 신청내역 및 접수증 출력</span>
                 <MdArrowForward className="text-base" />
@@ -147,7 +148,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
-                className="w-full sm:w-auto px-7 py-4 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-full shadow-[0_6px_20px_rgba(99,102,241,0.32)] transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                className="w-full sm:w-auto px-7 py-4 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-xl shadow-[0_6px_20px_rgba(99,102,241,0.32)] transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
               >
                 <span>선수 로그인 / 참가 등록</span>
                 <MdArrowForward className="text-lg" />
@@ -160,7 +161,7 @@ const Home = () => {
             <button
               type="button"
               onClick={() => handleTabSelect("all")}
-              className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
+              className={`rounded-xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
                 activeTab === "all"
                   ? "bg-gradient-to-br from-indigo-50 to-violet-50 text-indigo-700 border-indigo-200 shadow-sm"
                   : "bg-[#F8FAFC] text-[#0F172A] border-slate-100 hover:border-indigo-200"
@@ -182,7 +183,7 @@ const Home = () => {
             <button
               type="button"
               onClick={() => handleTabSelect("gbbf")}
-              className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
+              className={`rounded-xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
                 activeTab === "gbbf"
                   ? "bg-gradient-to-br from-amber-50 to-orange-50/70 text-amber-800 border-amber-200 shadow-sm"
                   : "bg-[#F8FAFC] text-[#0F172A] border-slate-100 hover:border-amber-200"
@@ -205,7 +206,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => navigate("/myprofile")}
-                className="rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer bg-gradient-to-br from-emerald-50 to-teal-50/70 hover:from-emerald-100/80 border border-emerald-200/80 text-emerald-900"
+                className="rounded-xl p-3.5 sm:p-4 text-left transition cursor-pointer bg-gradient-to-br from-emerald-50 to-teal-50/70 hover:from-emerald-100/80 border border-emerald-200/80 text-emerald-900"
               >
                 <span className="text-[11px] font-bold text-emerald-700 block truncate">
                   내 신청완료
@@ -219,7 +220,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => handleTabSelect("sub")}
-                className={`rounded-2xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
+                className={`rounded-xl p-3.5 sm:p-4 text-left transition cursor-pointer border ${
                   activeTab === "sub"
                     ? "bg-gradient-to-br from-rose-50 to-pink-50/70 text-[#FF2E54] border-rose-200 shadow-sm"
                     : "bg-[#F8FAFC] text-[#0F172A] border-slate-100 hover:border-rose-200"
@@ -241,9 +242,9 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Filter Tabs (Electric Stage Gradient Active Pill) */}
+        {/* Architectural Segmented Filter Bar (No Pills) */}
         <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto no-scrollbar scroll-smooth">
-          <div className="flex items-center gap-2 w-max sm:w-full pb-1 pr-4 sm:pr-0">
+          <div className="inline-flex sm:flex items-center gap-1.5 p-1.5 bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-xl w-max sm:w-full shadow-sm">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -254,17 +255,17 @@ const Home = () => {
                   }}
                   type="button"
                   onClick={() => handleTabSelect(tab.id)}
-                  className={`px-4 sm:px-5 py-2.5 rounded-full flex items-center gap-x-2 text-[13px] sm:text-sm font-bold transition cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`flex-1 px-4 sm:px-5 py-2.5 rounded-lg flex items-center justify-center gap-x-2 text-[13px] sm:text-sm font-bold transition cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
-                      ? "bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] text-white shadow-[0_4px_14px_rgba(99,102,241,0.32)]"
-                      : "bg-white/95 backdrop-blur-sm text-slate-600 border border-slate-200/90 hover:border-indigo-300 hover:text-indigo-600"
+                      ? "bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] text-white shadow-[0_4px_12px_rgba(99,102,241,0.28)]"
+                      : "text-slate-600 hover:bg-slate-100/80 hover:text-indigo-600"
                   }`}
                 >
                   <span>{tab.label}</span>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-bold tabular-nums ${
+                    className={`text-xs px-1.5 py-0.5 rounded-[5px] font-extrabold tabular-nums ${
                       isActive
-                        ? "bg-white/25 text-white"
+                        ? "bg-white/20 text-white"
                         : "bg-slate-100 text-slate-600"
                     }`}
                   >

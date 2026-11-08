@@ -104,7 +104,7 @@ const MyProfile = () => {
           <button
             type="button"
             onClick={handleLogout}
-            className="flex items-center gap-x-1.5 text-slate-600 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/60 transition text-xs sm:text-sm font-bold cursor-pointer px-3.5 py-2 rounded-full border border-slate-200 bg-white active:scale-95"
+            className="flex items-center gap-x-1.5 text-slate-600 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/60 transition text-xs sm:text-sm font-bold cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white active:scale-95"
           >
             <RiLogoutBoxRLine className="text-base" />
             <span>로그아웃</span>
@@ -151,10 +151,10 @@ const MyProfile = () => {
               />
             </label>
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-              <span className="text-xs font-bold text-[#2563EB] bg-blue-50 border border-blue-100 px-3 py-1 rounded-full">
-                선수 기본 프로필
+              <span className="text-[11px] font-extrabold text-indigo-600 uppercase tracking-wider border-l-2 border-indigo-600 pl-2">
+                ATHLETE PROFILE · 선수 기본 프로필
               </span>
-              <h2 className="text-2xl font-extrabold text-[#191F28] mt-2 tracking-tight">
+              <h2 className="text-2xl font-extrabold text-[#0F172A] mt-1.5 tracking-tight">
                 {pInfo.pName || "선수 회원"}
               </h2>
               <p className="text-sm text-slate-500 mt-0.5">{pInfo.pEmail}</p>
@@ -289,7 +289,7 @@ const MyProfile = () => {
                   비밀번호 변경하기
                 </span>
               </div>
-              <span className="text-xs font-bold text-[#2563EB] bg-white px-3.5 py-1.5 rounded-full border border-blue-200 group-hover:bg-[#2563EB] group-hover:text-white transition flex items-center gap-1">
+              <span className="text-xs font-bold text-indigo-600 bg-white px-3 py-1.5 rounded-lg border border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white transition flex items-center gap-1">
                 <span>비밀번호 변경</span>
                 <IoChevronForward />
               </span>
@@ -298,13 +298,13 @@ const MyProfile = () => {
         </section>
 
         {/* 나의 대회 참가 신청 내역 섹션 */}
-        <section className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
+        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <h3 className="text-lg sm:text-xl font-extrabold text-[#191F28] flex items-center gap-x-2 tracking-tight">
-              <RiTrophyLine className="text-[#2563EB] text-xl" />
+            <h3 className="text-lg sm:text-xl font-extrabold text-[#0F172A] flex items-center gap-x-2 tracking-tight">
+              <RiTrophyLine className="text-amber-500 text-xl" />
               나의 대회 참가 신청 내역
             </h3>
-            <span className="text-xs font-bold text-[#2563EB] bg-blue-50 border border-blue-100 px-3 py-1 rounded-full">
+            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-md">
               총 {userInvoices.length}건
             </span>
           </div>
@@ -312,7 +312,7 @@ const MyProfile = () => {
           {invoicesLoading ? (
             <div className="flex justify-center items-center py-12">
               <RotatingLines
-                strokeColor="#2563EB"
+                strokeColor="#4F46E5"
                 strokeWidth="4"
                 width="36"
                 visible={true}
@@ -323,7 +323,7 @@ const MyProfile = () => {
               {userInvoices.map((inv) => (
                 <div
                   key={inv.id}
-                  className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-5 flex flex-col gap-y-4 transition"
+                  className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-5 flex flex-col gap-y-4 transition"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex flex-col gap-y-1">
@@ -332,17 +332,17 @@ const MyProfile = () => {
                           inv.contestPromoter ||
                           "공식 참가신청서"}
                       </span>
-                      <h4 className="text-base sm:text-lg font-extrabold text-[#191F28] tracking-tight break-keep">
+                      <h4 className="text-base sm:text-lg font-extrabold text-[#0F172A] tracking-tight break-keep">
                         {inv.contestTitle}
                       </h4>
                       <span className="text-xs sm:text-sm text-slate-600 font-medium flex items-center gap-x-1.5 mt-0.5">
-                        <RiCalendarLine className="text-[#2563EB]" />{" "}
+                        <RiCalendarLine className="text-indigo-600" />{" "}
                         {inv.contestDate}{" "}
                         {inv.contestLocation ? `· ${inv.contestLocation}` : ""}
                       </span>
                     </div>
                     <span
-                      className={`text-xs font-bold px-3 py-1.5 rounded-full border whitespace-nowrap shrink-0 ${
+                      className={`text-xs font-bold px-2.5 py-1 rounded-[5px] border whitespace-nowrap shrink-0 ${
                         inv.isCanceled
                           ? "bg-rose-50 text-rose-600 border-rose-200"
                           : inv.isPriceCheck
@@ -363,9 +363,9 @@ const MyProfile = () => {
                     {inv.joins?.map((j, jIdx) => (
                       <span
                         key={jIdx}
-                        className="text-xs sm:text-sm font-semibold text-[#191F28] bg-white px-3.5 py-1.5 rounded-full border border-slate-200 flex items-center gap-x-1.5"
+                        className="text-xs sm:text-sm font-semibold text-[#0F172A] bg-white px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-x-1.5"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
                         {j.contestCategoryTitle} ({j.contestGradeTitle})
                       </span>
                     ))}
@@ -376,7 +376,7 @@ const MyProfile = () => {
                       <span className="text-xs font-medium text-slate-500">
                         총 참가비
                       </span>
-                      <span className="text-lg font-extrabold text-[#2563EB]">
+                      <span className="text-lg font-extrabold text-indigo-600">
                         {Number(inv.contestPriceSum || 0).toLocaleString()} 원
                       </span>
                     </div>
@@ -386,7 +386,7 @@ const MyProfile = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedPrintInvoice(inv)}
-                          className="flex-1 sm:flex-none px-4 py-2.5 bg-white hover:bg-slate-100 text-[#191F28] border border-slate-300 font-bold text-xs sm:text-sm rounded-full transition cursor-pointer flex items-center justify-center gap-1.5"
+                          className="flex-1 sm:flex-none px-4 py-2.5 bg-white hover:bg-slate-100 text-[#0F172A] border border-slate-300 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
                         >
                           <RiPrinterLine className="text-base" />
                           <span>접수증 출력 / PDF</span>
@@ -396,7 +396,7 @@ const MyProfile = () => {
                           onClick={() =>
                             navigate(`/contestjoinedit/${inv.id}`)
                           }
-                          className="flex-1 sm:flex-none px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs sm:text-sm rounded-full shadow-[0_3px_10px_rgba(37,99,235,0.2)] transition cursor-pointer text-center"
+                          className="flex-1 sm:flex-none px-4 py-2.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-xs sm:text-sm rounded-xl shadow-[0_4px_12px_rgba(99,102,241,0.24)] transition cursor-pointer text-center"
                         >
                           신청내역 수정
                         </button>
@@ -412,7 +412,7 @@ const MyProfile = () => {
               <button
                 type="button"
                 onClick={() => navigate("/")}
-                className="px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm rounded-full shadow-[0_4px_12px_rgba(37,99,235,0.22)] transition cursor-pointer"
+                className="px-6 py-3 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-xl shadow-[0_4px_12px_rgba(99,102,241,0.24)] transition cursor-pointer"
               >
                 대회 참가 신청하러 가기
               </button>

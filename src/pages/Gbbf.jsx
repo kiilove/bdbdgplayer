@@ -42,10 +42,10 @@ const Gbbf = () => {
       />
 
       <main className="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
-        <section className="rounded-[28px] bg-white/92 backdrop-blur-md bg-gradient-to-br from-amber-50/55 via-white/95 to-indigo-50/60 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
+        <section className="rounded-2xl bg-white/92 backdrop-blur-md bg-gradient-to-br from-amber-50/55 via-white/95 to-indigo-50/60 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="flex flex-col gap-y-3 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/90 text-xs font-extrabold w-fit">
+            <div className="flex flex-col gap-y-2.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 border-l-2 border-amber-500 pl-2.5 text-xs font-extrabold text-amber-700 tracking-wider uppercase w-fit">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                 <span>GBBF OFFICIAL · 경기도보디빌딩협회 공식 승인</span>
               </div>
@@ -65,7 +65,7 @@ const Gbbf = () => {
             <button
               type="button"
               onClick={() => navigate("/")}
-              className="w-full sm:w-auto px-5 py-3.5 bg-indigo-50 hover:bg-indigo-100/80 text-indigo-700 border border-indigo-200/80 font-bold text-sm rounded-full transition cursor-pointer whitespace-nowrap shrink-0 text-center"
+              className="w-full sm:w-auto px-5 py-3.5 bg-indigo-50 hover:bg-indigo-100/80 text-indigo-700 border border-indigo-200/80 font-bold text-sm rounded-xl transition cursor-pointer whitespace-nowrap shrink-0 text-center"
             >
               전체 대회 통합 보기
             </button>

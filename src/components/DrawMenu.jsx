@@ -36,16 +36,16 @@ const DrawMenu = ({ setOpen }) => {
   ];
 
   return (
-    <div className="flex w-full h-full flex-col bg-white text-[#191F28] p-6">
+    <div className="flex w-full h-full flex-col bg-white text-[#0F172A] p-6">
       {/* Top Close Bar */}
       <div className="flex w-full justify-between items-center pb-4 border-b border-slate-100 mb-6">
-        <span className="text-sm font-extrabold tracking-tight text-[#191F28]">
+        <span className="text-sm font-extrabold tracking-tight text-[#0F172A]">
           전체 메뉴
         </span>
         <button
           type="button"
           onClick={() => setOpen()}
-          className="w-9 h-9 rounded-full text-slate-500 hover:text-[#191F28] hover:bg-slate-100 flex items-center justify-center transition cursor-pointer"
+          className="w-9 h-9 rounded-lg text-slate-500 hover:text-[#0F172A] hover:bg-slate-100 flex items-center justify-center transition cursor-pointer"
         >
           <IoCloseOutline className="text-2xl" />
         </button>
@@ -63,7 +63,7 @@ const DrawMenu = ({ setOpen }) => {
           className="rounded-full w-14 h-14 object-cover border border-slate-200 bg-white shrink-0"
         />
         <div className="flex flex-col flex-1 min-w-0">
-          <span className="text-base font-bold text-[#191F28] truncate">
+          <span className="text-base font-bold text-[#0F172A] truncate">
             {pInfo.pNick
               ? pInfo.pNick
               : pInfo.pName
@@ -79,7 +79,7 @@ const DrawMenu = ({ setOpen }) => {
               <>
                 <button
                   type="button"
-                  className="px-4 py-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer active:scale-95"
+                  className="px-3.5 py-1.5 bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-xs rounded-lg shadow-sm transition cursor-pointer active:scale-95"
                   onClick={() => {
                     setOpen();
                     navigate("/myprofile");
@@ -89,7 +89,7 @@ const DrawMenu = ({ setOpen }) => {
                 </button>
                 <button
                   type="button"
-                  className="px-3.5 py-1.5 bg-white hover:bg-slate-100 text-slate-600 font-semibold text-xs rounded-full border border-slate-200 transition cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-600 font-semibold text-xs rounded-lg border border-slate-200 transition cursor-pointer active:scale-95"
                   onClick={handleLogout}
                 >
                   로그아웃
@@ -98,7 +98,7 @@ const DrawMenu = ({ setOpen }) => {
             ) : (
               <button
                 type="button"
-                className="px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer active:scale-95"
+                className="px-4 py-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-xs rounded-lg shadow-sm transition cursor-pointer active:scale-95"
                 onClick={handleLogin}
               >
                 로그인 / 회원가입
@@ -118,7 +118,7 @@ const DrawMenu = ({ setOpen }) => {
               setOpen();
               navigate(item.path);
             }}
-            className="w-full py-4 px-2 font-semibold text-[15px] text-left text-[#191F28] hover:bg-blue-50/50 hover:text-[#2563EB] rounded-xl transition flex items-center justify-between cursor-pointer"
+            className="w-full py-4 px-2 font-semibold text-[15px] text-left text-[#0F172A] hover:bg-indigo-50/50 hover:text-[#4F46E5] rounded-xl transition flex items-center justify-between cursor-pointer"
           >
             <span>{item.label}</span>
             <IoChevronForward className="text-slate-400 text-base" />

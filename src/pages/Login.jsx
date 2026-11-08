@@ -177,7 +177,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-13 py-3.5 mt-3 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-[15px] rounded-full shadow-[0_6px_18px_rgba(99,102,241,0.30)] transition cursor-pointer flex items-center justify-center active:scale-[0.99] disabled:opacity-60"
+            className="w-full h-13 py-3.5 mt-3 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-[15px] rounded-xl shadow-[0_6px_18px_rgba(99,102,241,0.30)] transition cursor-pointer flex items-center justify-center active:scale-[0.99] disabled:opacity-60"
           >
             로그인
           </button>

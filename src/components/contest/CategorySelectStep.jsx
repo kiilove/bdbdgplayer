@@ -44,10 +44,10 @@ const CategorySelectStep = ({
   }, [invoiceInfo?.joins]);
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
+    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <h2 className="text-lg sm:text-xl font-extrabold text-[#0F172A] flex items-center gap-x-2.5 tracking-tight">
-          <span className="w-7 h-7 rounded-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white text-xs flex items-center justify-center font-bold shadow-sm">
+          <span className="w-7 h-7 rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white text-xs flex items-center justify-center font-bold shadow-sm">
             2
           </span>
           {stepTitle}
@@ -56,7 +56,7 @@ const CategorySelectStep = ({
           <button
             type="button"
             onClick={() => setChkAllItem((prev) => !prev)}
-            className={`text-xs sm:text-sm font-semibold px-3.5 py-1.5 rounded-full border transition cursor-pointer ${
+            className={`text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg border transition cursor-pointer ${
               !chkAllItem
                 ? "bg-indigo-50 text-indigo-600 border-indigo-200 font-bold"
                 : "bg-[#F8FAFC] text-slate-600 border-slate-200 hover:bg-slate-100"
@@ -64,14 +64,14 @@ const CategorySelectStep = ({
           >
             {!chkAllItem ? "내 성별 종목만 표시 중" : "전체 성별 종목 표시 중"}
           </button>
-          <span className="text-xs sm:text-sm text-amber-800 font-bold bg-amber-50/90 px-3.5 py-1.5 rounded-full border border-amber-200/80">
+          <span className="text-xs sm:text-sm text-amber-800 font-bold bg-amber-50/90 px-3 py-1.5 rounded-lg border border-amber-200/80">
             중복 출전 가능
           </span>
         </div>
       </div>
 
       {/* 참가비 유의사항 안내 박스 */}
-      <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-4 flex items-start gap-x-3 text-slate-700 text-sm leading-relaxed">
+      <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex items-start gap-x-3 text-slate-700 text-sm leading-relaxed">
         <RiErrorWarningLine className="text-indigo-600 text-lg flex-shrink-0 mt-0.5" />
         <div>
           <span className="font-bold text-[#0F172A] block mb-0.5">
@@ -98,7 +98,7 @@ const CategorySelectStep = ({
             return (
               <div
                 key={cId}
-                className={`p-4 sm:p-5 rounded-2xl border transition flex flex-col justify-between gap-y-3.5 ${
+                className={`p-4 sm:p-5 rounded-xl border transition flex flex-col justify-between gap-y-3.5 ${
                   selectedJoinInThisCat
                     ? "bg-indigo-50/35 border-2 border-[#4F46E5] shadow-[0_4px_16px_rgba(79,70,229,0.10)]"
                     : "bg-[#F8FAFC] border-slate-200/80 hover:border-indigo-200"
@@ -107,7 +107,7 @@ const CategorySelectStep = ({
                 <div className="flex items-start justify-between gap-x-2">
                   <div className="flex items-center gap-x-2">
                     {selectedJoinInThisCat && (
-                      <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white flex items-center justify-center shrink-0">
+                      <span className="w-5 h-5 rounded-md bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white flex items-center justify-center shrink-0">
                         <RiCheckLine className="text-xs" />
                       </span>
                     )}
@@ -116,7 +116,7 @@ const CategorySelectStep = ({
                     </span>
                   </div>
                   {badgeText && (
-                    <span className="shrink-0 text-xs font-semibold text-indigo-600 bg-white px-2.5 py-1 rounded-full border border-indigo-200/80">
+                    <span className="shrink-0 text-xs font-semibold text-indigo-600 bg-white px-2 py-0.5 rounded-[5px] border border-indigo-200/80">
                       {badgeText}
                     </span>
                   )}

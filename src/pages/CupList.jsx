@@ -55,9 +55,9 @@ const CupList = () => {
             message={message}
           />
           <main className="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
-            <section className="rounded-[28px] bg-white/92 backdrop-blur-md bg-gradient-to-br from-indigo-50/60 via-white/95 to-rose-50/55 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
-              <div className="flex flex-col gap-y-3 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 text-[#FF2E54] border border-rose-200/90 text-xs font-extrabold w-fit shadow-[0_2px_8px_rgba(255,46,84,0.10)]">
+            <section className="rounded-2xl bg-white/92 backdrop-blur-md bg-gradient-to-br from-indigo-50/60 via-white/95 to-rose-50/55 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)]">
+              <div className="flex flex-col gap-y-2.5 max-w-2xl">
+                <div className="inline-flex items-center gap-2 border-l-2 border-[#FF2E54] pl-2.5 text-xs font-extrabold text-[#FF2E54] tracking-wider uppercase w-fit">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#FF2E54] animate-pulse" />
                   <span>LIVE SCHEDULE · 현재 접수 중 총 {noticeList?.length || 0}건</span>
                 </div>

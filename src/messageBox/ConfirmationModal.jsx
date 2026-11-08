@@ -127,7 +127,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
         </div>
 
         <span
-          className={`text-[11px] font-bold px-3 py-1 rounded-full border mb-3 ${badgeClass}`}
+          className={`text-[11px] font-bold px-2.5 py-0.5 rounded-[5px] border mb-3 ${badgeClass}`}
         >
           {badge}
         </span>
@@ -135,17 +135,17 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
         {/* 본문 메시지 영역 */}
         <div className="flex flex-col gap-y-2 w-full px-1">
           {message?.body && (
-            <h2 className="text-[17px] sm:text-lg font-extrabold tracking-tight text-[#111111] leading-snug break-keep">
+            <h2 className="text-[17px] sm:text-lg font-extrabold tracking-tight text-[#0F172A] leading-snug break-keep">
               {message.body}
             </h2>
           )}
           {message?.body2 && (
-            <p className="text-sm font-medium text-neutral-600 leading-relaxed break-keep">
+            <p className="text-sm font-medium text-slate-600 leading-relaxed break-keep">
               {message.body2}
             </p>
           )}
           {message?.body3 && (
-            <p className="text-xs font-medium text-neutral-500 bg-[#F5F5F7] rounded-xl px-3.5 py-2.5 mt-1 leading-relaxed break-keep">
+            <p className="text-xs font-medium text-slate-500 bg-slate-50 rounded-xl px-3.5 py-2.5 mt-1 leading-relaxed break-keep">
               {message.body3}
             </p>
           )}
@@ -157,7 +157,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
             {message?.cancelButtonText && (
               <button
                 type="button"
-                className="flex-1 py-3.5 bg-[#F5F5F7] hover:bg-neutral-200/80 border border-neutral-200/80 rounded-full text-sm font-bold text-[#111111] transition cursor-pointer active:scale-[0.98]"
+                className="flex-1 py-3.5 bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 rounded-xl text-sm font-bold text-slate-700 transition cursor-pointer active:scale-[0.98]"
                 onClick={handleCancelClick}
               >
                 {message.cancelButtonText}
@@ -166,7 +166,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
             <button
               type="button"
               autoFocus
-              className="flex-1 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] rounded-full text-sm font-bold text-white transition active:scale-[0.98] shadow-[0_6px_18px_rgba(99,102,241,0.28)] cursor-pointer"
+              className="flex-1 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] rounded-xl text-sm font-bold text-white transition active:scale-[0.98] shadow-[0_6px_18px_rgba(99,102,241,0.28)] cursor-pointer"
               onClick={handleConfirmClick}
             >
               {message?.confirmButtonText || "확인"}
