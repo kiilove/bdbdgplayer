@@ -13,36 +13,143 @@ import {
   calculateContestPrice,
 } from "../utils/formatUtils";
 
+const CONTEST_CACHE_TTL_MS = 60 * 1000; // 60초 메모리 캐시
+const INVOICE_MAP_CACHE_TTL_MS = 30 * 1000; // 30초 메모리 캐시
+
+let activeContestsCache = {
+  data: null,
+  timestamp: 0,
+  promise: null,
+};
+
+let userInvoiceMapCache = {
+  uid: null,
+  data: null,
+  timestamp: 0,
+  promise: null,
+};
+
 /**
- * 현재 접수중인 대회 공고 목록 조회 (contestDate 오름차순)
+ * 신청서 신규 제출 또는 수정 시 메모리 캐시 즉시 무효화
  */
-export const fetchActiveContests = async () => {
+export const invalidateContestCache = () => {
+  activeContestsCache = { data: null, timestamp: 0, promise: null };
+  userInvoiceMapCache = { uid: null, data: null, timestamp: 0, promise: null };
+};
+
+/**
+ * 동기적으로 유효한 접수중 대회 캐시 조회 (탭 전환 시 스피너 없이 즉시 렌더링용)
+ */
+export const getCachedActiveContests = () => {
+  if (
+    activeContestsCache.data &&
+    Date.now() - activeContestsCache.timestamp < CONTEST_CACHE_TTL_MS
+  ) {
+    return activeContestsCache.data;
+  }
+  return null;
+};
+
+/**
+ * 동기적으로 유효한 선수 신청내역 맵 캐시 조회
+ */
+export const getCachedUserInvoiceMap = (playerUid) => {
+  if (
+    playerUid &&
+    userInvoiceMapCache.uid === playerUid &&
+    userInvoiceMapCache.data &&
+    Date.now() - userInvoiceMapCache.timestamp < INVOICE_MAP_CACHE_TTL_MS
+  ) {
+    return userInvoiceMapCache.data;
+  }
+  return null;
+};
+
+/**
+ * 현재 접수중인 대회 공고 목록 조회 (contestDate 오름차순, 중복 요청 방지 및 메모리 캐싱 지원)
+ */
+export const fetchActiveContests = async ({ forceRefresh = false } = {}) => {
+  if (!forceRefresh) {
+    const cached = getCachedActiveContests();
+    if (cached) return cached;
+    if (activeContestsCache.promise) return activeContestsCache.promise;
+  }
+
   const conditions = [where("contestStatus", "==", "접수중")];
-  const list = await queryDocuments(
+  const requestPromise = queryDocuments(
     "contest_notice",
     conditions,
     "contestDate",
     "asc"
-  );
-  return Array.isArray(list) ? list : [];
+  )
+    .then((list) => {
+      const normalized = Array.isArray(list) ? list : [];
+      activeContestsCache = {
+        data: normalized,
+        timestamp: Date.now(),
+        promise: null,
+      };
+      return normalized;
+    })
+    .catch((err) => {
+      activeContestsCache.promise = null;
+      throw err;
+    });
+
+  activeContestsCache.promise = requestPromise;
+  return requestPromise;
 };
 
 /**
  * 특정 선수의 유효한 참가신청서(취소되지 않은 내역) 맵 조회
  * 반환 형태: { [contestId]: invoiceId }
  */
-export const fetchUserActiveInvoiceMap = async (playerUid) => {
+export const fetchUserActiveInvoiceMap = async (
+  playerUid,
+  { forceRefresh = false } = {}
+) => {
   if (!playerUid) return {};
-  const list = await queryDocuments("invoices_pool", [
-    where("playerUid", "==", playerUid),
-  ]);
-  const map = {};
-  list.forEach((inv) => {
-    if (!inv.isCanceled && inv.contestId) {
-      map[inv.contestId] = inv.id;
+
+  if (!forceRefresh) {
+    const cached = getCachedUserInvoiceMap(playerUid);
+    if (cached) return cached;
+    if (
+      userInvoiceMapCache.uid === playerUid &&
+      userInvoiceMapCache.promise
+    ) {
+      return userInvoiceMapCache.promise;
     }
-  });
-  return map;
+  }
+
+  const requestPromise = queryDocuments("invoices_pool", [
+    where("playerUid", "==", playerUid),
+  ])
+    .then((list) => {
+      const map = {};
+      list.forEach((inv) => {
+        if (!inv.isCanceled && inv.contestId) {
+          map[inv.contestId] = inv.id;
+        }
+      });
+      userInvoiceMapCache = {
+        uid: playerUid,
+        data: map,
+        timestamp: Date.now(),
+        promise: null,
+      };
+      return map;
+    })
+    .catch((err) => {
+      userInvoiceMapCache.promise = null;
+      throw err;
+    });
+
+  userInvoiceMapCache = {
+    ...userInvoiceMapCache,
+    uid: playerUid,
+    promise: requestPromise,
+  };
+  return requestPromise;
 };
 
 /**
@@ -264,7 +371,9 @@ export const submitNewInvoice = async (invoiceInfo, invoicePrice) => {
     sanitizedData[key] = rawData[key] !== undefined ? rawData[key] : "";
   });
 
-  return await createDocument("invoices_pool", sanitizedData);
+  const created = await createDocument("invoices_pool", sanitizedData);
+  invalidateContestCache();
+  return created;
 };
 
 /**
@@ -302,9 +411,11 @@ export const submitUpdatedInvoice = async (invoiceInfo, priceInfo) => {
     createBy: "web",
   };
 
-  return await updateDocumentById(
+  const updated = await updateDocumentById(
     "invoices_pool",
     invoiceInfo.id,
     updatedPayload
   );
+  invalidateContestCache();
+  return updated;
 };

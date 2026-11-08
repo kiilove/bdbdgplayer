@@ -49,6 +49,8 @@ const ContestCard = ({
             <img
               src={posterUrl}
               alt={contest.contestTitle}
+              loading="lazy"
+              decoding="async"
               className="w-full h-auto block group-hover:scale-[1.01] transition duration-500"
             />
           </div>
@@ -260,4 +262,4 @@ const ContestCard = ({
   );
 };
 
-export default ContestCard;
+export default React.memo(ContestCard);

@@ -178,4 +178,4 @@ const PlayerInfoStep = ({
   );
 };
 
-export default PlayerInfoStep;
+export default React.memo(PlayerInfoStep);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { RiErrorWarningLine, RiCheckLine } from "react-icons/ri";
 import { getCategoryPriceBadgeText } from "../../utils/formatUtils";
 
@@ -13,6 +13,36 @@ const CategorySelectStep = ({
   handleInvoiceInfo,
   children,
 }) => {
+  // 종목별 체급 목록을 사전 인덱싱 및 정렬하여 매 렌더링 시 O(N*M) 필터/정렬 비용 제거
+  const gradesByCategoryId = useMemo(() => {
+    const map = {};
+    grades.forEach((grade) => {
+      const catId = grade.refCategoryId;
+      if (!catId) return;
+      if (!map[catId]) {
+        map[catId] = [];
+      }
+      map[catId].push(grade);
+    });
+    Object.keys(map).forEach((catId) => {
+      map[catId].sort(
+        (a, b) => (a.contestGradeIndex || 0) - (b.contestGradeIndex || 0)
+      );
+    });
+    return map;
+  }, [grades]);
+
+  // 현재 선택된 종목 맵을 사전 인덱싱
+  const selectedJoinByCategoryId = useMemo(() => {
+    const map = {};
+    (invoiceInfo?.joins || []).forEach((join) => {
+      if (join.contestCategoryId) {
+        map[join.contestCategoryId] = join;
+      }
+    });
+    return map;
+  }, [invoiceInfo?.joins]);
+
   return (
     <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex flex-col gap-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100 pb-4">
@@ -61,14 +91,8 @@ const CategorySelectStep = ({
               contestCategoryId: cId,
               contestCategoryPriceType: cType,
             } = category;
-            const matchGrades = grades.filter(
-              (grade) => grade.refCategoryId === cId
-            );
-
-            const selectedJoinInThisCat = invoiceInfo?.joins?.find(
-              (join) => join.contestCategoryId === cId
-            );
-
+            const matchGrades = gradesByCategoryId[cId] || [];
+            const selectedJoinInThisCat = selectedJoinByCategoryId[cId];
             const badgeText = getCategoryPriceBadgeText(cType, priceSource);
 
             return (
@@ -98,7 +122,7 @@ const CategorySelectStep = ({
                   )}
                 </div>
 
-                {matchGrades?.length > 0 && (
+                {matchGrades.length > 0 && (
                   <select
                     id={cId}
                     name={cTitle}
@@ -112,7 +136,7 @@ const CategorySelectStep = ({
                         ? "bg-[#111111] text-white border border-[#111111]"
                         : "bg-white border border-neutral-200 text-neutral-700 focus:border-[#111111]"
                     }`}
-                    onChange={(e) => handleInvoiceInfo(e)}
+                    onChange={handleInvoiceInfo}
                   >
                     <option
                       value=""
@@ -120,26 +144,22 @@ const CategorySelectStep = ({
                     >
                       체급을 선택해 주세요 (미참가)
                     </option>
-                    {matchGrades
-                      .sort(
-                        (a, b) => a.contestGradeIndex - b.contestGradeIndex
-                      )
-                      .map((grade) => {
-                        const {
-                          contestGradeTitle: gTitle,
-                          contestGradeId: gId,
-                        } = grade;
+                    {matchGrades.map((grade) => {
+                      const {
+                        contestGradeTitle: gTitle,
+                        contestGradeId: gId,
+                      } = grade;
 
-                        return (
-                          <option
-                            key={gId}
-                            value={`${gId},${gTitle},${cType || ""}`}
-                            className="bg-white text-[#111111] font-semibold"
-                          >
-                            {gTitle}
-                          </option>
-                        );
-                      })}
+                      return (
+                        <option
+                          key={gId}
+                          value={`${gId},${gTitle},${cType || ""}`}
+                          className="bg-white text-[#111111] font-semibold"
+                        >
+                          {gTitle}
+                        </option>
+                      );
+                    })}
                   </select>
                 )}
               </div>
@@ -152,4 +172,4 @@ const CategorySelectStep = ({
   );
 };
 
-export default CategorySelectStep;
+export default React.memo(CategorySelectStep);
