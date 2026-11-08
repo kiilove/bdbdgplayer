@@ -207,16 +207,16 @@ const ContestJoinEdit = () => {
 
               {/* Right Column: Sticky Summary & Action Card */}
               <div className="lg:col-span-4">
-                <div className="sticky top-20 bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex flex-col gap-y-5">
-                  <h3 className="text-base sm:text-lg font-extrabold text-[#111111] border-b border-neutral-100 pb-3.5 flex items-center justify-between">
+                <div className="sticky top-20 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-5">
+                  <h3 className="text-base sm:text-lg font-extrabold text-[#191F28] border-b border-slate-100 pb-3.5 flex items-center justify-between">
                     <span>선택 종목 내역</span>
-                    <span className="text-xs font-bold text-white bg-[#111111] px-3 py-1 rounded-full">
+                    <span className="text-xs font-bold text-[#2563EB] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full">
                       총 {invoiceInfo.joins?.length || 0}개 선택
                     </span>
                   </h3>
 
                   {invoiceInfo.joins?.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-center text-sm text-neutral-400 font-medium">
+                    <div className="flex flex-col items-center justify-center py-8 text-center text-sm text-slate-400 font-medium">
                       참가하실 종목을 선택해 주세요.
                     </div>
                   ) : (
@@ -224,12 +224,12 @@ const ContestJoinEdit = () => {
                       {invoiceInfo.joins?.map((join, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between bg-[#F5F5F7] rounded-xl p-3.5 text-sm"
+                          className="flex items-center justify-between bg-[#F8FAFC] border border-slate-100 rounded-xl p-3.5 text-sm"
                         >
-                          <span className="font-bold text-[#111111]">
+                          <span className="font-bold text-[#191F28]">
                             {join.contestCategoryTitle}
                           </span>
-                          <span className="font-semibold text-[#111111] bg-white px-3 py-1 rounded-full text-xs border border-neutral-200">
+                          <span className="font-semibold text-[#2563EB] bg-white px-3 py-1 rounded-full text-xs border border-blue-200/80">
                             {join.contestGradeTitle}
                           </span>
                         </div>
@@ -238,11 +238,11 @@ const ContestJoinEdit = () => {
                   )}
 
                   {invoiceInfo.joins?.length > 0 && (
-                    <div className="flex items-center justify-between bg-[#F5F5F7] rounded-2xl px-4 py-3.5 text-sm">
-                      <span className="font-semibold text-neutral-600">
+                    <div className="flex items-center justify-between bg-blue-50/60 border border-blue-100 rounded-2xl px-4 py-3.5 text-sm">
+                      <span className="font-semibold text-slate-600">
                         예상 참가비 합계
                       </span>
-                      <span className="text-lg font-extrabold text-[#111111]">
+                      <span className="text-lg font-extrabold text-[#2563EB]">
                         {calculateContestPrice(
                           invoiceInfo.joins,
                           priceSource
@@ -252,7 +252,7 @@ const ContestJoinEdit = () => {
                     </div>
                   )}
 
-                  <div className="pt-3 border-t border-neutral-100 flex flex-col gap-y-2.5">
+                  <div className="pt-3 border-t border-slate-100 flex flex-col gap-y-2.5">
                     <button
                       type="button"
                       onClick={() => setConfirmDrawerOpen(true)}
@@ -261,8 +261,8 @@ const ContestJoinEdit = () => {
                       }
                       className={`w-full py-4 rounded-full font-bold text-[15px] transition cursor-pointer ${
                         invoiceInfo.joins?.length > 0
-                          ? "bg-[#111111] hover:bg-neutral-800 text-white shadow-sm"
-                          : "bg-neutral-100 border border-neutral-200 text-neutral-400 cursor-not-allowed"
+                          ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)]"
+                          : "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed"
                       }`}
                     >
                       신청 정보 수정 완료
@@ -270,9 +270,9 @@ const ContestJoinEdit = () => {
                     <button
                       type="button"
                       onClick={() => setPrintDrawerOpen(true)}
-                      className="w-full py-3.5 bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] border border-neutral-200 font-bold text-sm rounded-full transition flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3.5 bg-[#F8FAFC] hover:bg-slate-100 text-[#191F28] border border-slate-200 font-bold text-sm rounded-full transition flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <RiPrinterLine className="text-base" />
+                      <RiPrinterLine className="text-base text-[#2563EB]" />
                       <span>접수증 A4 인쇄 / PDF 저장</span>
                     </button>
                   </div>

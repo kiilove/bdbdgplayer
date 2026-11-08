@@ -247,10 +247,10 @@ const ContestJoin = () => {
 
               {/* Right Column: Sticky Summary & Action Card */}
               <div className="lg:col-span-4">
-                <div className="sticky top-20 bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex flex-col gap-y-5">
-                  <h3 className="text-base sm:text-lg font-extrabold text-[#111111] border-b border-neutral-100 pb-3.5 flex items-center justify-between">
+                <div className="sticky top-20 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-5">
+                  <h3 className="text-base sm:text-lg font-extrabold text-[#191F28] border-b border-slate-100 pb-3.5 flex items-center justify-between">
                     <span>선택 종목 및 신청 요약</span>
-                    <span className="text-xs font-bold text-white bg-[#111111] px-3 py-1 rounded-full">
+                    <span className="text-xs font-bold text-[#2563EB] bg-blue-50 border border-blue-200/80 px-3 py-1 rounded-full">
                       {invoiceInfo.joins.length}개 선택
                     </span>
                   </h3>
@@ -260,29 +260,29 @@ const ContestJoin = () => {
                       invoiceInfo.joins.map((item, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between bg-[#F5F5F7] rounded-xl p-3.5 text-sm"
+                          className="flex items-center justify-between bg-[#F8FAFC] border border-slate-100 rounded-xl p-3.5 text-sm"
                         >
-                          <span className="font-bold text-[#111111]">
+                          <span className="font-bold text-[#191F28]">
                             {item.contestCategoryTitle}
                           </span>
-                          <span className="font-semibold text-[#111111] bg-white px-3 py-1 rounded-full text-xs border border-neutral-200">
+                          <span className="font-semibold text-[#2563EB] bg-white px-3 py-1 rounded-full text-xs border border-blue-200/80">
                             {item.contestGradeTitle}
                           </span>
                         </div>
                       ))
                     ) : (
-                      <div className="flex flex-col items-center justify-center py-8 text-center text-sm text-neutral-400 font-medium">
+                      <div className="flex flex-col items-center justify-center py-8 text-center text-sm text-slate-400 font-medium">
                         선택된 참가 종목이 없습니다.
                       </div>
                     )}
                   </div>
 
                   {invoiceInfo.joins.length > 0 && (
-                    <div className="flex items-center justify-between bg-[#F5F5F7] rounded-2xl px-4 py-3.5 text-sm">
-                      <span className="font-semibold text-neutral-600">
+                    <div className="flex items-center justify-between bg-blue-50/60 border border-blue-100 rounded-2xl px-4 py-3.5 text-sm">
+                      <span className="font-semibold text-slate-600">
                         예상 참가비 합계
                       </span>
-                      <span className="text-lg font-extrabold text-[#111111]">
+                      <span className="text-lg font-extrabold text-[#2563EB]">
                         {calculateContestPrice(
                           invoiceInfo.joins,
                           noticeInfo
@@ -293,15 +293,15 @@ const ContestJoin = () => {
                   )}
 
                   {noticeInfo.contestAccountOwner && (
-                    <div className="bg-[#F5F5F7] rounded-2xl p-4 text-sm flex flex-col gap-y-1 text-[#111111]">
-                      <span className="font-bold text-neutral-600 text-xs">
+                    <div className="bg-[#F8FAFC] border border-slate-100 rounded-2xl p-4 text-sm flex flex-col gap-y-1 text-[#191F28]">
+                      <span className="font-bold text-slate-500 text-xs">
                         입금 계좌 안내
                       </span>
-                      <p className="font-bold text-[#111111] mt-0.5">
+                      <p className="font-bold text-[#191F28] mt-0.5">
                         {noticeInfo.contestBankName || ""}{" "}
                         {noticeInfo.contestAccountNumber}
                       </p>
-                      <p className="text-xs text-neutral-500 font-medium">
+                      <p className="text-xs text-slate-500 font-medium">
                         예금주: {noticeInfo.contestAccountOwner}
                       </p>
                     </div>
@@ -312,7 +312,7 @@ const ContestJoin = () => {
                   isValidate ? (
                     <button
                       type="button"
-                      className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer text-center"
+                      className="w-full py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[15px] rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition cursor-pointer text-center"
                       onClick={() => setActiveDrawer("confirm")}
                     >
                       참가신청서 확인 및 제출
@@ -320,7 +320,7 @@ const ContestJoin = () => {
                   ) : (
                     <button
                       type="button"
-                      className="w-full py-4 bg-neutral-100 border border-neutral-200 text-neutral-400 font-semibold text-sm rounded-full cursor-not-allowed text-center"
+                      className="w-full py-4 bg-slate-100 border border-slate-200 text-slate-400 font-semibold text-sm rounded-full cursor-not-allowed text-center"
                       disabled
                     >
                       {!isValidate

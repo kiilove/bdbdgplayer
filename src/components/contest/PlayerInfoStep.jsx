@@ -28,13 +28,13 @@ const PlayerInfoStep = ({
   return (
     <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex flex-col gap-y-6">
       <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
-        <h2 className="text-lg sm:text-xl font-extrabold text-[#111111] flex items-center gap-x-2.5 tracking-tight">
-          <span className="w-7 h-7 rounded-full bg-[#111111] text-white text-xs flex items-center justify-center font-bold">
+        <h2 className="text-lg sm:text-xl font-extrabold text-[#191F28] flex items-center gap-x-2.5 tracking-tight">
+          <span className="w-7 h-7 rounded-full bg-[#2563EB] text-white text-xs flex items-center justify-center font-bold shadow-sm">
             1
           </span>
           {stepTitle}
         </h2>
-        <span className="text-xs text-neutral-500 font-medium">
+        <span className="text-xs text-slate-500 font-medium">
           * 모든 항목 필수 입력
         </span>
       </div>
@@ -164,10 +164,10 @@ const PlayerInfoStep = ({
             <button
               type="button"
               onClick={handlePlayerValidateButtonClick}
-              className="px-6 py-3.5 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-full transition shadow-sm cursor-pointer flex items-center justify-center gap-x-2 shrink-0"
+              className="px-6 py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-sm rounded-full transition shadow-[0_4px_14px_rgba(37,99,235,0.25)] cursor-pointer flex items-center justify-center gap-x-2 shrink-0"
             >
               <span>선수 정보 확인 완료</span>
-              <span className="text-xs text-neutral-300 font-semibold">
+              <span className="text-xs text-blue-100 font-semibold">
                 → 2단계
               </span>
             </button>

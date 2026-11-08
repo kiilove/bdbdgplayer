@@ -24,11 +24,11 @@ const CupList = () => {
   } = useLoginPrompt();
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-[#111111] w-full pb-32 font-sans antialiased">
+    <div className="min-h-screen bg-[#F6F8FB] text-[#191F28] w-full pb-32 font-sans antialiased">
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="#111111"
+            strokeColor="#2563EB"
             strokeWidth="4"
             animationDuration="0.75"
             width="52"
@@ -53,17 +53,17 @@ const CupList = () => {
             message={message}
           />
           <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
-            <section className="rounded-[28px] bg-white border border-neutral-200/90 p-6 sm:p-9 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+            <section className="rounded-[28px] bg-gradient-to-br from-white via-white to-blue-50/60 border border-slate-200/80 p-6 sm:p-9 shadow-[0_4px_20px_rgba(15,23,42,0.04)]">
               <div className="flex flex-col gap-y-3 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111111] text-white text-xs font-bold w-fit">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 text-[#2563EB] border border-blue-200/80 text-xs font-bold w-fit">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse" />
                   <span>LIVE SCHEDULE · 현재 접수 중 총 {noticeList?.length || 0}건</span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight leading-[1.3] break-keep">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#191F28] tracking-tight leading-[1.3] break-keep">
                   보디빌딩 & 피트니스 <br className="sm:hidden" />
                   공식 대회 접수 일정
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-600 font-medium leading-relaxed break-keep">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed break-keep">
                   참가신청이 진행 중인 공식 대회의 개최 일자와 장소,{" "}
                   <br className="sm:hidden" />
                   모집 요강을 한눈에 확인하실 수 있습니다.

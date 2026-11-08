@@ -211,14 +211,14 @@ const EditProfile = () => {
     editType === "pBirth" && validateDate(value) ? calculateAge(value) : null;
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-[#111111] pb-28 font-sans antialiased">
+    <div className="min-h-screen bg-[#F6F8FB] text-[#191F28] pb-28 font-sans antialiased">
       <BottomMenu />
       <Header title={config.title} />
 
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="#111111"
+            strokeColor="#2563EB"
             strokeWidth="4"
             animationDuration="0.75"
             width="52"
@@ -228,18 +228,18 @@ const EditProfile = () => {
       )}
 
       <main className="max-w-md mx-auto px-4 pt-8">
-        <div className="flex w-full flex-col bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 gap-y-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
+        <div className="flex w-full flex-col bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 gap-y-5 shadow-[0_2px_16px_rgba(15,23,42,0.04)]">
           {editType === "password" ? (
             <form
               onSubmit={handlePasswordChangeSubmit}
               className="flex flex-col gap-y-4"
             >
               {pInfo?.pEmail && (
-                <div className="bg-[#F5F5F7] rounded-2xl px-4 py-3 flex items-center justify-between text-xs sm:text-sm">
-                  <span className="text-neutral-500 font-semibold">
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 flex items-center justify-between text-xs sm:text-sm">
+                  <span className="text-slate-500 font-semibold">
                     대상 계정
                   </span>
-                  <span className="font-bold text-[#111111] truncate ml-2">
+                  <span className="font-bold text-[#191F28] truncate ml-2">
                     {pInfo.pEmail}
                   </span>
                 </div>
@@ -252,7 +252,7 @@ const EditProfile = () => {
               )}
 
               <div>
-                <label className="block text-sm font-bold text-[#111111] mb-1.5">
+                <label className="block text-sm font-bold text-[#191F28] mb-1.5">
                   현재 비밀번호
                 </label>
                 <input
@@ -262,12 +262,12 @@ const EditProfile = () => {
                   value={pwdForm.currentPassword}
                   onChange={handlePwdFieldChange}
                   placeholder="현재 사용 중인 비밀번호 입력"
-                  className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-1 focus:ring-[#111111] focus:outline-none px-4 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
+                  className="w-full h-12 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none px-4 rounded-xl text-[#191F28] text-base font-medium placeholder-slate-400 transition"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#111111] mb-1.5">
+                <label className="block text-sm font-bold text-[#191F28] mb-1.5">
                   새 비밀번호
                 </label>
                 <input
@@ -277,7 +277,7 @@ const EditProfile = () => {
                   value={pwdForm.newPassword}
                   onChange={handlePwdFieldChange}
                   placeholder="새 비밀번호 (6자리 이상)"
-                  className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-1 focus:ring-[#111111] focus:outline-none px-4 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
+                  className="w-full h-12 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none px-4 rounded-xl text-[#191F28] text-base font-medium placeholder-slate-400 transition"
                 />
                 {pwdForm.newPassword.length > 0 &&
                   pwdForm.newPassword.length < 6 && (
@@ -295,7 +295,7 @@ const EditProfile = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#111111] mb-1.5">
+                <label className="block text-sm font-bold text-[#191F28] mb-1.5">
                   새 비밀번호 확인
                 </label>
                 <input
@@ -305,7 +305,7 @@ const EditProfile = () => {
                   value={pwdForm.confirmPassword}
                   onChange={handlePwdFieldChange}
                   placeholder="새 비밀번호 다시 입력"
-                  className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-1 focus:ring-[#111111] focus:outline-none px-4 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
+                  className="w-full h-12 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none px-4 rounded-xl text-[#191F28] text-base font-medium placeholder-slate-400 transition"
                 />
                 {pwdForm.confirmPassword.length > 0 &&
                   pwdForm.newPassword !== pwdForm.confirmPassword && (
@@ -315,7 +315,7 @@ const EditProfile = () => {
                   )}
               </div>
 
-              <ul className="text-xs sm:text-sm text-neutral-500 space-y-1.5 bg-[#F5F5F7] p-4 rounded-2xl mt-1">
+              <ul className="text-xs sm:text-sm text-slate-500 space-y-1.5 bg-slate-50 border border-slate-100 p-4 rounded-2xl mt-1">
                 {config.hints.map((hint, idx) => (
                   <li key={idx}>• {hint}</li>
                 ))}
@@ -325,7 +325,7 @@ const EditProfile = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/myprofile")}
-                  className="flex-1 py-3.5 rounded-full font-bold text-sm bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] transition cursor-pointer"
+                  className="flex-1 py-3.5 rounded-full font-bold text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
                 >
                   취소
                 </button>
@@ -334,8 +334,8 @@ const EditProfile = () => {
                   disabled={!isPasswordModeValid || isLoading}
                   className={`flex-1 py-3.5 rounded-full font-bold text-sm transition ${
                     isPasswordModeValid
-                      ? "bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer shadow-sm"
-                      : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                      ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer shadow-[0_4px_12px_rgba(37,99,235,0.22)]"
+                      : "bg-slate-100 text-slate-400 cursor-not-allowed"
                   }`}
                 >
                   비밀번호 변경
@@ -343,11 +343,11 @@ const EditProfile = () => {
               </div>
 
               {pInfo?.pEmail && (
-                <div className="pt-4 mt-1 border-t border-neutral-100 text-center">
+                <div className="pt-4 mt-1 border-t border-slate-100 text-center">
                   <button
                     type="button"
                     onClick={handleSendResetEmailFallback}
-                    className="text-xs text-neutral-500 hover:text-[#111111] underline underline-offset-4 font-semibold cursor-pointer"
+                    className="text-xs text-slate-500 hover:text-[#2563EB] underline underline-offset-4 font-semibold cursor-pointer"
                   >
                     현재 비밀번호가 기억나지 않으시나요? 이메일로 재설정 링크 받기
                   </button>
@@ -356,13 +356,13 @@ const EditProfile = () => {
             </form>
           ) : (
             <>
-              <label className="text-sm font-bold text-[#111111]">
+              <label className="text-sm font-bold text-[#191F28]">
                 {config.label}
               </label>
 
               {editType === "pGender" ? (
                 <select
-                  className="w-full h-13 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:outline-none px-4 py-3.5 rounded-xl text-[#111111] text-base font-medium cursor-pointer transition"
+                  className="w-full h-13 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none px-4 py-3.5 rounded-xl text-[#191F28] text-base font-medium cursor-pointer transition"
                   value={value}
                   onChange={handleChange}
                 >
@@ -381,20 +381,20 @@ const EditProfile = () => {
                       : "text"
                   }
                   placeholder={config.placeholder}
-                  className="w-full h-13 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-1 focus:ring-[#111111] focus:outline-none px-4 py-3.5 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
+                  className="w-full h-13 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-blue-500/15 focus:outline-none px-4 py-3.5 rounded-xl text-[#191F28] text-base font-medium placeholder-slate-400 transition"
                 />
               )}
 
               {computedAge !== null && computedAge > 0 && (
                 <div className="flex justify-end items-center">
-                  <span className="text-xs font-bold text-[#111111] bg-[#F5F5F7] border border-neutral-200 px-3 py-1.5 rounded-full">
+                  <span className="text-xs font-bold text-[#2563EB] bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full">
                     계산된 나이: 만 {computedAge}세
                   </span>
                 </div>
               )}
 
               {config.hints.length > 0 && (
-                <ul className="text-xs sm:text-sm text-neutral-500 space-y-1.5 bg-[#F5F5F7] p-4 rounded-2xl">
+                <ul className="text-xs sm:text-sm text-slate-500 space-y-1.5 bg-slate-50 border border-slate-100 p-4 rounded-2xl">
                   {config.hints.map((hint, idx) => (
                     <li key={idx}>• {hint}</li>
                   ))}
@@ -405,7 +405,7 @@ const EditProfile = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/myprofile")}
-                  className="flex-1 py-3.5 rounded-full font-bold text-sm bg-[#F5F5F7] hover:bg-neutral-200/80 text-[#111111] transition cursor-pointer"
+                  className="flex-1 py-3.5 rounded-full font-bold text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
                 >
                   취소
                 </button>
@@ -415,8 +415,8 @@ const EditProfile = () => {
                   onClick={handleSave}
                   className={`flex-1 py-3.5 rounded-full font-bold text-sm transition ${
                     isValid()
-                      ? "bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer shadow-sm"
-                      : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+                      ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer shadow-[0_4px_12px_rgba(37,99,235,0.22)]"
+                      : "bg-slate-100 text-slate-400 cursor-not-allowed"
                   }`}
                 >
                   저장하기

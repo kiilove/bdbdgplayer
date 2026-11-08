@@ -46,8 +46,8 @@ const CategorySelectStep = ({
   return (
     <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(0,0,0,0.04)] flex flex-col gap-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100 pb-4">
-        <h2 className="text-lg sm:text-xl font-extrabold text-[#111111] flex items-center gap-x-2.5 tracking-tight">
-          <span className="w-7 h-7 rounded-full bg-[#111111] text-white text-xs flex items-center justify-center font-bold">
+        <h2 className="text-lg sm:text-xl font-extrabold text-[#191F28] flex items-center gap-x-2.5 tracking-tight">
+          <span className="w-7 h-7 rounded-full bg-[#2563EB] text-white text-xs flex items-center justify-center font-bold shadow-sm">
             2
           </span>
           {stepTitle}
@@ -58,26 +58,26 @@ const CategorySelectStep = ({
             onClick={() => setChkAllItem((prev) => !prev)}
             className={`text-xs sm:text-sm font-semibold px-3.5 py-1.5 rounded-full border transition cursor-pointer ${
               !chkAllItem
-                ? "bg-[#111111] text-white border-[#111111]"
-                : "bg-[#F5F5F7] text-neutral-700 border-neutral-200 hover:bg-neutral-200/70"
+                ? "bg-blue-50 text-[#2563EB] border-blue-200 font-bold"
+                : "bg-[#F8FAFC] text-slate-600 border-slate-200 hover:bg-slate-100"
             }`}
           >
             {!chkAllItem ? "내 성별 종목만 표시 중" : "전체 성별 종목 표시 중"}
           </button>
-          <span className="text-xs sm:text-sm text-neutral-600 font-semibold bg-[#F5F5F7] px-3.5 py-1.5 rounded-full border border-neutral-200/80">
+          <span className="text-xs sm:text-sm text-slate-600 font-semibold bg-[#F8FAFC] px-3.5 py-1.5 rounded-full border border-slate-200/80">
             중복 출전 가능
           </span>
         </div>
       </div>
 
       {/* 참가비 유의사항 안내 박스 */}
-      <div className="bg-[#F5F5F7] border border-neutral-200/80 rounded-2xl p-4 flex items-start gap-x-3 text-neutral-700 text-sm leading-relaxed">
-        <RiErrorWarningLine className="text-[#111111] text-lg flex-shrink-0 mt-0.5" />
+      <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-start gap-x-3 text-slate-700 text-sm leading-relaxed">
+        <RiErrorWarningLine className="text-[#2563EB] text-lg flex-shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold text-[#111111] block mb-0.5">
+          <span className="font-bold text-[#191F28] block mb-0.5">
             참가비용 관련 유의사항
           </span>
-          <span className="text-neutral-600 text-xs sm:text-sm">
+          <span className="text-slate-600 text-xs sm:text-sm">
             학생부, 피트니스 챌린지와 보디빌딩 중복 출전의 경우 정확한 참가비용은 경기도보디빌딩협회를 통해 안내 받으시기 바랍니다.
           </span>
         </div>
@@ -100,23 +100,23 @@ const CategorySelectStep = ({
                 key={cId}
                 className={`p-4 sm:p-5 rounded-2xl border transition flex flex-col justify-between gap-y-3.5 ${
                   selectedJoinInThisCat
-                    ? "bg-white border-2 border-[#111111] shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
-                    : "bg-[#F5F5F7]/70 border-neutral-200/90 hover:border-neutral-300"
+                    ? "bg-blue-50/30 border-2 border-[#2563EB] shadow-[0_4px_16px_rgba(37,99,235,0.08)]"
+                    : "bg-[#F8FAFC] border-slate-200/80 hover:border-blue-200"
                 }`}
               >
                 <div className="flex items-start justify-between gap-x-2">
                   <div className="flex items-center gap-x-2">
                     {selectedJoinInThisCat && (
-                      <span className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center shrink-0">
+                      <span className="w-5 h-5 rounded-full bg-[#2563EB] text-white flex items-center justify-center shrink-0">
                         <RiCheckLine className="text-xs" />
                       </span>
                     )}
-                    <span className="text-base font-bold text-[#111111] tracking-tight break-keep">
+                    <span className="text-base font-bold text-[#191F28] tracking-tight break-keep">
                       {cTitle}
                     </span>
                   </div>
                   {badgeText && (
-                    <span className="shrink-0 text-xs font-semibold text-neutral-600 bg-white px-2.5 py-1 rounded-full border border-neutral-200">
+                    <span className="shrink-0 text-xs font-semibold text-blue-600 bg-white px-2.5 py-1 rounded-full border border-blue-200/80">
                       {badgeText}
                     </span>
                   )}
@@ -133,8 +133,8 @@ const CategorySelectStep = ({
                     }
                     className={`w-full h-12 px-3.5 rounded-xl text-[15px] font-semibold focus:outline-none cursor-pointer transition ${
                       selectedJoinInThisCat
-                        ? "bg-[#111111] text-white border border-[#111111]"
-                        : "bg-white border border-neutral-200 text-neutral-700 focus:border-[#111111]"
+                        ? "bg-[#2563EB] text-white border border-[#2563EB]"
+                        : "bg-white border border-slate-200 text-slate-700 focus:border-[#2563EB]"
                     }`}
                     onChange={handleInvoiceInfo}
                   >
