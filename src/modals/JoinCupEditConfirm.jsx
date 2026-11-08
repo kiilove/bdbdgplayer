@@ -32,8 +32,7 @@ const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
       await submitUpdatedInvoice(invoiceInfo, priceInfo);
       setIsLoading(false);
       navigate("/editsuccesspage", { replace: true });
-    } catch (error) {
-      console.error("Update Error:", error);
+    } catch {
       setIsLoading(false);
       handleToast(
         "error",

@@ -32,7 +32,6 @@ export function useFirestoreQuery() {
         setData(documents);
         return documents;
       } catch (err) {
-        console.error(err);
         setError(err);
         return [];
       } finally {
@@ -88,7 +87,6 @@ export function useFirestoreAddData(collectionName) {
         setData(addedData);
         return addedData;
       } catch (err) {
-        console.error("Firestore Add Error:", err);
         setError(err);
         throw err;
       } finally {
@@ -119,7 +117,6 @@ export function useFirestoreUpdateData(collectionName) {
         if (callback) callback();
         return updatedData;
       } catch (err) {
-        console.error("Firestore Update Error:", err);
         setError(err);
         throw err;
       } finally {
@@ -141,8 +138,7 @@ export function useFirestoreDeleteData(collectionName) {
         await deleteDocumentById(collectionName, id);
         setData(id);
         return true;
-      } catch (err) {
-        console.error(err);
+      } catch {
         return false;
       }
     },

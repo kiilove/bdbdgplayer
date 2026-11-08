@@ -72,8 +72,7 @@ export const UserContextProvider = ({ children }) => {
         };
         setCurrentUserInfo(resolvedProfile);
         return resolvedProfile;
-      } catch (err) {
-        console.error("Failed to load player profile on login:", err);
+      } catch {
         const fallback = {
           playerUid: uid,
           pEmail: firebaseUser.email || "",
@@ -121,8 +120,8 @@ export const UserContextProvider = ({ children }) => {
             pEmail: prev?.pEmail || firebaseUser.email || "",
           }));
         }
-      } catch (err) {
-        console.error("Failed to load player profile:", err);
+      } catch {
+        // Non-blocking profile fetch error
       } finally {
         if (isMounted) {
           setIsAuthLoading(false);

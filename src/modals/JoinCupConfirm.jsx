@@ -43,8 +43,7 @@ const JoinCupConfirm = ({ propInvoiceInfo, prevSetModal }) => {
       await submitNewInvoice(invoiceInfo, invoicePrice);
       setIsLoading(false);
       navigate("/successpage", { replace: true });
-    } catch (error) {
-      console.error("Save Error:", error);
+    } catch {
       setIsLoading(false);
       handleToast(
         "error",

@@ -61,8 +61,8 @@ const MyProfile = () => {
           setUserInvoices(data);
         }
       })
-      .catch((err) => {
-        console.error("Fetch invoices error:", err);
+      .catch(() => {
+        // Non-blocking invoice list error
       })
       .finally(() => {
         if (isMounted) {
@@ -85,8 +85,7 @@ const MyProfile = () => {
       const updatedProfile = await uploadPlayerAvatar(pInfo, files[0]);
       setCurrentUserInfo(updatedProfile);
       handleToast("success", "프로필 사진이 변경되었습니다.");
-    } catch (err) {
-      console.error("Profile image upload error:", err);
+    } catch {
       handleToast("error", "프로필 사진 업로드 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
