@@ -43,6 +43,8 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
+          <Route path="/auth/action" element={<ResetPassword />} />
+          <Route path="/__/auth/action" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
           <Route path="/registeremail" element={<RegisterWithEmail />} />
           <Route path="/regsuccess" element={<RegisterSuccess />} />

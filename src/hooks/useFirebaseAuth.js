@@ -153,7 +153,25 @@ const useFirebaseAuth = () => {
         };
       }
 
-      await sendPasswordResetEmail(auth, trimmedEmail);
+      const actionCodeSettings = {
+        url: `${window.location.origin}/login`,
+        handleCodeInApp: false,
+      };
+
+      try {
+        await sendPasswordResetEmail(auth, trimmedEmail, actionCodeSettings);
+      } catch (innerErr) {
+        // 만약 현재 도메인(예: 임시 포트 등)이 승인된 도메인 목록에 없을 경우 기본 설정으로 폴백 발송
+        if (
+          innerErr?.code === "auth/unauthorized-continue-uri" ||
+          innerErr?.code === "auth/invalid-continue-uri"
+        ) {
+          await sendPasswordResetEmail(auth, trimmedEmail);
+        } else {
+          throw innerErr;
+        }
+      }
+
       return {
         success: {
           message: `${trimmedEmail}으로 비밀번호 재설정 링크를 발송했습니다.`,
