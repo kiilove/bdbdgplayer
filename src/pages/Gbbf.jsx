@@ -7,6 +7,7 @@ import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
 import { useLoginPrompt } from "../hooks/useLoginPrompt";
+import { isGbbfContest } from "../services/contestService";
 
 const Gbbf = () => {
   const {
@@ -24,11 +25,7 @@ const Gbbf = () => {
   } = useLoginPrompt();
   const navigate = useNavigate();
 
-  const noticeList = allContests.filter(
-    (item) =>
-      item.contestPromoter?.includes("경기도보디빌딩협회") ||
-      item.contestAssociate?.includes("경기도보디빌딩협회")
-  );
+  const noticeList = allContests.filter(isGbbfContest);
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] text-[#111111] flex flex-col pb-32 font-sans antialiased">

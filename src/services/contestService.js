@@ -46,13 +46,27 @@ export const fetchUserActiveInvoiceMap = async (playerUid) => {
 };
 
 /**
- * 특정 선수의 전체 참가신청 내역 목록 조회 (마이페이지용)
+ * 경기도보디빌딩협회 직접 주관/주최 대회 여부 판별 헬퍼
+ */
+export const isGbbfContest = (item) =>
+  Boolean(
+    item?.contestPromoter?.includes("경기도") ||
+      item?.contestAssociate?.includes("경기도")
+  );
+
+/**
+ * 특정 선수의 전체 참가신청 내역 목록 조회 (마이페이지용, 최신 신청순 정렬)
  */
 export const fetchUserInvoices = async (playerUid) => {
   if (!playerUid) return [];
-  return await queryDocuments("invoices_pool", [
+  const list = await queryDocuments("invoices_pool", [
     where("playerUid", "==", playerUid),
   ]);
+  return [...list].sort((a, b) => {
+    const dateA = a.invoiceCreateAt || a.contestDate || "";
+    const dateB = b.invoiceCreateAt || b.contestDate || "";
+    return String(dateB).localeCompare(String(dateA));
+  });
 };
 
 /**

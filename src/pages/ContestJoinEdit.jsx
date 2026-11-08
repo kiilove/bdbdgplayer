@@ -89,6 +89,17 @@ const ContestJoinEdit = () => {
     invoiceInfo.contestPromoter ||
     contests.contestPromoter ||
     "보디빌딩협회";
+  const collectionFileLink =
+    noticeInfo.contestCollectionFileLink ||
+    invoiceInfo.contestCollectionFileLink ||
+    contests.contestCollectionFileLink ||
+    "";
+  const bankName =
+    invoiceInfo.contestBankName || noticeInfo.contestBankName || "";
+  const accountNumber =
+    invoiceInfo.contestAccountNumber || noticeInfo.contestAccountNumber || "";
+  const accountOwner =
+    invoiceInfo.contestAccountOwner || noticeInfo.contestAccountOwner || "";
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] text-[#111111] font-sans antialiased pb-28">
@@ -139,20 +150,26 @@ const ContestJoinEdit = () => {
             <ContestHeaderBanner
               associateName={associateName}
               badgeSubtitle="참가신청 수정"
-              contestTitle={invoiceInfo.contestTitle || contests.contestTitle}
-              contestDate={invoiceInfo.contestDate}
-              contestLocation={invoiceInfo.contestLocation}
-              contestPriceBasic={invoiceInfo.contestPriceBasic}
+              contestTitle={
+                invoiceInfo.contestTitle ||
+                noticeInfo.contestTitle ||
+                contests.contestTitle
+              }
+              contestDate={invoiceInfo.contestDate || noticeInfo.contestDate}
+              contestLocation={
+                invoiceInfo.contestLocation || noticeInfo.contestLocation
+              }
+              contestPriceBasic={priceSource.contestPriceBasic}
               bankInfo={
-                invoiceInfo.contestBankName
+                bankName || accountNumber
                   ? {
-                      bankName: invoiceInfo.contestBankName,
-                      accountNumber: invoiceInfo.contestAccountNumber,
-                      accountOwner: invoiceInfo.contestAccountOwner,
+                      bankName,
+                      accountNumber,
+                      accountOwner,
                     }
                   : null
               }
-              collectionFileLink={contests.contestCollectionFileLink}
+              collectionFileLink={collectionFileLink}
               onOpenPrintModal={() => setPrintDrawerOpen(true)}
             />
 

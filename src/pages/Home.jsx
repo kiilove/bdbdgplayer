@@ -8,12 +8,7 @@ import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
 import { useLoginPrompt } from "../hooks/useLoginPrompt";
-
-const isGbbfDirectContest = (item) =>
-  Boolean(
-    item?.contestPromoter?.includes("경기도") ||
-      item?.contestAssociate?.includes("경기도")
-  );
+import { isGbbfContest } from "../services/contestService";
 
 const Home = () => {
   const {
@@ -48,17 +43,17 @@ const Home = () => {
   // 탭 필터링에 따른 동적 카드 목록
   const displayedContests = allContests.filter((item) => {
     if (activeTab === "gbbf") {
-      return isGbbfDirectContest(item);
+      return isGbbfContest(item);
     }
     if (activeTab === "sub") {
-      return !isGbbfDirectContest(item);
+      return !isGbbfContest(item);
     }
     return true;
   });
 
   const totalCount = allContests.length;
-  const gbbfCount = allContests.filter(isGbbfDirectContest).length;
-  const subCount = allContests.filter((item) => !isGbbfDirectContest(item)).length;
+  const gbbfCount = allContests.filter(isGbbfContest).length;
+  const subCount = allContests.filter((item) => !isGbbfContest(item)).length;
 
   const tabs = [
     { id: "all", label: "전체 접수대회", count: totalCount },
