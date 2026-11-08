@@ -6,8 +6,14 @@ import {
   fetchSignInMethodsForEmail,
   signOut,
   sendPasswordResetEmail,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  verifyPasswordResetCode,
+  confirmPasswordReset,
 } from "firebase/auth";
 import { auth } from "../firebase";
+import { checkPlayerEmailInPool } from "../services/playerService";
 
 const useFirebaseAuth = () => {
   const [user, setUser] = useState(null);
@@ -111,9 +117,14 @@ const useFirebaseAuth = () => {
     }
   }, []);
 
+  /**
+   * 비밀번호 찾기 (Firebase 비밀번호 재설정 이메일 발송)
+   * - Firebase 이메일 열거 보호가 켜져 있어도 players_pool 조회를 병행하여 미가입 이메일 안내 지원
+   */
   const resetPassword = useCallback(async (email) => {
     auth.languageCode = "ko";
-    if (!email || !email.trim()) {
+    const trimmedEmail = (email || "").trim();
+    if (!trimmedEmail) {
       return {
         success: null,
         error: {
@@ -122,11 +133,30 @@ const useFirebaseAuth = () => {
         },
       };
     }
+
     try {
-      await sendPasswordResetEmail(auth, email.trim());
+      const [existsInPool, existsInAuth] = await Promise.all([
+        checkPlayerEmailInPool(trimmedEmail).catch(() => true),
+        fetchSignInMethodsForEmail(auth, trimmedEmail)
+          .then((methods) => Array.isArray(methods) && methods.length > 0)
+          .catch(() => false),
+      ]);
+
+      if (!existsInPool && !existsInAuth) {
+        return {
+          success: null,
+          error: {
+            code: "auth/user-not-found",
+            message:
+              "가입되지 않은 이메일 주소입니다. '이메일(아이디) 찾기' 탭에서 가입 계정을 먼저 확인해 주세요.",
+          },
+        };
+      }
+
+      await sendPasswordResetEmail(auth, trimmedEmail);
       return {
         success: {
-          message: `${email.trim()}으로 비밀번호 재설정 링크를 발송했습니다.`,
+          message: `${trimmedEmail}으로 비밀번호 재설정 링크를 발송했습니다.`,
         },
         error: null,
       };
@@ -161,6 +191,152 @@ const useFirebaseAuth = () => {
     }
   }, []);
 
+  /**
+   * 로그인된 선수의 비밀번호 변경 (현재 비밀번호 재인증 후 Firebase updatePassword 실행)
+   */
+  const changePassword = useCallback(
+    async ({ email, currentPassword, newPassword }) => {
+      const trimmedEmail = (email || auth.currentUser?.email || "").trim();
+      if (!trimmedEmail) {
+        return {
+          success: false,
+          error: {
+            message:
+              "계정 이메일 정보를 확인할 수 없습니다. 다시 로그인해 주세요.",
+          },
+        };
+      }
+      if (!currentPassword) {
+        return {
+          success: false,
+          error: { message: "현재 사용 중인 비밀번호를 입력해 주세요." },
+        };
+      }
+      if (!newPassword || newPassword.length < 6) {
+        return {
+          success: false,
+          error: { message: "새 비밀번호는 6자리 이상이어야 합니다." },
+        };
+      }
+      if (currentPassword === newPassword) {
+        return {
+          success: false,
+          error: {
+            message: "새 비밀번호는 현재 비밀번호와 다르게 입력해 주세요.",
+          },
+        };
+      }
+
+      try {
+        let targetUser = auth.currentUser;
+
+        if (
+          targetUser &&
+          targetUser.email &&
+          targetUser.email.toLowerCase() === trimmedEmail.toLowerCase()
+        ) {
+          const credential = EmailAuthProvider.credential(
+            trimmedEmail,
+            currentPassword
+          );
+          await reauthenticateWithCredential(targetUser, credential);
+        } else {
+          // 로컬 암호화 세션으로만 복원되어 auth.currentUser가 비어있는 경우 재로그인으로 세션 확보
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            trimmedEmail,
+            currentPassword
+          );
+          targetUser = userCredential.user;
+          setUser(targetUser);
+        }
+
+        await updatePassword(targetUser, newPassword);
+        return { success: true, error: null };
+      } catch (error) {
+        let errorMessage;
+        switch (error.code) {
+          case "auth/wrong-password":
+          case "auth/invalid-credential":
+          case "auth/invalid-login-credentials":
+            errorMessage =
+              "현재 비밀번호가 일치하지 않습니다. 다시 확인해 주세요.";
+            break;
+          case "auth/weak-password":
+            errorMessage = "새 비밀번호는 6자리 이상으로 설정해 주세요.";
+            break;
+          case "auth/too-many-requests":
+            errorMessage =
+              "시도 횟수가 너무 많습니다. 잠시 후 다시 시도해 주세요.";
+            break;
+          case "auth/requires-recent-login":
+            errorMessage =
+              "보안을 위해 다시 로그인한 뒤 비밀번호를 변경해 주세요.";
+            break;
+          case "auth/network-request-failed":
+            errorMessage = "네트워크 연결 상태를 확인해 주세요.";
+            break;
+          default:
+            errorMessage =
+              "비밀번호 변경 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+            break;
+        }
+        return {
+          success: false,
+          error: { code: error.code || "error", message: errorMessage },
+        };
+      }
+    },
+    []
+  );
+
+  /**
+   * 이메일 재설정 링크(oobCode) 유효성 검증
+   */
+  const verifyResetCode = useCallback(async (oobCode) => {
+    try {
+      const accountEmail = await verifyPasswordResetCode(auth, oobCode);
+      return { email: accountEmail, error: null };
+    } catch {
+      return {
+        email: null,
+        error: {
+          message:
+            "만료되었거나 이미 사용된 비밀번호 재설정 링크입니다. 재설정 메일을 다시 요청해 주세요.",
+        },
+      };
+    }
+  }, []);
+
+  /**
+   * 이메일 재설정 링크(oobCode)로 새 비밀번호 확정
+   */
+  const confirmNewPassword = useCallback(async (oobCode, newPassword) => {
+    if (!newPassword || newPassword.length < 6) {
+      return {
+        success: false,
+        error: { message: "새 비밀번호는 6자리 이상 입력해 주세요." },
+      };
+    }
+    try {
+      await confirmPasswordReset(auth, oobCode, newPassword);
+      return { success: true, error: null };
+    } catch (error) {
+      let errorMessage =
+        "비밀번호 재설정 중 오류가 발생했습니다. 링크를 다시 발급받아 주세요.";
+      if (error.code === "auth/weak-password") {
+        errorMessage = "새 비밀번호는 6자리 이상이어야 합니다.";
+      } else if (
+        error.code === "auth/expired-action-code" ||
+        error.code === "auth/invalid-action-code"
+      ) {
+        errorMessage =
+          "재설정 링크 유효시간이 만료되었습니다. 재설정 메일을 다시 요청해 주세요.";
+      }
+      return { success: false, error: { message: errorMessage } };
+    }
+  }, []);
+
   return {
     user,
     isLoading,
@@ -169,6 +345,9 @@ const useFirebaseAuth = () => {
     checkEmailExists,
     handleSignOut,
     resetPassword,
+    changePassword,
+    verifyResetCode,
+    confirmNewPassword,
   };
 };
 

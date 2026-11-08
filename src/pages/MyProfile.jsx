@@ -241,6 +241,27 @@ const MyProfile = () => {
                 <IoChevronForward />
               </span>
             </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                navigate("/editprofile", { state: { editType: "password" } })
+              }
+              className="sm:col-span-2 flex items-center justify-between p-4 bg-[#F5F5F7] hover:bg-neutral-200/70 rounded-2xl transition cursor-pointer text-left group"
+            >
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-neutral-500">
+                  계정 보안 · 비밀번호
+                </span>
+                <span className="text-[15px] font-bold text-[#111111] mt-1">
+                  비밀번호 변경하기
+                </span>
+              </div>
+              <span className="text-xs font-bold text-[#111111] bg-white px-3.5 py-1.5 rounded-full border border-neutral-200 group-hover:bg-[#111111] group-hover:text-white transition flex items-center gap-1">
+                <span>비밀번호 변경</span>
+                <IoChevronForward />
+              </span>
+            </button>
           </div>
         </section>
 

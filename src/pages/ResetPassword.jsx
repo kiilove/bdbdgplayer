@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FiCopy,
   FiCheck,
@@ -75,8 +75,74 @@ const ResetPassword = () => {
 
   const [emailInfo, setEmailInfo] = useState({});
 
-  const { resetPassword } = useFirebaseAuth();
+  const [searchParams] = useSearchParams();
+  const oobCode = searchParams.get("oobCode") || "";
+  const [oobTargetEmail, setOobTargetEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPasswordVal, setConfirmPasswordVal] = useState("");
+
+  const { resetPassword, verifyResetCode, confirmNewPassword } =
+    useFirebaseAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!oobCode) return undefined;
+
+    setIsLoading(true);
+    verifyResetCode(oobCode)
+      .then(({ email, error }) => {
+        if (!isMounted) return;
+        if (error) {
+          setIsError({ message: error.message });
+        } else {
+          setOobTargetEmail(email || "");
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [oobCode, verifyResetCode]);
+
+  const handleConfirmOobReset = async (e) => {
+    if (e && typeof e.preventDefault === "function") {
+      e.preventDefault();
+    }
+    if (!oobCode) return;
+    if (newPassword.length < 6) {
+      setIsError({ message: "새 비밀번호는 6자리 이상 입력해 주세요." });
+      return;
+    }
+    if (newPassword !== confirmPasswordVal) {
+      setIsError({ message: "새 비밀번호가 일치하지 않습니다." });
+      return;
+    }
+
+    setIsLoading(true);
+    setIsError({});
+    try {
+      const { success, error } = await confirmNewPassword(oobCode, newPassword);
+      if (error || !success) {
+        setIsError({ message: error?.message || "비밀번호 변경에 실패했습니다." });
+      } else {
+        setMessage({
+          body: "새 비밀번호가 설정되었습니다",
+          body2: "변경된 비밀번호로 즉시 로그인하실 수 있습니다.",
+          isButton: true,
+          confirmButtonText: "로그인하러 가기",
+        });
+        setMessageOpen(true);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handlePhoneChange = (e) => {
     const formatted = formatPhoneNumber(e.target.value);
@@ -320,200 +386,279 @@ const ResetPassword = () => {
 
         {/* Main Box */}
         <div className="w-full bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.05)] flex flex-col">
-          {/* Tab Bar */}
-          <div className="flex w-full p-1 bg-[#F5F5F7] rounded-2xl mb-6">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("findEmail");
-                setIsError({});
-                setFoundEmails(null);
-              }}
-              className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition cursor-pointer ${
-                activeTab === "findEmail"
-                  ? "bg-white text-[#111111] shadow-sm"
-                  : "text-neutral-500 hover:text-[#111111]"
-              }`}
+          {oobCode ? (
+            <form
+              onSubmit={handleConfirmOobReset}
+              className="flex flex-col gap-y-4"
             >
-              이메일(아이디) 찾기
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("resetPassword");
-                setIsError({});
-                setFoundEmails(null);
-              }}
-              className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition cursor-pointer ${
-                activeTab === "resetPassword"
-                  ? "bg-white text-[#111111] shadow-sm"
-                  : "text-neutral-500 hover:text-[#111111]"
-              }`}
-            >
-              비밀번호 재설정
-            </button>
-          </div>
+              <div className="pb-3 border-b border-neutral-100">
+                <span className="text-xs font-bold text-white bg-[#111111] px-3 py-1 rounded-full">
+                  새 비밀번호 설정
+                </span>
+                {oobTargetEmail && (
+                  <p className="text-sm font-bold text-[#111111] mt-2">
+                    계정: {oobTargetEmail}
+                  </p>
+                )}
+              </div>
 
-          {isError.message && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-medium flex items-center gap-2 mb-4">
-              <FiAlertTriangle className="text-base shrink-0" />
-              <span>{isError.message}</span>
-            </div>
-          )}
-
-          {activeTab === "findEmail" && (
-            <div>
-              {foundEmails ? (
-                <div className="flex flex-col gap-y-4">
-                  <div className="text-center py-2">
-                    <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      계정 확인 완료 ({foundEmails.length}건)
-                    </span>
-                    <p className="text-xs sm:text-sm text-neutral-500 font-medium mt-3">
-                      개인정보 보호를 위해 일부가 마스킹 처리되었습니다:
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col gap-y-2.5 max-h-[320px] overflow-y-auto pr-1">
-                    {foundEmails.map((email, idx) => {
-                      const masked = maskEmail(email);
-                      return (
-                        <div
-                          key={idx}
-                          className="bg-[#F5F5F7] border border-neutral-200 rounded-2xl p-4 flex flex-col gap-y-3"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-x-2 min-w-0">
-                              <div className="w-7 h-7 rounded-full bg-white text-[#111111] border border-neutral-200 flex items-center justify-center shrink-0">
-                                <FiMail className="text-xs" />
-                              </div>
-                              <span className="font-bold text-[#111111] text-sm sm:text-base tracking-tight truncate">
-                                {masked}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleCopyEmail(masked)}
-                              className="flex items-center gap-x-1 px-2.5 py-1.5 rounded-lg bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 text-xs font-semibold transition cursor-pointer shrink-0"
-                            >
-                              {copiedEmail === masked ? (
-                                <>
-                                  <FiCheck className="text-emerald-600 text-xs" />
-                                  <span className="text-emerald-600">복사됨</span>
-                                </>
-                              ) : (
-                                <>
-                                  <FiCopy className="text-xs" />
-                                  <span>복사</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleGoToResetWithEmail(email)}
-                            className="w-full py-2.5 bg-white hover:bg-[#111111] text-[#111111] hover:text-white border border-neutral-200 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center justify-center gap-x-1.5"
-                          >
-                            <span>이 계정으로 비밀번호 재설정</span>
-                            <FiArrowRight className="text-xs" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="flex flex-col gap-y-2 mt-2 pt-4 border-t border-neutral-100">
-                    <button
-                      type="button"
-                      onClick={() => navigate("/login")}
-                      className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer flex items-center justify-center"
-                    >
-                      로그인 화면으로 이동
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFoundEmails(null);
-                        setFindName("");
-                        setFindPhone("");
-                      }}
-                      className="text-xs sm:text-sm text-neutral-500 hover:text-[#111111] font-medium py-2 transition flex items-center justify-center gap-x-1 cursor-pointer"
-                    >
-                      <FiRotateCcw className="text-xs" />
-                      <span>다른 정보로 다시 찾기</span>
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
-                      선수 이름 (실명)
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
-                      placeholder="이름 입력"
-                      value={findName}
-                      onChange={handleNameChange}
-                      onKeyDown={(e) => e.key === "Enter" && handleFindEmail()}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
-                      휴대폰 번호
-                    </label>
-                    <input
-                      type="tel"
-                      inputMode="numeric"
-                      className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
-                      placeholder="010-1234-5678"
-                      value={findPhone}
-                      onChange={handlePhoneChange}
-                      onKeyDown={(e) => e.key === "Enter" && handleFindEmail()}
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleFindEmail}
-                    disabled={isLoading}
-                    className="w-full py-4 font-bold text-[15px] rounded-full shadow-sm transition flex items-center justify-center mt-2 bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer disabled:opacity-50"
-                  >
-                    {isLoading ? "조회 중..." : "이메일 계정 찾기"}
-                  </button>
+              {isError.message && (
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-medium flex items-center gap-2">
+                  <FiAlertTriangle className="text-base shrink-0" />
+                  <span>{isError.message}</span>
                 </div>
               )}
-            </div>
-          )}
 
-          {activeTab === "resetPassword" && (
-            <div className="flex flex-col gap-y-4">
               <div>
                 <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
-                  가입한 이메일 주소
+                  새 비밀번호 (6자리 이상)
                 </label>
                 <input
-                  type="email"
+                  type="password"
+                  autoComplete="new-password"
                   className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
-                  placeholder="name@example.com"
-                  value={emailInfo.email || ""}
-                  onChange={handleEmailInput}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
+                  placeholder="새 비밀번호 입력"
+                  value={newPassword}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    if (isError.message) setIsError({});
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
+                  새 비밀번호 확인
+                </label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
+                  placeholder="새 비밀번호 다시 입력"
+                  value={confirmPasswordVal}
+                  onChange={(e) => {
+                    setConfirmPasswordVal(e.target.value);
+                    if (isError.message) setIsError({});
+                  }}
                 />
               </div>
 
               <button
-                type="button"
-                onClick={handleSendEmail}
-                disabled={isLoading}
+                type="submit"
+                disabled={isLoading || !oobTargetEmail}
                 className="w-full py-4 font-bold text-[15px] rounded-full shadow-sm transition flex items-center justify-center mt-2 bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer disabled:opacity-50"
               >
-                {isLoading ? "발송 중..." : "비밀번호 재설정 메일 발송"}
+                {isLoading ? "변경 중..." : "새 비밀번호 저장"}
               </button>
-            </div>
+            </form>
+          ) : (
+            <>
+              {/* Tab Bar */}
+              <div className="flex w-full p-1 bg-[#F5F5F7] rounded-2xl mb-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("findEmail");
+                    setIsError({});
+                    setFoundEmails(null);
+                  }}
+                  className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition cursor-pointer ${
+                    activeTab === "findEmail"
+                      ? "bg-white text-[#111111] shadow-sm"
+                      : "text-neutral-500 hover:text-[#111111]"
+                  }`}
+                >
+                  이메일(아이디) 찾기
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("resetPassword");
+                    setIsError({});
+                    setFoundEmails(null);
+                  }}
+                  className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition cursor-pointer ${
+                    activeTab === "resetPassword"
+                      ? "bg-white text-[#111111] shadow-sm"
+                      : "text-neutral-500 hover:text-[#111111]"
+                  }`}
+                >
+                  비밀번호 재설정
+                </button>
+              </div>
+
+              {isError.message && (
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-medium flex items-center gap-2 mb-4">
+                  <FiAlertTriangle className="text-base shrink-0" />
+                  <span>{isError.message}</span>
+                </div>
+              )}
+
+              {activeTab === "findEmail" && (
+                <div>
+                  {foundEmails ? (
+                    <div className="flex flex-col gap-y-4">
+                      <div className="text-center py-2">
+                        <span className="text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          계정 확인 완료 ({foundEmails.length}건)
+                        </span>
+                        <p className="text-xs sm:text-sm text-neutral-500 font-medium mt-3">
+                          개인정보 보호를 위해 일부가 마스킹 처리되었습니다:
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col gap-y-2.5 max-h-[320px] overflow-y-auto pr-1">
+                        {foundEmails.map((email, idx) => {
+                          const masked = maskEmail(email);
+                          return (
+                            <div
+                              key={idx}
+                              className="bg-[#F5F5F7] border border-neutral-200 rounded-2xl p-4 flex flex-col gap-y-3"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-x-2 min-w-0">
+                                  <div className="w-7 h-7 rounded-full bg-white text-[#111111] border border-neutral-200 flex items-center justify-center shrink-0">
+                                    <FiMail className="text-xs" />
+                                  </div>
+                                  <span className="font-bold text-[#111111] text-sm sm:text-base tracking-tight truncate">
+                                    {masked}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyEmail(masked)}
+                                  className="flex items-center gap-x-1 px-2.5 py-1.5 rounded-lg bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 text-xs font-semibold transition cursor-pointer shrink-0"
+                                >
+                                  {copiedEmail === masked ? (
+                                    <>
+                                      <FiCheck className="text-emerald-600 text-xs" />
+                                      <span className="text-emerald-600">
+                                        복사됨
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <FiCopy className="text-xs" />
+                                      <span>복사</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleGoToResetWithEmail(email)}
+                                className="w-full py-2.5 bg-white hover:bg-[#111111] text-[#111111] hover:text-white border border-neutral-200 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center justify-center gap-x-1.5"
+                              >
+                                <span>이 계정으로 비밀번호 재설정</span>
+                                <FiArrowRight className="text-xs" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="flex flex-col gap-y-2 mt-2 pt-4 border-t border-neutral-100">
+                        <button
+                          type="button"
+                          onClick={() => navigate("/login")}
+                          className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-full shadow-sm transition cursor-pointer flex items-center justify-center"
+                        >
+                          로그인 화면으로 이동
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFoundEmails(null);
+                            setFindName("");
+                            setFindPhone("");
+                          }}
+                          className="text-xs sm:text-sm text-neutral-500 hover:text-[#111111] font-medium py-2 transition flex items-center justify-center gap-x-1 cursor-pointer"
+                        >
+                          <FiRotateCcw className="text-xs" />
+                          <span>다른 정보로 다시 찾기</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-y-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
+                          선수 이름 (실명)
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
+                          placeholder="이름 입력"
+                          value={findName}
+                          onChange={handleNameChange}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" && handleFindEmail()
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
+                          휴대폰 번호
+                        </label>
+                        <input
+                          type="tel"
+                          inputMode="numeric"
+                          className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
+                          placeholder="010-1234-5678"
+                          value={findPhone}
+                          onChange={handlePhoneChange}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" && handleFindEmail()
+                          }
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleFindEmail}
+                        disabled={isLoading}
+                        className="w-full py-4 font-bold text-[15px] rounded-full shadow-sm transition flex items-center justify-center mt-2 bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer disabled:opacity-50"
+                      >
+                        {isLoading ? "조회 중..." : "이메일 계정 찾기"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "resetPassword" && (
+                <div className="flex flex-col gap-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
+                      가입한 이메일 주소
+                    </label>
+                    <input
+                      type="email"
+                      className="w-full h-12 bg-[#F5F5F7] border border-neutral-200 rounded-xl px-4 text-[#111111] text-base focus:bg-white focus:border-[#111111] focus:outline-none placeholder-neutral-400 transition"
+                      placeholder="name@example.com"
+                      value={emailInfo.email || ""}
+                      onChange={handleEmailInput}
+                      onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
+                    />
+                  </div>
+
+                  <p className="text-xs text-neutral-500 leading-relaxed bg-[#F5F5F7] p-3.5 rounded-2xl">
+                    입력하신 이메일로 Firebase 공식 비밀번호 재설정 링크가 발송됩니다. 메일함의 링크를 누르면 새 비밀번호를 즉시 설정하실 수 있습니다.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={handleSendEmail}
+                    disabled={isLoading}
+                    className="w-full py-4 font-bold text-[15px] rounded-full shadow-sm transition flex items-center justify-center mt-1 bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer disabled:opacity-50"
+                  >
+                    {isLoading ? "발송 중..." : "비밀번호 재설정 메일 발송"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
