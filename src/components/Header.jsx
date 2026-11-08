@@ -3,8 +3,8 @@ import { RxArrowLeft } from "react-icons/rx";
 
 const Header = ({ title, banner, rightElement }) => {
   return (
-    <header className="sticky top-0 z-30 w-full bg-white/85 backdrop-blur-xl border-b border-slate-200/80 text-[#0F172A]">
-      <div className="max-w-5xl mx-auto h-14 sm:h-16 px-4 sm:px-6 flex items-center justify-between relative">
+    <header className="sticky top-0 z-30 w-full bg-white border-b border-slate-200/90 shadow-[0_2px_12px_rgba(15,23,42,0.04)] text-[#0F172A]">
+      <div className="max-w-[1080px] mx-auto h-14 sm:h-16 px-4 sm:px-8 flex items-center justify-between relative">
         <button
           type="button"
           onClick={() => window.history.back()}
