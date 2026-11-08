@@ -65,6 +65,35 @@ code {
   animation: bdbdgModalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Kinetic Poster Wall Infinite Vertical Marquee */
+@keyframes bdbdgPosterScrollUp {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+@keyframes bdbdgPosterScrollDown {
+  0% {
+    transform: translate3d(0, -50%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.poster-marquee-up {
+  animation: bdbdgPosterScrollUp var(--marquee-duration, 44s) linear infinite;
+  will-change: transform;
+}
+
+.poster-marquee-down {
+  animation: bdbdgPosterScrollDown var(--marquee-duration, 50s) linear infinite;
+  will-change: transform;
+}
+
 /* Custom Capsule Toast Styling */
 .Toastify__toast-container--top-center {
   top: 16px !important;
