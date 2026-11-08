@@ -29,6 +29,72 @@ let userInvoiceMapCache = {
   promise: null,
 };
 
+let archivePostersCache = {
+  data: null,
+  timestamp: 0,
+  promise: null,
+};
+
+const ARCHIVE_POSTERS_TTL_MS = 10 * 60 * 1000; // 10분 메모리 캐시
+
+/**
+ * 동기적으로 유효한 역대 대회 포스터 캐시 조회
+ */
+export const getCachedArchivePosters = () => {
+  if (
+    archivePostersCache.data &&
+    Date.now() - archivePostersCache.timestamp < ARCHIVE_POSTERS_TTL_MS
+  ) {
+    return archivePostersCache.data;
+  }
+  return null;
+};
+
+/**
+ * 역대 모든 대회 공고(contest_notice)에서 유효한 포스터 URL 목록 조회 (배경 타일용)
+ */
+export const fetchArchiveContestPosters = async () => {
+  const cached = getCachedArchivePosters();
+  if (cached) return cached;
+  if (archivePostersCache.promise) return archivePostersCache.promise;
+
+  const requestPromise = queryDocuments("contest_notice")
+    .then((list) => {
+      const normalized = Array.isArray(list) ? list : [];
+      // 최신 대회순 정렬 후 유효한 이미지 URL만 중복 없이 추출
+      const sorted = [...normalized].sort((a, b) =>
+        String(b.contestDate || "").localeCompare(String(a.contestDate || ""))
+      );
+      const seen = new Set();
+      const posters = [];
+      sorted.forEach((item) => {
+        const url = item?.contestPoster?.trim();
+        if (url && url.startsWith("http") && !seen.has(url)) {
+          seen.add(url);
+          posters.push({
+            id: item.id,
+            url,
+            title: item.contestTitle || "대회 포스터",
+          });
+        }
+      });
+
+      archivePostersCache = {
+        data: posters,
+        timestamp: Date.now(),
+        promise: null,
+      };
+      return posters;
+    })
+    .catch(() => {
+      archivePostersCache.promise = null;
+      return [];
+    });
+
+  archivePostersCache.promise = requestPromise;
+  return requestPromise;
+};
+
 /**
  * 신청서 신규 제출 또는 수정 시 메모리 캐시 즉시 무효화
  */

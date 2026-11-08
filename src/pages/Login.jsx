@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import PosterWallBackground from "../components/common/PosterWallBackground";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { UserContext } from "../context/UserContext";
@@ -93,7 +94,8 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-[#111111] flex flex-col justify-center items-center px-4 py-12 font-sans antialiased">
+    <div className="relative min-h-screen bg-[#F6F8FB] text-[#191F28] flex flex-col justify-center items-center px-4 py-12 font-sans antialiased">
+      <PosterWallBackground />
       <ConfirmationModal
         isOpen={messageOpen}
         onCancel={handleMessageBox}
@@ -104,7 +106,7 @@ const Login = () => {
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="#111111"
+            strokeColor="#2563EB"
             strokeWidth="4"
             animationDuration="0.75"
             width="52"
@@ -113,7 +115,7 @@ const Login = () => {
         </div>
       )}
 
-      <div className="w-full max-w-md bg-white border border-neutral-200/90 rounded-3xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.05)] flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-3xl p-8 sm:p-10 shadow-[0_8px_32px_rgba(15,23,42,0.06)] flex flex-col items-center">
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-y-2 mb-8">
           <Link

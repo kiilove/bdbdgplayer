@@ -4,6 +4,7 @@ import { RotatingLines } from "react-loader-spinner";
 import { MdArrowForward } from "react-icons/md";
 import { RiUserLine } from "react-icons/ri";
 import BottomMenu from "../components/BottomMenu";
+import PosterWallBackground from "../components/common/PosterWallBackground";
 import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
@@ -63,11 +64,12 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F6F8FB] text-[#191F28] font-sans antialiased pb-32">
+    <div className="relative min-h-screen bg-[#F6F8FB] text-[#191F28] font-sans antialiased pb-32">
+      <PosterWallBackground />
       <BottomMenu />
 
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200/80">
+      <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-slate-200/80">
         <div className="max-w-5xl mx-auto h-14 sm:h-16 px-4 sm:px-6 flex items-center justify-between">
           <button
             type="button"
@@ -108,9 +110,9 @@ const Home = () => {
         message={message}
       />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-7">
         {/* Bright Editorial Bento Hero Section */}
-        <section className="rounded-[28px] bg-gradient-to-br from-white via-white to-blue-50/60 border border-slate-200/80 p-6 sm:p-9 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-6">
+        <section className="rounded-[28px] bg-white/92 backdrop-blur-md bg-gradient-to-br from-white/95 via-white/92 to-blue-50/75 border border-slate-200/90 p-6 sm:p-9 shadow-[0_8px_30px_rgba(15,23,42,0.05)] flex flex-col gap-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex flex-col gap-y-3 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 text-[#2563EB] border border-blue-200/80 text-xs font-bold w-fit">

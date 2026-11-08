@@ -40,7 +40,7 @@ const ContestCard = ({
 
   if (variant === "grid") {
     return (
-      <div className="bg-white border border-slate-200/80 hover:border-blue-200 rounded-[28px] p-5 sm:p-6 shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-[0_14px_34px_rgba(37,99,235,0.08)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-y-5 group">
+      <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-blue-300 rounded-[28px] p-5 sm:p-6 shadow-[0_6px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_38px_rgba(37,99,235,0.10)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-y-5 group">
         <div className="flex flex-col gap-y-5">
           {/* Clean Edge-to-Edge Poster */}
           <div
@@ -176,7 +176,7 @@ const ContestCard = ({
 
   // Default: Horizontal 12-col layout (Home & Gbbf)
   return (
-    <div className="bg-white border border-slate-200/80 hover:border-blue-200 rounded-[28px] p-5 sm:p-7 md:p-8 shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-[0_14px_34px_rgba(37,99,235,0.08)] hover:-translate-y-0.5 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-center group">
+    <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 hover:border-blue-300 rounded-[28px] p-5 sm:p-7 md:p-8 shadow-[0_6px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_38px_rgba(37,99,235,0.10)] hover:-translate-y-0.5 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-center group">
       {/* Poster Left */}
       <div className="lg:col-span-5">
         <div
