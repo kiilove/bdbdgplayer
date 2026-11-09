@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
-import { MdArrowForward } from "react-icons/md";
+import { MdArrowForward, MdSearch, MdClose } from "react-icons/md";
 import { RiUserLine } from "react-icons/ri";
 import BottomMenu from "../components/BottomMenu";
 import PosterWallBackground from "../components/common/PosterWallBackground";
@@ -10,6 +10,7 @@ import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
 import { useLoginPrompt } from "../hooks/useLoginPrompt";
 import { isGbbfContest } from "../services/contestService";
+import { getContestDDayBadge } from "../utils/formatUtils";
 
 const Home = () => {
   const {
@@ -26,6 +27,7 @@ const Home = () => {
     messageClose,
   } = useLoginPrompt();
   const [activeTab, setActiveTab] = useState("all"); // 'all' | 'gbbf' | 'sub'
+  const [searchQuery, setSearchQuery] = useState("");
   const tabRefs = useRef({});
   const navigate = useNavigate();
 
@@ -41,12 +43,28 @@ const Home = () => {
     }
   };
 
+  const trimmedQuery = searchQuery.trim().toLowerCase();
+
   const displayedContests = allContests.filter((item) => {
-    if (activeTab === "gbbf") {
-      return isGbbfContest(item);
+    if (activeTab === "gbbf" && !isGbbfContest(item)) {
+      return false;
     }
-    if (activeTab === "sub") {
-      return !isGbbfContest(item);
+    if (activeTab === "sub" && isGbbfContest(item)) {
+      return false;
+    }
+    if (trimmedQuery) {
+      const title = (item.contestTitle || "").toLowerCase();
+      const location = (item.contestLocation || "").toLowerCase();
+      const associate = (
+        item.contestAssociate ||
+        item.contestPromoter ||
+        ""
+      ).toLowerCase();
+      return (
+        title.includes(trimmedQuery) ||
+        location.includes(trimmedQuery) ||
+        associate.includes(trimmedQuery)
+      );
     }
     return true;
   });
@@ -55,6 +73,12 @@ const Home = () => {
   const gbbfCount = allContests.filter(isGbbfContest).length;
   const subCount = allContests.filter((item) => !isGbbfContest(item)).length;
   const myAppliedCount = Object.keys(invoices || {}).length;
+
+  // 가장 임박한 대회 D-Day 스포트라이트 (SNKRS / KREAM 드롭 티커)
+  const featuredContest = allContests[0] || null;
+  const featuredDDay = featuredContest
+    ? getContestDDayBadge(featuredContest.contestDate)
+    : null;
 
   const tabs = [
     { id: "all", label: "전체 접수대회", count: totalCount },
@@ -115,6 +139,47 @@ const Home = () => {
       <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 flex flex-col gap-y-6">
         {/* Minimal Editorial Hero Section */}
         <section className="rounded-2xl bg-white border border-neutral-200/90 p-6 sm:p-9 shadow-[0_2px_20px_rgba(0,0,0,0.03)] flex flex-col gap-7">
+          {/* Top Drop Ticker Bar (SNKRS / KREAM Drop Notice Style) */}
+          {featuredContest && (
+            <div className="flex items-center justify-between gap-3 bg-[#FAFAFA] border border-neutral-200/70 rounded-xl px-3.5 py-2.5 text-xs">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="px-2 py-0.5 rounded-[4px] bg-[#111111] text-white font-extrabold text-[10px] tracking-wider uppercase shrink-0">
+                  NEXT STAGE
+                </span>
+                {featuredDDay && (
+                  <span className="font-black text-[#FF3B30] tabular-nums shrink-0">
+                    {featuredDDay.label}
+                  </span>
+                )}
+                <span className="text-neutral-700 font-bold truncate">
+                  {featuredContest.contestTitle}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const cid = featuredContest.id;
+                  const invId =
+                    invoices[cid] ||
+                    (featuredContest.refContestId
+                      ? invoices[featuredContest.refContestId]
+                      : null);
+                  if (invId) {
+                    navigate(`/contestjoinedit/${invId}`);
+                  } else if (pInfo?.playerUid) {
+                    navigate(`/contestjoin/${cid}`);
+                  } else {
+                    handleRequireLogin(`/contestjoin/${cid}`);
+                  }
+                }}
+                className="text-[#111111] font-extrabold hover:underline shrink-0 flex items-center gap-0.5 cursor-pointer"
+              >
+                <span>바로가기</span>
+                <MdArrowForward className="text-xs" />
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
             <div className="flex flex-col gap-y-2.5 max-w-2xl">
               <div className="inline-flex items-center gap-2 text-[11px] font-extrabold text-[#FF3B30] tracking-[0.08em] uppercase w-fit">
@@ -151,7 +216,7 @@ const Home = () => {
             )}
           </div>
 
-          {/* Monochrome Architectural KPI Bar (No Easter-Egg Colored Boxes) */}
+          {/* Monochrome Architectural KPI Bar */}
           <div className="grid grid-cols-3 divide-x divide-neutral-200/80 border-t border-neutral-100 pt-5">
             <button
               type="button"
@@ -221,38 +286,60 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Minimal Segmented Filter Bar (Stark Black Active State) */}
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto no-scrollbar scroll-smooth">
-          <div className="inline-flex sm:flex items-center gap-1.5 p-1.5 bg-white border border-neutral-200/90 rounded-xl w-max sm:w-full shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  ref={(el) => {
-                    tabRefs.current[tab.id] = el;
-                  }}
-                  type="button"
-                  onClick={() => handleTabSelect(tab.id)}
-                  className={`flex-1 px-4 sm:px-5 py-2.5 rounded-lg flex items-center justify-center gap-x-2 text-[13px] sm:text-sm font-bold transition cursor-pointer whitespace-nowrap shrink-0 ${
-                    isActive
-                      ? "bg-[#111111] text-white"
-                      : "text-neutral-500 hover:bg-neutral-100 hover:text-[#111111]"
-                  }`}
-                >
-                  <span>{tab.label}</span>
-                  <span
-                    className={`text-xs px-1.5 py-0.5 rounded-[4px] font-extrabold tabular-nums ${
+        {/* Filter Bar + Instant Search (KREAM / 29CM Style) */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto no-scrollbar scroll-smooth flex-1">
+            <div className="inline-flex sm:flex items-center gap-1.5 p-1.5 bg-white border border-neutral-200/90 rounded-xl w-max sm:w-full shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    ref={(el) => {
+                      tabRefs.current[tab.id] = el;
+                    }}
+                    type="button"
+                    onClick={() => handleTabSelect(tab.id)}
+                    className={`flex-1 px-4 sm:px-5 py-2.5 rounded-lg flex items-center justify-center gap-x-2 text-[13px] sm:text-sm font-bold transition cursor-pointer whitespace-nowrap shrink-0 ${
                       isActive
-                        ? "bg-white/15 text-white"
-                        : "bg-neutral-100 text-neutral-500"
+                        ? "bg-[#111111] text-white"
+                        : "text-neutral-500 hover:bg-neutral-100 hover:text-[#111111]"
                     }`}
                   >
-                    {tab.count}
-                  </span>
-                </button>
-              );
-            })}
+                    <span>{tab.label}</span>
+                    <span
+                      className={`text-xs px-1.5 py-0.5 rounded-[4px] font-extrabold tabular-nums ${
+                        isActive
+                          ? "bg-white/15 text-white"
+                          : "bg-neutral-100 text-neutral-500"
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="relative w-full md:w-64 shrink-0">
+            <MdSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-lg pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="대회명, 지역(화성·수원 등) 검색"
+              className="w-full h-[46px] pl-10 pr-9 bg-white border border-neutral-200/90 focus:border-[#111111] rounded-xl text-xs sm:text-sm font-semibold text-[#111111] placeholder-neutral-400 focus:outline-none transition shadow-[0_1px_4px_rgba(0,0,0,0.02)]"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-[#111111] cursor-pointer"
+              >
+                <MdClose className="text-base" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -270,7 +357,9 @@ const Home = () => {
             </div>
           ) : displayedContests.length === 0 ? (
             <div className="bg-white border border-neutral-200/80 rounded-2xl p-16 text-center text-neutral-400 font-semibold text-base">
-              현재 해당 부문에 접수 중인 대회가 없습니다.
+              {trimmedQuery
+                ? `"${searchQuery}" 검색 결과에 해당하는 대회가 없습니다.`
+                : "현재 해당 부문에 접수 중인 대회가 없습니다."}
             </div>
           ) : (
             displayedContests.map((item) => {

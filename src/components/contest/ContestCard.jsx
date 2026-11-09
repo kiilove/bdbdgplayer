@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import {
@@ -8,8 +8,11 @@ import {
   MdFileDownload,
   MdArrowForward,
   MdCheckCircle,
+  MdContentCopy,
+  MdCheck,
 } from "react-icons/md";
 import { DEFAULT_POSTER } from "../../consts";
+import { handleToast } from "../HandleToast";
 import { getContestDDayBadge } from "../../utils/formatUtils";
 
 const ContestCard = ({
@@ -21,12 +24,20 @@ const ContestCard = ({
   posterBadgeText,
 }) => {
   const navigate = useNavigate();
+  const [copiedAccount, setCopiedAccount] = useState(false);
+
   const posterUrl = contest.contestPoster || DEFAULT_POSTER;
   const contestId = contest.id;
   const associateLabel =
     contest.contestAssociate || contest.contestPromoter || "주관 협회";
   const statusLabel = posterBadgeText || contest.contestStatus || "접수중";
   const dDayBadge = getContestDDayBadge(contest.contestDate);
+
+  const parsedDate = contest.contestDate ? dayjs(contest.contestDate) : null;
+  const monthLabel =
+    parsedDate && parsedDate.isValid() ? parsedDate.format("MMM").toUpperCase() : "";
+  const dayLabel =
+    parsedDate && parsedDate.isValid() ? parsedDate.format("DD") : "";
 
   const handleJoinClick = () => {
     if (userInvoiceId) {
@@ -38,22 +49,55 @@ const ContestCard = ({
     }
   };
 
+  const handleCopyAccount = (e) => {
+    e.stopPropagation();
+    const accountText = `${contest.contestBankName || ""} ${
+      contest.contestAccountNumber || ""
+    }`.trim();
+    if (!accountText || !navigator?.clipboard) return;
+
+    navigator.clipboard.writeText(accountText).then(() => {
+      setCopiedAccount(true);
+      handleToast("success", "입금 계좌번호가 클립보드에 복사되었습니다.");
+      setTimeout(() => setCopiedAccount(false), 2000);
+    });
+  };
+
   if (variant === "grid") {
     return (
-      <div className="bg-white border border-neutral-200/90 hover:border-neutral-400 rounded-2xl p-5 sm:p-6 shadow-[0_2px_16px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.07)] transition-all duration-300 flex flex-col justify-between gap-y-5 group">
+      <div className="bg-white border border-neutral-200/90 hover:border-neutral-400 rounded-2xl p-5 sm:p-6 shadow-[0_2px_16px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_34px_rgba(0,0,0,0.07)] transition-all duration-300 flex flex-col justify-between gap-y-5 group">
         <div className="flex flex-col gap-y-5">
-          {/* Clean Edge-to-Edge Poster */}
+          {/* Luma-Style Ambient Poster Frame + SNKRS Date Stamp */}
           <div
             onClick={handleJoinClick}
-            className="w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/60 cursor-pointer"
+            className="relative w-full rounded-xl overflow-hidden bg-neutral-900 border border-neutral-200/60 cursor-pointer p-3 sm:p-4 flex items-center justify-center"
           >
             <img
               src={posterUrl}
-              alt={contest.contestTitle}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-auto block group-hover:scale-[1.01] transition duration-500"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-45 scale-125 pointer-events-none select-none"
             />
+            <div className="relative z-10 w-full rounded-lg overflow-hidden shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
+              <img
+                src={posterUrl}
+                alt={contest.contestTitle}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto block group-hover:scale-[1.015] transition duration-500"
+              />
+            </div>
+
+            {monthLabel && dayLabel && (
+              <div className="absolute top-5 left-5 z-20 bg-[#111111]/90 backdrop-blur-md text-white px-2.5 py-1.5 rounded-lg border border-white/15 flex flex-col items-center leading-none shadow-lg">
+                <span className="text-[9px] font-extrabold tracking-[0.12em] text-neutral-300">
+                  {monthLabel}
+                </span>
+                <span className="text-base font-black tracking-tight tabular-nums mt-0.5">
+                  {dayLabel}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Content Header & Metadata */}
@@ -99,7 +143,7 @@ const ContestCard = ({
               {contest.contestTitle}
             </h3>
 
-            {/* Editorial Metadata Rows (No Rainbow Icon Boxes) */}
+            {/* Editorial Metadata Rows + One-Click Copy */}
             <div className="divide-y divide-neutral-100 border-t border-b border-neutral-100 text-sm py-1">
               <div className="py-2.5 flex items-center justify-between gap-3">
                 <span className="text-neutral-400 text-xs font-semibold flex items-center gap-2 shrink-0">
@@ -124,16 +168,35 @@ const ContestCard = ({
               )}
 
               {contest.contestAccountOwner && contest.contestAccountNumber && (
-                <div className="py-2.5 flex items-center justify-between gap-3">
+                <div className="py-2.5 flex items-center justify-between gap-2">
                   <span className="text-neutral-400 text-xs font-semibold flex items-center gap-2 shrink-0">
                     <MdCreditCard className="text-sm text-neutral-400" />
                     입금 계좌
                   </span>
-                  <span className="font-bold text-xs sm:text-sm text-[#111111] text-right break-keep tabular-nums">
-                    {contest.contestBankName || ""}{" "}
-                    {contest.contestAccountNumber} ({contest.contestAccountOwner}
-                    )
-                  </span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="font-bold text-xs sm:text-sm text-[#111111] text-right truncate tabular-nums">
+                      {contest.contestBankName || ""}{" "}
+                      {contest.contestAccountNumber} (
+                      {contest.contestAccountOwner})
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyAccount}
+                      className="px-2 py-1 rounded-[5px] bg-neutral-100 hover:bg-neutral-200 text-[#111111] text-[11px] font-bold flex items-center gap-1 shrink-0 transition cursor-pointer"
+                    >
+                      {copiedAccount ? (
+                        <>
+                          <MdCheck className="text-emerald-600 text-xs" />
+                          <span className="text-emerald-700">복사됨</span>
+                        </>
+                      ) : (
+                        <>
+                          <MdContentCopy className="text-neutral-500 text-xs" />
+                          <span>복사</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -172,20 +235,39 @@ const ContestCard = ({
 
   // Default: Horizontal 12-col layout (Home & Gbbf)
   return (
-    <div className="bg-white border border-neutral-200/90 hover:border-neutral-400 rounded-2xl p-5 sm:p-7 md:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.07)] transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-center group">
-      {/* Poster Left */}
+    <div className="bg-white border border-neutral-200/90 hover:border-neutral-400 rounded-2xl p-5 sm:p-7 md:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_36px_rgba(0,0,0,0.07)] transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-center group">
+      {/* Poster Left: Luma Ambient Backdrop + SNKRS Date Stamp */}
       <div className="lg:col-span-5">
         <div
           onClick={handleJoinClick}
-          className="w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/60 cursor-pointer"
+          className="relative w-full rounded-xl overflow-hidden bg-neutral-900 border border-neutral-200/60 cursor-pointer p-3.5 sm:p-4 flex items-center justify-center"
         >
           <img
             src={posterUrl}
-            alt={contest.contestTitle}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-auto block group-hover:scale-[1.01] transition duration-500"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-45 scale-125 pointer-events-none select-none"
           />
+          <div className="relative z-10 w-full rounded-lg overflow-hidden shadow-[0_12px_28px_rgba(0,0,0,0.38)]">
+            <img
+              src={posterUrl}
+              alt={contest.contestTitle}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto block group-hover:scale-[1.015] transition duration-500"
+            />
+          </div>
+
+          {monthLabel && dayLabel && (
+            <div className="absolute top-5 left-5 z-20 bg-[#111111]/90 backdrop-blur-md text-white px-2.5 py-1.5 rounded-lg border border-white/15 flex flex-col items-center leading-none shadow-lg">
+              <span className="text-[9px] font-extrabold tracking-[0.12em] text-neutral-300">
+                {monthLabel}
+              </span>
+              <span className="text-base font-black tracking-tight tabular-nums mt-0.5">
+                {dayLabel}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -235,7 +317,7 @@ const ContestCard = ({
           </h2>
         </div>
 
-        {/* Clean Monochrome Architectural Metadata Grid (KREAM / 29CM Style) */}
+        {/* Clean Monochrome Architectural Metadata Grid + One-Click Copy */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div className="bg-[#FAFAFA] border border-neutral-200/70 rounded-xl p-4 flex flex-col gap-1">
             <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -260,16 +342,36 @@ const ContestCard = ({
           )}
 
           {contest.contestAccountOwner && contest.contestAccountNumber && (
-            <div className="sm:col-span-2 bg-[#FAFAFA] border border-neutral-200/70 rounded-xl p-4 flex flex-col gap-1">
-              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-                <MdCreditCard className="text-xs text-neutral-400" />
-                참가비 입금 계좌 · ACCOUNT
-              </span>
-              <span className="text-sm sm:text-[15px] font-extrabold text-[#111111] break-keep tabular-nums">
-                {contest.contestBankName || ""}{" "}
-                {contest.contestAccountNumber} (예금주:{" "}
-                {contest.contestAccountOwner})
-              </span>
+            <div className="sm:col-span-2 bg-[#FAFAFA] border border-neutral-200/70 rounded-xl p-4 flex items-center justify-between gap-3">
+              <div className="flex flex-col gap-1 min-w-0">
+                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <MdCreditCard className="text-xs text-neutral-400" />
+                  참가비 입금 계좌 · ACCOUNT
+                </span>
+                <span className="text-sm sm:text-[15px] font-extrabold text-[#111111] break-keep tabular-nums">
+                  {contest.contestBankName || ""}{" "}
+                  {contest.contestAccountNumber} (예금주:{" "}
+                  {contest.contestAccountOwner})
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCopyAccount}
+                className="px-3 py-2 rounded-lg bg-white hover:bg-neutral-100 border border-neutral-200 text-[#111111] text-xs font-bold flex items-center gap-1.5 shrink-0 transition cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.03)] active:scale-95"
+              >
+                {copiedAccount ? (
+                  <>
+                    <MdCheck className="text-emerald-600 text-sm" />
+                    <span className="text-emerald-700">계좌 복사됨</span>
+                  </>
+                ) : (
+                  <>
+                    <MdContentCopy className="text-neutral-500 text-xs" />
+                    <span>계좌 복사</span>
+                  </>
+                )}
+              </button>
             </div>
           )}
         </div>

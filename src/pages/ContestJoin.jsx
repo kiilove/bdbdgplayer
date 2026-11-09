@@ -183,6 +183,81 @@ const ContestJoin = () => {
               collectionFileLink={noticeInfo.contestCollectionFileLink}
             />
 
+            {/* KREAM / Luma 3-Step Live Progress Bar */}
+            <div className="bg-white border border-neutral-200/90 rounded-2xl p-4 sm:p-5 mb-7 grid grid-cols-3 gap-2 sm:gap-4 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className={`w-6 h-6 rounded-[5px] text-xs font-black flex items-center justify-center shrink-0 ${
+                    isValidate
+                      ? "bg-emerald-600 text-white"
+                      : "bg-[#111111] text-white"
+                  }`}
+                >
+                  01
+                </span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                    STEP 01
+                  </span>
+                  <span className="text-xs sm:text-sm font-extrabold text-[#111111] truncate">
+                    선수 인적사항 확인
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 border-l border-neutral-200/80 pl-2.5 sm:pl-4">
+                <span
+                  className={`w-6 h-6 rounded-[5px] text-xs font-black flex items-center justify-center shrink-0 ${
+                    invoiceInfo.joins.length > 0
+                      ? "bg-emerald-600 text-white"
+                      : isValidate
+                      ? "bg-[#111111] text-white"
+                      : "bg-neutral-100 text-neutral-400"
+                  }`}
+                >
+                  02
+                </span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                    STEP 02
+                  </span>
+                  <span
+                    className={`text-xs sm:text-sm font-extrabold truncate ${
+                      isValidate ? "text-[#111111]" : "text-neutral-400"
+                    }`}
+                  >
+                    참가 종목·체급 선택
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 border-l border-neutral-200/80 pl-2.5 sm:pl-4">
+                <span
+                  className={`w-6 h-6 rounded-[5px] text-xs font-black flex items-center justify-center shrink-0 ${
+                    isValidate && invoiceInfo.joins.length > 0 && isApply.value
+                      ? "bg-[#FF3B30] text-white"
+                      : "bg-neutral-100 text-neutral-400"
+                  }`}
+                >
+                  03
+                </span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                    STEP 03
+                  </span>
+                  <span
+                    className={`text-xs sm:text-sm font-extrabold truncate ${
+                      isValidate && invoiceInfo.joins.length > 0
+                        ? "text-[#111111]"
+                        : "text-neutral-400"
+                    }`}
+                  >
+                    약관 동의 및 접수
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Left Column: Form Steps */}
               <div className="lg:col-span-8 flex flex-col gap-y-6">

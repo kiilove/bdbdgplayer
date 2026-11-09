@@ -319,62 +319,80 @@ const MyProfile = () => {
               />
             </div>
           ) : userInvoices.length > 0 ? (
-            <div className="flex flex-col gap-y-4">
+            <div className="flex flex-col gap-y-5">
               {userInvoices.map((inv) => (
                 <div
                   key={inv.id}
-                  className="bg-[#FAFAFA] border border-neutral-200/80 rounded-xl p-5 flex flex-col gap-y-4 transition"
+                  className="relative bg-[#FAFAFA] border border-neutral-200/90 rounded-2xl overflow-hidden transition hover:border-neutral-300"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex flex-col gap-y-1">
-                      <span className="text-xs font-bold text-neutral-500">
-                        {inv.contestAssociate ||
-                          inv.contestPromoter ||
-                          "공식 참가신청서"}
+                  {/* Ticket Top Section: Contest & Pass ID */}
+                  <div className="p-5 sm:p-6 flex flex-col gap-y-3.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded-[4px] bg-[#111111] text-white">
+                          PASS #{String(inv.id || "").slice(0, 6).toUpperCase()}
+                        </span>
+                        <span className="text-xs font-bold text-neutral-500">
+                          {inv.contestAssociate ||
+                            inv.contestPromoter ||
+                            "공식 참가신청서"}
+                        </span>
+                      </div>
+
+                      <span
+                        className={`text-xs font-bold px-2.5 py-1 rounded-[4px] border whitespace-nowrap shrink-0 ${
+                          inv.isCanceled
+                            ? "bg-rose-50 text-rose-600 border-rose-200"
+                            : inv.isPriceCheck
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-white text-neutral-700 border-neutral-200"
+                        }`}
+                      >
+                        {inv.isCanceled
+                          ? "접수 취소됨"
+                          : inv.isPriceCheck
+                          ? "입금확인 완료"
+                          : "입금 대기중"}
                       </span>
-                      <h4 className="text-base sm:text-lg font-extrabold text-[#111111] tracking-tight break-keep">
+                    </div>
+
+                    <div>
+                      <h4 className="text-base sm:text-lg font-black text-[#111111] tracking-tight break-keep">
                         {inv.contestTitle}
                       </h4>
-                      <span className="text-xs sm:text-sm text-neutral-600 font-medium flex items-center gap-x-1.5 mt-0.5">
-                        <RiCalendarLine className="text-neutral-500" />{" "}
+                      <span className="text-xs sm:text-sm text-neutral-500 font-medium flex items-center gap-x-1.5 mt-1">
+                        <RiCalendarLine className="text-neutral-400" />{" "}
                         {inv.contestDate}{" "}
                         {inv.contestLocation ? `· ${inv.contestLocation}` : ""}
                       </span>
                     </div>
-                    <span
-                      className={`text-xs font-bold px-2.5 py-1 rounded-[4px] border whitespace-nowrap shrink-0 ${
-                        inv.isCanceled
-                          ? "bg-rose-50 text-rose-600 border-rose-200"
-                          : inv.isPriceCheck
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                          : "bg-white text-neutral-700 border-neutral-200"
-                      }`}
-                    >
-                      {inv.isCanceled
-                        ? "접수 취소됨"
-                        : inv.isPriceCheck
-                        ? "입금확인 완료"
-                        : "입금 대기중"}
-                    </span>
+
+                    {/* 신청한 종목 칩 리스트 */}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {inv.joins?.map((j, jIdx) => (
+                        <span
+                          key={jIdx}
+                          className="text-xs sm:text-sm font-semibold text-[#111111] bg-white px-3 py-1.5 rounded-lg border border-neutral-200 flex items-center gap-x-1.5"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
+                          {j.contestCategoryTitle} ({j.contestGradeTitle})
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* 신청한 종목 칩 리스트 */}
-                  <div className="flex flex-wrap gap-2 pt-3 border-t border-neutral-200/80">
-                    {inv.joins?.map((j, jIdx) => (
-                      <span
-                        key={jIdx}
-                        className="text-xs sm:text-sm font-semibold text-[#111111] bg-white px-3 py-1.5 rounded-lg border border-neutral-200 flex items-center gap-x-1.5"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
-                        {j.contestCategoryTitle} ({j.contestGradeTitle})
-                      </span>
-                    ))}
+                  {/* DICE.fm / Apple Wallet Perforated Ticket Divider */}
+                  <div className="relative flex items-center justify-between my-0.5">
+                    <div className="w-5 h-5 rounded-full bg-white border border-neutral-200/90 -ml-2.5 shrink-0" />
+                    <div className="w-full border-t border-dashed border-neutral-300 mx-1" />
+                    <div className="w-5 h-5 rounded-full bg-white border border-neutral-200/90 -mr-2.5 shrink-0" />
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-neutral-200/80">
+                  {/* Ticket Bottom Stub: Fee & Actions */}
+                  <div className="p-5 sm:px-6 sm:py-4 bg-neutral-100/60 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-col">
-                      <span className="text-xs font-medium text-neutral-500">
-                        총 참가비
+                      <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                        TOTAL ENTRY FEE · 참가비
                       </span>
                       <span className="text-lg font-black text-[#111111] tabular-nums">
                         {Number(inv.contestPriceSum || 0).toLocaleString()} 원
