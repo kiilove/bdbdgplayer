@@ -151,13 +151,13 @@ const MyProfile = () => {
               />
             </label>
             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-              <span className="text-[11px] font-extrabold text-indigo-600 uppercase tracking-wider border-l-2 border-indigo-600 pl-2">
+              <span className="text-[11px] font-extrabold text-[#FF3B30] uppercase tracking-[0.08em] border-l-2 border-[#FF3B30] pl-2">
                 ATHLETE PROFILE · 선수 기본 프로필
               </span>
-              <h2 className="text-2xl font-extrabold text-[#0F172A] mt-1.5 tracking-tight">
+              <h2 className="text-2xl font-black text-[#111111] mt-1.5 tracking-tight">
                 {pInfo.pName || "선수 회원"}
               </h2>
-              <p className="text-sm text-slate-500 mt-0.5">{pInfo.pEmail}</p>
+              <p className="text-sm text-neutral-500 mt-0.5">{pInfo.pEmail}</p>
             </div>
           </div>
 
@@ -289,7 +289,7 @@ const MyProfile = () => {
                   비밀번호 변경하기
                 </span>
               </div>
-              <span className="text-xs font-bold text-indigo-600 bg-white px-3 py-1.5 rounded-lg border border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white transition flex items-center gap-1">
+              <span className="text-xs font-bold text-[#111111] bg-white px-3 py-1.5 rounded-lg border border-neutral-200 group-hover:bg-[#111111] group-hover:text-white transition flex items-center gap-1">
                 <span>비밀번호 변경</span>
                 <IoChevronForward />
               </span>
@@ -298,13 +298,13 @@ const MyProfile = () => {
         </section>
 
         {/* 나의 대회 참가 신청 내역 섹션 */}
-        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <h3 className="text-lg sm:text-xl font-extrabold text-[#0F172A] flex items-center gap-x-2 tracking-tight">
-              <RiTrophyLine className="text-amber-500 text-xl" />
+        <section className="bg-white border border-neutral-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(0,0,0,0.03)] flex flex-col gap-y-6">
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
+            <h3 className="text-lg sm:text-xl font-extrabold text-[#111111] flex items-center gap-x-2 tracking-tight">
+              <RiTrophyLine className="text-[#FF3B30] text-xl" />
               나의 대회 참가 신청 내역
             </h3>
-            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-md">
+            <span className="text-xs font-bold text-[#111111] bg-neutral-100 border border-neutral-200 px-2.5 py-1 rounded-[4px]">
               총 {userInvoices.length}건
             </span>
           </div>
@@ -312,7 +312,7 @@ const MyProfile = () => {
           {invoicesLoading ? (
             <div className="flex justify-center items-center py-12">
               <RotatingLines
-                strokeColor="#4F46E5"
+                strokeColor="#111111"
                 strokeWidth="4"
                 width="36"
                 visible={true}
@@ -323,31 +323,31 @@ const MyProfile = () => {
               {userInvoices.map((inv) => (
                 <div
                   key={inv.id}
-                  className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-5 flex flex-col gap-y-4 transition"
+                  className="bg-[#FAFAFA] border border-neutral-200/80 rounded-xl p-5 flex flex-col gap-y-4 transition"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex flex-col gap-y-1">
-                      <span className="text-xs font-bold text-slate-500">
+                      <span className="text-xs font-bold text-neutral-500">
                         {inv.contestAssociate ||
                           inv.contestPromoter ||
                           "공식 참가신청서"}
                       </span>
-                      <h4 className="text-base sm:text-lg font-extrabold text-[#0F172A] tracking-tight break-keep">
+                      <h4 className="text-base sm:text-lg font-extrabold text-[#111111] tracking-tight break-keep">
                         {inv.contestTitle}
                       </h4>
-                      <span className="text-xs sm:text-sm text-slate-600 font-medium flex items-center gap-x-1.5 mt-0.5">
-                        <RiCalendarLine className="text-indigo-600" />{" "}
+                      <span className="text-xs sm:text-sm text-neutral-600 font-medium flex items-center gap-x-1.5 mt-0.5">
+                        <RiCalendarLine className="text-neutral-500" />{" "}
                         {inv.contestDate}{" "}
                         {inv.contestLocation ? `· ${inv.contestLocation}` : ""}
                       </span>
                     </div>
                     <span
-                      className={`text-xs font-bold px-2.5 py-1 rounded-[5px] border whitespace-nowrap shrink-0 ${
+                      className={`text-xs font-bold px-2.5 py-1 rounded-[4px] border whitespace-nowrap shrink-0 ${
                         inv.isCanceled
                           ? "bg-rose-50 text-rose-600 border-rose-200"
                           : inv.isPriceCheck
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                          : "bg-white text-slate-700 border-slate-200"
+                          : "bg-white text-neutral-700 border-neutral-200"
                       }`}
                     >
                       {inv.isCanceled
@@ -359,24 +359,24 @@ const MyProfile = () => {
                   </div>
 
                   {/* 신청한 종목 칩 리스트 */}
-                  <div className="flex flex-wrap gap-2 pt-3 border-t border-slate-200/80">
+                  <div className="flex flex-wrap gap-2 pt-3 border-t border-neutral-200/80">
                     {inv.joins?.map((j, jIdx) => (
                       <span
                         key={jIdx}
-                        className="text-xs sm:text-sm font-semibold text-[#0F172A] bg-white px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-x-1.5"
+                        className="text-xs sm:text-sm font-semibold text-[#111111] bg-white px-3 py-1.5 rounded-lg border border-neutral-200 flex items-center gap-x-1.5"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
                         {j.contestCategoryTitle} ({j.contestGradeTitle})
                       </span>
                     ))}
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/80">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-neutral-200/80">
                     <div className="flex flex-col">
-                      <span className="text-xs font-medium text-slate-500">
+                      <span className="text-xs font-medium text-neutral-500">
                         총 참가비
                       </span>
-                      <span className="text-lg font-extrabold text-indigo-600">
+                      <span className="text-lg font-black text-[#111111] tabular-nums">
                         {Number(inv.contestPriceSum || 0).toLocaleString()} 원
                       </span>
                     </div>
@@ -386,7 +386,7 @@ const MyProfile = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedPrintInvoice(inv)}
-                          className="flex-1 sm:flex-none px-4 py-2.5 bg-white hover:bg-slate-100 text-[#0F172A] border border-slate-300 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
+                          className="flex-1 sm:flex-none px-4 py-2.5 bg-white hover:bg-neutral-100 text-[#111111] border border-neutral-300 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
                         >
                           <RiPrinterLine className="text-base" />
                           <span>접수증 출력 / PDF</span>
@@ -396,7 +396,7 @@ const MyProfile = () => {
                           onClick={() =>
                             navigate(`/contestjoinedit/${inv.id}`)
                           }
-                          className="flex-1 sm:flex-none px-4 py-2.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-xs sm:text-sm rounded-xl shadow-[0_4px_12px_rgba(99,102,241,0.24)] transition cursor-pointer text-center"
+                          className="flex-1 sm:flex-none px-4 py-2.5 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer text-center"
                         >
                           신청내역 수정
                         </button>
@@ -407,12 +407,12 @@ const MyProfile = () => {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center text-slate-500 text-sm font-medium gap-y-4">
+            <div className="flex flex-col items-center justify-center py-12 text-center text-neutral-500 text-sm font-medium gap-y-4">
               <span>아직 신청된 대회 내역이 없습니다.</span>
               <button
                 type="button"
                 onClick={() => navigate("/")}
-                className="px-6 py-3 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-sm rounded-xl shadow-[0_4px_12px_rgba(99,102,241,0.24)] transition cursor-pointer"
+                className="px-6 py-3 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-xl transition cursor-pointer"
               >
                 대회 참가 신청하러 가기
               </button>

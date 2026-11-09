@@ -40,52 +40,52 @@ const ContestCard = ({
 
   if (variant === "grid") {
     return (
-      <div className="bg-white border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-5 sm:p-6 shadow-[0_6px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_38px_rgba(99,102,241,0.12)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-y-5 group">
+      <div className="bg-white border border-neutral-200/90 hover:border-neutral-400 rounded-2xl p-5 sm:p-6 shadow-[0_2px_16px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.07)] transition-all duration-300 flex flex-col justify-between gap-y-5 group">
         <div className="flex flex-col gap-y-5">
           {/* Clean Edge-to-Edge Poster */}
           <div
             onClick={handleJoinClick}
-            className="w-full rounded-xl overflow-hidden ring-1 ring-slate-200/70 bg-slate-50 cursor-pointer"
+            className="w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/60 cursor-pointer"
           >
             <img
               src={posterUrl}
               alt={contest.contestTitle}
               loading="lazy"
               decoding="async"
-              className="w-full h-auto block group-hover:scale-[1.015] transition duration-500"
+              className="w-full h-auto block group-hover:scale-[1.01] transition duration-500"
             />
           </div>
 
-          {/* Content Header & Bento Meta */}
+          {/* Content Header & Metadata */}
           <div className="flex flex-col gap-y-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="inline-flex items-center gap-1.5 bg-[#FF2E54] text-white font-extrabold px-2 py-0.5 rounded-[5px] tracking-tight">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 bg-[#111111] text-white font-bold px-2 py-0.5 rounded-[4px] tracking-tight">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
                   {statusLabel}
                 </span>
 
                 {dDayBadge && (
                   <span
-                    className={`inline-flex items-center font-black px-2 py-0.5 rounded-[5px] border tabular-nums ${
+                    className={`inline-flex items-center font-extrabold px-2 py-0.5 rounded-[4px] border tabular-nums ${
                       dDayBadge.isUrgent
-                        ? "bg-rose-50 text-[#FF2E54] border-rose-200"
-                        : "bg-indigo-50 text-indigo-700 border-indigo-200/80"
+                        ? "bg-[#FFF5F5] text-[#FF3B30] border-[#FF3B30]/25"
+                        : "bg-neutral-100 text-neutral-700 border-neutral-200"
                     }`}
                   >
                     {dDayBadge.label}
                   </span>
                 )}
 
-                <span className="w-px h-3 bg-slate-300 mx-0.5" />
+                <span className="w-px h-3 bg-neutral-300 mx-0.5" />
 
-                <span className="font-bold text-slate-500 tracking-tight">
+                <span className="font-semibold text-neutral-500 tracking-tight">
                   {associateLabel}
                 </span>
               </div>
 
               {userInvoiceId && (
-                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2.5 py-0.5 rounded-[5px]">
+                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2 py-0.5 rounded-[4px]">
                   <MdCheckCircle className="text-sm text-emerald-600" />
                   <span>신청완료</span>
                 </span>
@@ -94,48 +94,42 @@ const ContestCard = ({
 
             <h3
               onClick={handleJoinClick}
-              className="text-xl font-extrabold text-[#0F172A] group-hover:text-[#4F46E5] transition-colors tracking-tight leading-snug break-keep cursor-pointer"
+              className="text-xl font-black text-[#111111] group-hover:text-neutral-600 transition-colors tracking-[-0.02em] leading-snug break-keep cursor-pointer"
             >
               {contest.contestTitle}
             </h3>
 
-            {/* Modular Bento Metadata Cells */}
-            <div className="grid grid-cols-1 gap-2">
-              <div className="bg-[#F8FAFC] border border-slate-100 rounded-xl p-3.5 flex items-center justify-between gap-3">
-                <span className="text-slate-500 text-xs sm:text-sm font-semibold flex items-center gap-2 shrink-0">
-                  <span className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                    <MdOutlineCalendarToday className="text-sm" />
-                  </span>
+            {/* Editorial Metadata Rows (No Rainbow Icon Boxes) */}
+            <div className="divide-y divide-neutral-100 border-t border-b border-neutral-100 text-sm py-1">
+              <div className="py-2.5 flex items-center justify-between gap-3">
+                <span className="text-neutral-400 text-xs font-semibold flex items-center gap-2 shrink-0">
+                  <MdOutlineCalendarToday className="text-sm text-neutral-400" />
                   대회 일자
                 </span>
-                <span className="font-bold text-sm text-[#0F172A] text-right tabular-nums">
+                <span className="font-bold text-sm text-[#111111] text-right tabular-nums">
                   {dayjs(contest.contestDate).format("YYYY. MM. DD")}
                 </span>
               </div>
 
               {contest.contestLocation && (
-                <div className="bg-[#F8FAFC] border border-slate-100 rounded-xl p-3.5 flex items-center justify-between gap-3">
-                  <span className="text-slate-500 text-xs sm:text-sm font-semibold flex items-center gap-2 shrink-0">
-                    <span className="w-7 h-7 rounded-lg bg-rose-50 text-[#FF2E54] flex items-center justify-center">
-                      <MdOutlineLocationOn className="text-sm" />
-                    </span>
+                <div className="py-2.5 flex items-center justify-between gap-3">
+                  <span className="text-neutral-400 text-xs font-semibold flex items-center gap-2 shrink-0">
+                    <MdOutlineLocationOn className="text-sm text-neutral-400" />
                     개최 장소
                   </span>
-                  <span className="font-bold text-sm text-[#0F172A] text-right break-keep">
+                  <span className="font-bold text-sm text-[#111111] text-right break-keep">
                     {contest.contestLocation}
                   </span>
                 </div>
               )}
 
               {contest.contestAccountOwner && contest.contestAccountNumber && (
-                <div className="bg-[#F8FAFC] border border-slate-100 rounded-xl p-3.5 flex items-center justify-between gap-3">
-                  <span className="text-slate-500 text-xs sm:text-sm font-semibold flex items-center gap-2 shrink-0">
-                    <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                      <MdCreditCard className="text-sm" />
-                    </span>
+                <div className="py-2.5 flex items-center justify-between gap-3">
+                  <span className="text-neutral-400 text-xs font-semibold flex items-center gap-2 shrink-0">
+                    <MdCreditCard className="text-sm text-neutral-400" />
                     입금 계좌
                   </span>
-                  <span className="font-bold text-xs sm:text-sm text-[#0F172A] text-right break-keep tabular-nums">
+                  <span className="font-bold text-xs sm:text-sm text-[#111111] text-right break-keep tabular-nums">
                     {contest.contestBankName || ""}{" "}
                     {contest.contestAccountNumber} ({contest.contestAccountOwner}
                     )
@@ -151,7 +145,7 @@ const ContestCard = ({
           <button
             type="button"
             onClick={handleJoinClick}
-            className="flex-1 w-full font-bold text-sm py-3.5 px-5 rounded-xl transition cursor-pointer text-center flex items-center justify-center gap-1.5 active:scale-[0.99] bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:via-[#4F46E5] hover:to-[#6D28D9] text-white shadow-[0_6px_18px_rgba(99,102,241,0.28)]"
+            className="flex-1 w-full font-bold text-sm py-3.5 px-5 rounded-xl transition cursor-pointer text-center flex items-center justify-center gap-1.5 active:scale-[0.99] bg-[#111111] hover:bg-neutral-800 text-white"
           >
             <span>
               {userInvoiceId ? "신청정보 확인 및 변경" : "참가신청 하기"}
@@ -165,9 +159,9 @@ const ContestCard = ({
               download
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 font-semibold text-sm py-3.5 px-4 rounded-xl border border-slate-200/80 transition cursor-pointer text-center whitespace-nowrap flex items-center justify-center gap-1.5 active:scale-[0.99]"
+              className="w-full sm:w-auto bg-neutral-100 hover:bg-neutral-200/80 text-neutral-700 font-semibold text-sm py-3.5 px-4 rounded-xl transition cursor-pointer text-center whitespace-nowrap flex items-center justify-center gap-1.5 active:scale-[0.99]"
             >
-              <MdFileDownload className="text-base text-slate-700" />
+              <MdFileDownload className="text-base text-neutral-700" />
               <span>요강 다운로드</span>
             </a>
           )}
@@ -178,19 +172,19 @@ const ContestCard = ({
 
   // Default: Horizontal 12-col layout (Home & Gbbf)
   return (
-    <div className="bg-white border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-5 sm:p-7 md:p-8 shadow-[0_6px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_38px_rgba(99,102,241,0.12)] hover:-translate-y-0.5 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-center group">
+    <div className="bg-white border border-neutral-200/90 hover:border-neutral-400 rounded-2xl p-5 sm:p-7 md:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.07)] transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-center group">
       {/* Poster Left */}
       <div className="lg:col-span-5">
         <div
           onClick={handleJoinClick}
-          className="w-full rounded-xl overflow-hidden ring-1 ring-slate-200/70 bg-slate-50 shadow-sm cursor-pointer"
+          className="w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/60 cursor-pointer"
         >
           <img
             src={posterUrl}
             alt={contest.contestTitle}
             loading="lazy"
             decoding="async"
-            className="w-full h-auto block group-hover:scale-[1.015] transition duration-500"
+            className="w-full h-auto block group-hover:scale-[1.01] transition duration-500"
           />
         </div>
       </div>
@@ -198,35 +192,35 @@ const ContestCard = ({
       {/* Details Right */}
       <div className="lg:col-span-7 flex flex-col gap-y-5">
         <div className="flex flex-col gap-y-3">
-          {/* Editorial Eyebrow Row (No Pill Clutter) */}
+          {/* Editorial Eyebrow Row */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="inline-flex items-center gap-1.5 bg-[#FF2E54] text-white font-extrabold px-2.5 py-1 rounded-[5px] tracking-tight">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 bg-[#111111] text-white font-bold px-2.5 py-1 rounded-[4px] tracking-tight">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
                 {statusLabel}
               </span>
 
               {dDayBadge && (
                 <span
-                  className={`inline-flex items-center font-black px-2.5 py-1 rounded-[5px] border tabular-nums ${
+                  className={`inline-flex items-center font-extrabold px-2.5 py-1 rounded-[4px] border tabular-nums ${
                     dDayBadge.isUrgent
-                      ? "bg-rose-50 text-[#FF2E54] border-rose-200"
-                      : "bg-indigo-50 text-indigo-700 border-indigo-200/80"
+                      ? "bg-[#FFF5F5] text-[#FF3B30] border-[#FF3B30]/25"
+                      : "bg-neutral-100 text-neutral-700 border-neutral-200"
                   }`}
                 >
                   {dDayBadge.label}
                 </span>
               )}
 
-              <span className="w-px h-3.5 bg-slate-300 mx-0.5" />
+              <span className="w-px h-3.5 bg-neutral-300 mx-0.5" />
 
-              <span className="text-xs sm:text-[13px] font-bold text-slate-500 tracking-tight">
+              <span className="text-xs sm:text-[13px] font-semibold text-neutral-500 tracking-tight">
                 {associateLabel}
               </span>
             </div>
 
             {userInvoiceId && (
-              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-[5px]">
+              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-[4px]">
                 <MdCheckCircle className="text-sm text-emerald-600" />
                 <span>신청완료</span>
               </span>
@@ -235,68 +229,56 @@ const ContestCard = ({
 
           <h2
             onClick={handleJoinClick}
-            className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] group-hover:text-[#4F46E5] transition-colors tracking-tight leading-snug break-keep cursor-pointer"
+            className="text-2xl sm:text-[28px] font-black text-[#111111] group-hover:text-neutral-600 transition-colors tracking-[-0.025em] leading-[1.28] break-keep cursor-pointer"
           >
             {contest.contestTitle}
           </h2>
         </div>
 
-        {/* Modular Bento Metadata Grid */}
+        {/* Clean Monochrome Architectural Metadata Grid (KREAM / 29CM Style) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <div className="bg-[#F8FAFC] border border-slate-100 rounded-xl p-4 flex items-center gap-3.5">
-            <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-              <MdOutlineCalendarToday className="text-base" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                대회 일자 · SCHEDULE
-              </span>
-              <span className="text-sm sm:text-[15px] font-extrabold text-[#0F172A] mt-0.5 tabular-nums">
-                {dayjs(contest.contestDate).format("YYYY년 MM월 DD일")}
-              </span>
-            </div>
+          <div className="bg-[#FAFAFA] border border-neutral-200/70 rounded-xl p-4 flex flex-col gap-1">
+            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+              <MdOutlineCalendarToday className="text-xs text-neutral-400" />
+              대회 일자 · DATE
+            </span>
+            <span className="text-sm sm:text-[15px] font-extrabold text-[#111111] tabular-nums">
+              {dayjs(contest.contestDate).format("YYYY년 MM월 DD일")}
+            </span>
           </div>
 
           {contest.contestLocation && (
-            <div className="bg-[#F8FAFC] border border-slate-100 rounded-xl p-4 flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-lg bg-rose-50 text-[#FF2E54] flex items-center justify-center shrink-0">
-                <MdOutlineLocationOn className="text-base" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  개최 장소 · VENUE
-                </span>
-                <span className="text-sm sm:text-[15px] font-extrabold text-[#0F172A] mt-0.5 break-keep">
-                  {contest.contestLocation}
-                </span>
-              </div>
+            <div className="bg-[#FAFAFA] border border-neutral-200/70 rounded-xl p-4 flex flex-col gap-1">
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                <MdOutlineLocationOn className="text-xs text-neutral-400" />
+                개최 장소 · VENUE
+              </span>
+              <span className="text-sm sm:text-[15px] font-extrabold text-[#111111] break-keep">
+                {contest.contestLocation}
+              </span>
             </div>
           )}
 
           {contest.contestAccountOwner && contest.contestAccountNumber && (
-            <div className="sm:col-span-2 bg-[#F8FAFC] border border-slate-100 rounded-xl p-4 flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                <MdCreditCard className="text-base" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  참가비 입금 계좌 · ACCOUNT
-                </span>
-                <span className="text-sm sm:text-[15px] font-extrabold text-[#0F172A] mt-0.5 break-keep tabular-nums">
-                  {contest.contestBankName || ""}{" "}
-                  {contest.contestAccountNumber} (예금주:{" "}
-                  {contest.contestAccountOwner})
-                </span>
-              </div>
+            <div className="sm:col-span-2 bg-[#FAFAFA] border border-neutral-200/70 rounded-xl p-4 flex flex-col gap-1">
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                <MdCreditCard className="text-xs text-neutral-400" />
+                참가비 입금 계좌 · ACCOUNT
+              </span>
+              <span className="text-sm sm:text-[15px] font-extrabold text-[#111111] break-keep tabular-nums">
+                {contest.contestBankName || ""}{" "}
+                {contest.contestAccountNumber} (예금주:{" "}
+                {contest.contestAccountOwner})
+              </span>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-1">
+        <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
           <button
             type="button"
             onClick={handleJoinClick}
-            className="flex-1 py-4 px-6 font-bold text-[15px] rounded-xl transition cursor-pointer text-center flex items-center justify-center gap-2 active:scale-[0.99] bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:via-[#4F46E5] hover:to-[#6D28D9] text-white shadow-[0_6px_20px_rgba(99,102,241,0.30)]"
+            className="flex-1 py-4 px-6 font-bold text-[15px] rounded-xl transition cursor-pointer text-center flex items-center justify-center gap-2 active:scale-[0.99] bg-[#111111] hover:bg-neutral-800 text-white"
           >
             <span>
               {userInvoiceId ? "신청정보 확인 및 변경" : "참가신청 하기"}
@@ -310,9 +292,9 @@ const ContestCard = ({
               download
               target="_blank"
               rel="noopener noreferrer"
-              className="py-4 px-6 bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200/80 text-slate-700 font-semibold text-sm sm:text-[15px] rounded-xl transition text-center whitespace-nowrap flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+              className="py-4 px-6 bg-neutral-100 hover:bg-neutral-200/80 text-neutral-700 font-semibold text-sm sm:text-[15px] rounded-xl transition text-center whitespace-nowrap flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
             >
-              <MdFileDownload className="text-lg text-slate-700" />
+              <MdFileDownload className="text-lg text-neutral-700" />
               <span>공식 요강 다운로드</span>
             </a>
           )}
