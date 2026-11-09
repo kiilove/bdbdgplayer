@@ -1,16 +1,21 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  Suspense,
+  lazy,
+} from "react";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { handleToast } from "../components/HandleToast";
-import Policy3 from "../components/Policy3";
 import AppDrawer from "../components/common/AppDrawer";
 import ContestHeaderBanner from "../components/contest/ContestHeaderBanner";
 import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
-import JoinCupConfirm from "../modals/JoinCupConfirm";
 import { UserContext } from "../context/UserContext";
 import { useContestForm } from "../hooks/useContestForm";
 import {
@@ -18,6 +23,9 @@ import {
   buildInitialInvoicePayload,
 } from "../services/contestService";
 import { calculateContestPrice } from "../utils/formatUtils";
+
+const Policy3 = lazy(() => import("../components/Policy3"));
+const JoinCupConfirm = lazy(() => import("../modals/JoinCupConfirm"));
 
 const ContestJoin = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -158,15 +166,28 @@ const ContestJoin = () => {
             onClose={handleCloseDrawer}
             size="md"
           >
-            {activeDrawer === "policy" && (
-              <Policy3 onClose={handleCloseDrawer} />
-            )}
-            {activeDrawer === "confirm" && (
-              <JoinCupConfirm
-                propInvoiceInfo={invoiceInfo}
-                prevSetModal={handleCloseDrawer}
-              />
-            )}
+            <Suspense
+              fallback={
+                <div className="flex justify-center items-center py-20">
+                  <RotatingLines
+                    strokeColor="#111111"
+                    strokeWidth="4"
+                    width="36"
+                    visible={true}
+                  />
+                </div>
+              }
+            >
+              {activeDrawer === "policy" && (
+                <Policy3 onClose={handleCloseDrawer} />
+              )}
+              {activeDrawer === "confirm" && (
+                <JoinCupConfirm
+                  propInvoiceInfo={invoiceInfo}
+                  prevSetModal={handleCloseDrawer}
+                />
+              )}
+            </Suspense>
           </AppDrawer>
 
           <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">

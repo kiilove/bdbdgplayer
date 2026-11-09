@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
@@ -6,23 +6,38 @@ import "./App.css";
 import RequireAuth from "./components/auth/RequireAuth";
 import Home from "./pages/Home";
 
-const CupList = lazy(() => import("./pages/CupList"));
-const Gbbf = lazy(() => import("./pages/Gbbf"));
-const Login = lazy(() => import("./pages/Login"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const Register = lazy(() => import("./pages/Register"));
-const RegisterWithEmail = lazy(() => import("./pages/RegisterWithEmail"));
-const RegisterSuccess = lazy(() => import("./pages/RegisterSuccess"));
-const SuccessPage = lazy(() => import("./pages/SuccessPage"));
-const EditSuccessPage = lazy(() => import("./pages/EditSuccessPage"));
-const ContestJoin = lazy(() => import("./pages/ContestJoin"));
-const ContestJoinEdit = lazy(() => import("./pages/ContestJoinEdit"));
-const MyProfile = lazy(() => import("./pages/MyProfile"));
-const EditProfile = lazy(() => import("./pages/EditProfile"));
-const Policy3 = lazy(() => import("./components/Policy3"));
+const importCupList = () => import("./pages/CupList");
+const importGbbf = () => import("./pages/Gbbf");
+const importLogin = () => import("./pages/Login");
+const importResetPassword = () => import("./pages/ResetPassword");
+const importRegister = () => import("./pages/Register");
+const importRegisterWithEmail = () => import("./pages/RegisterWithEmail");
+const importRegisterSuccess = () => import("./pages/RegisterSuccess");
+const importSuccessPage = () => import("./pages/SuccessPage");
+const importEditSuccessPage = () => import("./pages/EditSuccessPage");
+const importContestJoin = () => import("./pages/ContestJoin");
+const importContestJoinEdit = () => import("./pages/ContestJoinEdit");
+const importMyProfile = () => import("./pages/MyProfile");
+const importEditProfile = () => import("./pages/EditProfile");
+const importPolicy3 = () => import("./components/Policy3");
+
+const CupList = lazy(importCupList);
+const Gbbf = lazy(importGbbf);
+const Login = lazy(importLogin);
+const ResetPassword = lazy(importResetPassword);
+const Register = lazy(importRegister);
+const RegisterWithEmail = lazy(importRegisterWithEmail);
+const RegisterSuccess = lazy(importRegisterSuccess);
+const SuccessPage = lazy(importSuccessPage);
+const EditSuccessPage = lazy(importEditSuccessPage);
+const ContestJoin = lazy(importContestJoin);
+const ContestJoinEdit = lazy(importContestJoinEdit);
+const MyProfile = lazy(importMyProfile);
+const EditProfile = lazy(importEditProfile);
+const Policy3 = lazy(importPolicy3);
 
 const PageFallback = () => (
-  <div className="min-h-screen bg-[#F5F5F7] flex justify-center items-center">
+  <div className="min-h-screen bg-[#F6F7F9] flex justify-center items-center">
     <RotatingLines
       strokeColor="#111111"
       strokeWidth="4"
@@ -34,6 +49,27 @@ const PageFallback = () => (
 );
 
 function App() {
+  // 초기 메인 화면 렌더링 완료 후 브라우저 유휴 시간에 주요 라우트 청크를 백그라운드 프리페치
+  useEffect(() => {
+    const prefetchCoreRoutes = () => {
+      importCupList();
+      importGbbf();
+      importContestJoin();
+      importMyProfile();
+      importLogin();
+    };
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(prefetchCoreRoutes, {
+        timeout: 2500,
+      });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timerId = setTimeout(prefetchCoreRoutes, 1200);
+    return () => clearTimeout(timerId);
+  }, []);
+
   return (
     <BrowserRouter>
       <ToastContainer

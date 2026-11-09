@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import { RiPrinterLine } from "react-icons/ri";
@@ -8,11 +8,12 @@ import AppDrawer from "../components/common/AppDrawer";
 import ContestHeaderBanner from "../components/contest/ContestHeaderBanner";
 import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
-import JoinCupEditConfirm from "../modals/JoinCupEditConfirm";
-import InvoicePrintModal from "../modals/InvoicePrintModal";
 import { useContestForm } from "../hooks/useContestForm";
 import { fetchInvoiceEditBundle } from "../services/contestService";
 import { calculateContestPrice } from "../utils/formatUtils";
+
+const JoinCupEditConfirm = lazy(() => import("../modals/JoinCupEditConfirm"));
+const InvoicePrintModal = lazy(() => import("../modals/InvoicePrintModal"));
 
 const ContestJoinEdit = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -140,10 +141,23 @@ const ContestJoinEdit = () => {
             onClose={() => setConfirmDrawerOpen(false)}
             size="md"
           >
-            <JoinCupEditConfirm
-              propInvoiceInfo={invoiceInfo}
-              prevSetModal={setConfirmDrawerOpen}
-            />
+            <Suspense
+              fallback={
+                <div className="flex justify-center items-center py-20">
+                  <RotatingLines
+                    strokeColor="#111111"
+                    strokeWidth="4"
+                    width="36"
+                    visible={true}
+                  />
+                </div>
+              }
+            >
+              <JoinCupEditConfirm
+                propInvoiceInfo={invoiceInfo}
+                prevSetModal={setConfirmDrawerOpen}
+              />
+            </Suspense>
           </AppDrawer>
 
           <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
@@ -281,12 +295,25 @@ const ContestJoinEdit = () => {
             </div>
           </main>
           {printDrawerOpen && (
-            <InvoicePrintModal
-              invoiceInfo={invoiceInfo}
-              contestInfo={contests}
-              noticeInfo={noticeInfo}
-              onClose={() => setPrintDrawerOpen(false)}
-            />
+            <Suspense
+              fallback={
+                <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
+                  <RotatingLines
+                    strokeColor="#111111"
+                    strokeWidth="4"
+                    width="48"
+                    visible={true}
+                  />
+                </div>
+              }
+            >
+              <InvoicePrintModal
+                invoiceInfo={invoiceInfo}
+                contestInfo={contests}
+                noticeInfo={noticeInfo}
+                onClose={() => setPrintDrawerOpen(false)}
+              />
+            </Suspense>
           )}
         </div>
       )}

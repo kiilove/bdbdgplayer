@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, Suspense, lazy } from "react";
 import { BsFillCameraFill } from "react-icons/bs";
 import {
   RiTrophyLine,
@@ -12,13 +12,14 @@ import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { handleToast } from "../components/HandleToast";
-import InvoicePrintModal from "../modals/InvoicePrintModal";
 import { DEFAULT_AVATAR } from "../consts";
 import { UserContext } from "../context/UserContext";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import { fetchUserInvoices } from "../services/contestService";
 import { uploadPlayerAvatar } from "../services/playerService";
 import { calculateAge } from "../utils/formatUtils";
+
+const InvoicePrintModal = lazy(() => import("../modals/InvoicePrintModal"));
 
 const MyProfile = () => {
   const {
@@ -439,10 +440,23 @@ const MyProfile = () => {
         </section>
       </main>
       {selectedPrintInvoice && (
-        <InvoicePrintModal
-          invoiceInfo={selectedPrintInvoice}
-          onClose={() => setSelectedPrintInvoice(null)}
-        />
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
+              <RotatingLines
+                strokeColor="#111111"
+                strokeWidth="4"
+                width="48"
+                visible={true}
+              />
+            </div>
+          }
+        >
+          <InvoicePrintModal
+            invoiceInfo={selectedPrintInvoice}
+            onClose={() => setSelectedPrintInvoice(null)}
+          />
+        </Suspense>
       )}
     </div>
   );
