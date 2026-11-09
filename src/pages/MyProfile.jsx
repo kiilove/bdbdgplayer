@@ -12,6 +12,7 @@ import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { handleToast } from "../components/HandleToast";
+import PosterWallBackground from "../components/common/PosterWallBackground";
 import InvoicePrintModal from "../modals/InvoicePrintModal";
 import { DEFAULT_AVATAR } from "../consts";
 import { UserContext } from "../context/UserContext";
@@ -96,7 +97,8 @@ const MyProfile = () => {
     pInfo?.playerAge || (pInfo?.pBirth ? calculateAge(pInfo.pBirth) : null);
 
   return (
-    <div className="min-h-screen bg-[#F6F8FB] text-[#191F28] w-full pb-32 font-sans antialiased">
+    <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] w-full pb-32 font-sans antialiased">
+      <PosterWallBackground />
       <BottomMenu />
       <Header
         title="마이페이지"
@@ -104,7 +106,7 @@ const MyProfile = () => {
           <button
             type="button"
             onClick={handleLogout}
-            className="flex items-center gap-x-1.5 text-slate-600 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/60 transition text-xs sm:text-sm font-bold cursor-pointer px-3 py-1.5 rounded-lg border border-slate-200 bg-white active:scale-95"
+            className="flex items-center gap-x-1.5 text-neutral-600 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/60 transition text-xs sm:text-sm font-bold cursor-pointer px-3 py-1.5 rounded-lg border border-neutral-200 bg-white active:scale-95"
           >
             <RiLogoutBoxRLine className="text-base" />
             <span>로그아웃</span>
@@ -114,7 +116,7 @@ const MyProfile = () => {
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="#2563EB"
+            strokeColor="#111111"
             strokeWidth="4"
             animationDuration="0.75"
             width="52"
@@ -123,22 +125,22 @@ const MyProfile = () => {
         </div>
       )}
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-7 md:py-10 flex flex-col gap-y-8">
+      <main className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-7 md:py-10 flex flex-col gap-y-8">
         {/* Profile Card */}
-        <section className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
-          <div className="flex flex-col sm:flex-row items-center gap-5 border-b border-slate-100 pb-6">
+        <section className="bg-white border border-neutral-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_2px_16px_rgba(0,0,0,0.03)] flex flex-col gap-y-6">
+          <div className="flex flex-col sm:flex-row items-center gap-5 border-b border-neutral-100 pb-6">
             <label
               htmlFor="playerPic"
               className="relative cursor-pointer group shrink-0"
             >
-              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-slate-200 bg-slate-50">
+              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-neutral-200 bg-[#FAFAFA]">
                 <img
                   src={pInfo.pPic || DEFAULT_AVATAR}
                   alt={pInfo.pName || "프로필"}
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-200"
                 />
               </div>
-              <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#2563EB] text-white shadow-sm flex items-center justify-center border-2 border-white">
+              <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#111111] text-white shadow-sm flex items-center justify-center border-2 border-white">
                 <BsFillCameraFill className="text-xs" />
               </div>
               <input
@@ -163,23 +165,23 @@ const MyProfile = () => {
 
           {/* Profile Information List */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+            <div className="flex items-center justify-between p-4 bg-[#FAFAFA] border border-neutral-200/70 rounded-xl">
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-neutral-500">
                   이름 (실명 · 변경 불가)
                 </span>
-                <span className="text-[15px] font-bold text-[#191F28] mt-1">
+                <span className="text-[15px] font-bold text-[#111111] mt-1">
                   {pInfo.pName || "-"}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+            <div className="flex items-center justify-between p-4 bg-[#FAFAFA] border border-neutral-200/70 rounded-xl">
               <div className="flex flex-col min-w-0">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-neutral-500">
                   이메일 계정 (변경 불가)
                 </span>
-                <span className="text-[15px] font-bold text-[#191F28] mt-1 truncate">
+                <span className="text-[15px] font-bold text-[#111111] mt-1 truncate">
                   {pInfo.pEmail || "-"}
                 </span>
               </div>
@@ -190,17 +192,17 @@ const MyProfile = () => {
               onClick={() =>
                 navigate("/editprofile", { state: { editType: "pTel" } })
               }
-              className="flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 rounded-2xl transition cursor-pointer text-left group"
+              className="flex items-center justify-between p-4 bg-[#FAFAFA] hover:bg-neutral-100/80 border border-neutral-200/70 hover:border-neutral-300 rounded-xl transition cursor-pointer text-left group"
             >
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-neutral-500">
                   휴대폰 번호
                 </span>
-                <span className="text-[15px] font-bold text-[#191F28] mt-1">
+                <span className="text-[15px] font-bold text-[#111111] mt-1">
                   {pInfo.pTel || "등록 필요"}
                 </span>
               </div>
-              <span className="text-xs font-bold text-slate-500 group-hover:text-[#2563EB] flex items-center gap-0.5">
+              <span className="text-xs font-bold text-neutral-500 group-hover:text-[#111111] flex items-center gap-0.5">
                 <span>수정</span>
                 <IoChevronForward />
               </span>
@@ -211,18 +213,18 @@ const MyProfile = () => {
               onClick={() =>
                 navigate("/editprofile", { state: { editType: "pBirth" } })
               }
-              className="flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 rounded-2xl transition cursor-pointer text-left group"
+              className="flex items-center justify-between p-4 bg-[#FAFAFA] hover:bg-neutral-100/80 border border-neutral-200/70 hover:border-neutral-300 rounded-xl transition cursor-pointer text-left group"
             >
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-neutral-500">
                   생년월일 및 만 나이
                 </span>
-                <span className="text-[15px] font-bold text-[#191F28] mt-1">
+                <span className="text-[15px] font-bold text-[#111111] mt-1">
                   {pInfo.pBirth || "등록 필요"}{" "}
                   {displayAge ? `(만 ${displayAge}세)` : ""}
                 </span>
               </div>
-              <span className="text-xs font-bold text-slate-500 group-hover:text-[#2563EB] flex items-center gap-0.5">
+              <span className="text-xs font-bold text-neutral-500 group-hover:text-[#111111] flex items-center gap-0.5">
                 <span>수정</span>
                 <IoChevronForward />
               </span>
@@ -233,13 +235,13 @@ const MyProfile = () => {
               onClick={() =>
                 navigate("/editprofile", { state: { editType: "pGender" } })
               }
-              className="flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 rounded-2xl transition cursor-pointer text-left group"
+              className="flex items-center justify-between p-4 bg-[#FAFAFA] hover:bg-neutral-100/80 border border-neutral-200/70 hover:border-neutral-300 rounded-xl transition cursor-pointer text-left group"
             >
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-neutral-500">
                   성별
                 </span>
-                <span className="text-[15px] font-bold text-[#191F28] mt-1">
+                <span className="text-[15px] font-bold text-[#111111] mt-1">
                   {pInfo.pGender
                     ? pInfo.pGender === "m"
                       ? "남자"
@@ -247,7 +249,7 @@ const MyProfile = () => {
                     : "등록 필요"}
                 </span>
               </div>
-              <span className="text-xs font-bold text-slate-500 group-hover:text-[#2563EB] flex items-center gap-0.5">
+              <span className="text-xs font-bold text-neutral-500 group-hover:text-[#111111] flex items-center gap-0.5">
                 <span>수정</span>
                 <IoChevronForward />
               </span>
@@ -258,17 +260,17 @@ const MyProfile = () => {
               onClick={() =>
                 navigate("/editprofile", { state: { editType: "pGym" } })
               }
-              className="flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 rounded-2xl transition cursor-pointer text-left group"
+              className="flex items-center justify-between p-4 bg-[#FAFAFA] hover:bg-neutral-100/80 border border-neutral-200/70 hover:border-neutral-300 rounded-xl transition cursor-pointer text-left group"
             >
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-neutral-500">
                   소속 체육관 / 팀
                 </span>
-                <span className="text-[15px] font-bold text-[#191F28] mt-1">
+                <span className="text-[15px] font-bold text-[#111111] mt-1">
                   {pInfo.pGym || "등록 필요"}
                 </span>
               </div>
-              <span className="text-xs font-bold text-slate-500 group-hover:text-[#2563EB] flex items-center gap-0.5">
+              <span className="text-xs font-bold text-neutral-500 group-hover:text-[#111111] flex items-center gap-0.5">
                 <span>수정</span>
                 <IoChevronForward />
               </span>
@@ -279,13 +281,13 @@ const MyProfile = () => {
               onClick={() =>
                 navigate("/editprofile", { state: { editType: "password" } })
               }
-              className="sm:col-span-2 flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 rounded-2xl transition cursor-pointer text-left group"
+              className="sm:col-span-2 flex items-center justify-between p-4 bg-[#FAFAFA] hover:bg-neutral-100/80 border border-neutral-200/70 hover:border-neutral-300 rounded-xl transition cursor-pointer text-left group"
             >
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-neutral-500">
                   계정 보안 · 비밀번호
                 </span>
-                <span className="text-[15px] font-bold text-[#191F28] mt-1">
+                <span className="text-[15px] font-bold text-[#111111] mt-1">
                   비밀번호 변경하기
                 </span>
               </div>

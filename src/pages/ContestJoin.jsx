@@ -4,8 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
+import { handleToast } from "../components/HandleToast";
 import Policy3 from "../components/Policy3";
 import AppDrawer from "../components/common/AppDrawer";
+import PosterWallBackground from "../components/common/PosterWallBackground";
 import ContestHeaderBanner from "../components/contest/ContestHeaderBanner";
 import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
@@ -119,7 +121,8 @@ const ContestJoin = () => {
   }, [noticeInfo, contests, pInfo, params.contestId, setInvoiceInfo]);
 
   return (
-    <div className="flex justify-center items-start align-top bg-[#F5F5F7] min-h-screen">
+    <div className="relative flex justify-center items-start align-top bg-[#F6F7F9] min-h-screen">
+      <PosterWallBackground />
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
@@ -133,14 +136,14 @@ const ContestJoin = () => {
       )}
 
       {!isLoading && error && (
-        <div className="min-h-screen bg-[#F5F5F7] text-[#111111] w-full flex flex-col items-center justify-center p-6 text-center gap-4">
+        <div className="relative z-10 min-h-screen bg-[#F6F7F9] text-[#111111] w-full flex flex-col items-center justify-center p-6 text-center gap-4">
           <p className="text-base text-neutral-600 font-bold">
             대회 정보를 불러올 수 없거나 종료된 공고입니다.
           </p>
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="px-6 py-3.5 bg-[#111111] text-white font-bold text-sm rounded-full cursor-pointer"
+            className="px-6 py-3.5 bg-[#111111] text-white font-bold text-sm rounded-xl cursor-pointer"
           >
             홈으로 돌아가기
           </button>
@@ -148,7 +151,7 @@ const ContestJoin = () => {
       )}
 
       {!isLoading && !error && noticeInfo.contestTitle && (
-        <div className="min-h-screen bg-[#F5F5F7] text-[#111111] w-full pb-28 font-sans antialiased">
+        <div className="relative z-10 min-h-screen text-[#111111] w-full pb-28 font-sans antialiased">
           <BottomMenu />
           <Header title="대회 참가신청" />
 
@@ -369,9 +372,26 @@ const ContestJoin = () => {
 
                   {noticeInfo.contestAccountOwner && (
                     <div className="bg-[#FAFAFA] border border-neutral-200/70 rounded-xl p-4 text-sm flex flex-col gap-y-1 text-[#111111]">
-                      <span className="font-bold text-neutral-400 text-xs">
-                        입금 계좌 안내
-                      </span>
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-neutral-400 text-xs">
+                          입금 계좌 안내
+                        </span>
+                        {noticeInfo.contestAccountNumber && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const text = `${noticeInfo.contestBankName || ""} ${noticeInfo.contestAccountNumber || ""}`.trim();
+                              if (navigator?.clipboard?.writeText) {
+                                navigator.clipboard.writeText(text);
+                                handleToast("success", "입금 계좌번호가 복사되었습니다.");
+                              }
+                            }}
+                            className="text-[11px] font-bold text-[#111111] bg-white hover:bg-neutral-100 border border-neutral-200 px-2 py-0.5 rounded-[4px] transition cursor-pointer"
+                          >
+                            계좌 복사
+                          </button>
+                        )}
+                      </div>
                       <p className="font-bold text-[#111111] mt-0.5 tabular-nums">
                         {noticeInfo.contestBankName || ""}{" "}
                         {noticeInfo.contestAccountNumber}

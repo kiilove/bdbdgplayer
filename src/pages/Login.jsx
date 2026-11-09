@@ -94,7 +94,7 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#F6F8FB] text-[#191F28] flex flex-col justify-center items-center px-4 py-12 font-sans antialiased">
+    <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] flex flex-col justify-center items-center px-4 py-12 font-sans antialiased">
       <PosterWallBackground />
       <ConfirmationModal
         isOpen={messageOpen}
@@ -106,7 +106,7 @@ const Login = () => {
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="#2563EB"
+            strokeColor="#111111"
             strokeWidth="4"
             animationDuration="0.75"
             width="52"
@@ -115,19 +115,19 @@ const Login = () => {
         </div>
       )}
 
-      <div className="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-3xl p-8 sm:p-10 shadow-[0_8px_32px_rgba(15,23,42,0.06)] flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-md border border-neutral-200/90 rounded-2xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col items-center">
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-y-2 mb-8">
           <Link
             to="/"
-            className="text-2xl font-black tracking-tighter bg-gradient-to-r from-[#4F46E5] via-[#7C3AED] to-[#FF2E54] bg-clip-text text-transparent"
+            className="text-2xl font-black tracking-tighter text-[#111111]"
           >
-            BDBDG
+            BDBDG<span className="text-[#FF3B30]">.</span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A] mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#111111] mt-1">
             선수 로그인
           </h1>
-          <p className="text-sm text-slate-500 font-medium">
+          <p className="text-sm text-neutral-500 font-medium">
             보디빌딩 & 피트니스 대회 공식 참가접수 시스템
           </p>
         </div>
@@ -137,9 +137,9 @@ const Login = () => {
           <div className="flex flex-col gap-y-1.5">
             <label
               htmlFor="login-email"
-              className="text-sm font-semibold text-slate-700 px-0.5"
+              className="text-xs font-bold text-neutral-500 uppercase tracking-wider px-0.5"
             >
-              이메일 계정
+              EMAIL · 이메일 계정
             </label>
             <input
               id="login-email"
@@ -149,7 +149,7 @@ const Login = () => {
               value={loginInfo.email}
               onChange={handleInputs}
               ref={loginEmailRef}
-              className="w-full h-12 bg-[#F8FAFC] border border-slate-200 rounded-xl px-4 text-base text-[#0F172A] placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 transition"
+              className="w-full h-12 bg-[#FAFAFA] border border-neutral-200 rounded-xl px-4 text-base text-[#111111] placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-[#111111] focus:ring-2 focus:ring-black/5 transition"
               placeholder="name@example.com"
             />
           </div>
@@ -157,9 +157,9 @@ const Login = () => {
           <div className="flex flex-col gap-y-1.5">
             <label
               htmlFor="login-password"
-              className="text-sm font-semibold text-slate-700 px-0.5"
+              className="text-xs font-bold text-neutral-500 uppercase tracking-wider px-0.5"
             >
-              비밀번호
+              PASSWORD · 비밀번호
             </label>
             <input
               id="login-password"
@@ -169,7 +169,7 @@ const Login = () => {
               value={loginInfo.password}
               onChange={handleInputs}
               ref={loginPasswordRef}
-              className="w-full h-12 bg-[#F8FAFC] border border-slate-200 rounded-xl px-4 text-base text-[#0F172A] placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 transition"
+              className="w-full h-12 bg-[#FAFAFA] border border-neutral-200 rounded-xl px-4 text-base text-[#111111] placeholder-neutral-400 focus:bg-white focus:outline-none focus:border-[#111111] focus:ring-2 focus:ring-black/5 transition"
               placeholder="비밀번호를 입력하세요"
             />
           </div>
@@ -177,17 +177,17 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-13 py-3.5 mt-3 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white font-bold text-[15px] rounded-xl shadow-[0_6px_18px_rgba(99,102,241,0.30)] transition cursor-pointer flex items-center justify-center active:scale-[0.99] disabled:opacity-60"
+            className="w-full h-13 py-3.5 mt-3 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-[15px] rounded-xl transition cursor-pointer flex items-center justify-center active:scale-[0.99] disabled:opacity-60"
           >
             로그인
           </button>
         </form>
 
         {/* Footer Actions */}
-        <div className="flex flex-wrap items-center justify-between gap-2 w-full mt-8 pt-6 border-t border-slate-100 text-xs sm:text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2 w-full mt-8 pt-6 border-t border-neutral-100 text-xs sm:text-sm">
           <Link
             to="/register"
-            className="font-bold text-indigo-600 hover:underline transition"
+            className="font-bold text-[#111111] hover:underline transition"
           >
             신규 선수 회원가입
           </Link>

@@ -11,7 +11,7 @@ const Policy3 = ({ onClose }) => {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-neutral-200 pb-4 mb-5">
         <div className="flex items-center gap-x-3">
-          <div className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold text-xl shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#111111] text-white flex items-center justify-center font-bold text-xl shrink-0">
             <RiShieldCheckLine />
           </div>
           <div>
@@ -27,7 +27,7 @@ const Policy3 = ({ onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-[#F5F5F7] hover:bg-neutral-200 text-neutral-600 hover:text-[#111111] flex items-center justify-center transition cursor-pointer shrink-0"
+            className="w-9 h-9 rounded-lg bg-[#F5F5F7] hover:bg-neutral-200 text-neutral-600 hover:text-[#111111] flex items-center justify-center transition cursor-pointer shrink-0"
           >
             <RiCloseLine className="text-xl" />
           </button>
@@ -126,7 +126,7 @@ const Policy3 = ({ onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-full transition active:scale-[0.99] cursor-pointer shadow-sm"
+            className="w-full py-4 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-xl transition active:scale-[0.99] cursor-pointer shadow-sm"
           >
             확인 및 닫기
           </button>

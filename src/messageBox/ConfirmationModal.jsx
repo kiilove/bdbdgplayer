@@ -30,8 +30,8 @@ const resolveModalTheme = (message = {}) => {
     return {
       badge: message.title || "로그인 안내",
       icon: FiLock,
-      iconWrapClass: "bg-indigo-50 text-indigo-600 border-indigo-200/80",
-      badgeClass: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
+      iconWrapClass: "bg-neutral-100 text-[#111111] border-neutral-200",
+      badgeClass: "bg-[#111111] text-white border-[#111111]",
     };
   }
 
@@ -43,16 +43,16 @@ const resolveModalTheme = (message = {}) => {
     return {
       badge: message.title || "확인 필요",
       icon: FiAlertCircle,
-      iconWrapClass: "bg-rose-50 text-[#FF2E54] border-rose-200",
-      badgeClass: "bg-rose-50 text-[#FF2E54] border-rose-200",
+      iconWrapClass: "bg-[#FFF5F5] text-[#FF3B30] border-[#FF3B30]/25",
+      badgeClass: "bg-[#FFF5F5] text-[#FF3B30] border-[#FF3B30]/25",
     };
   }
 
   return {
     badge: message.title || "안내",
     icon: FiInfo,
-    iconWrapClass: "bg-indigo-50 text-indigo-600 border-indigo-200/80",
-    badgeClass: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
+    iconWrapClass: "bg-neutral-100 text-[#111111] border-neutral-200",
+    badgeClass: "bg-neutral-100 text-neutral-700 border-neutral-200",
   };
 };
 
@@ -105,7 +105,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
       aria-modal="true"
     >
       <div
-        className="relative w-full max-w-[380px] bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.18)] text-[#111111] flex flex-col items-center text-center animate-modalPop"
+        className="relative w-full max-w-[380px] bg-white border border-neutral-200/90 rounded-2xl p-6 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.18)] text-[#111111] flex flex-col items-center text-center animate-modalPop"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 우측 상단 닫기 버튼 */}
@@ -113,21 +113,21 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
           type="button"
           onClick={handleCancelClick}
           aria-label="닫기"
-          className="absolute top-4 right-4 w-8 h-8 rounded-full text-neutral-400 hover:text-[#111111] hover:bg-[#F5F5F7] flex items-center justify-center transition cursor-pointer"
+          className="absolute top-4 right-4 w-8 h-8 rounded-lg text-neutral-400 hover:text-[#111111] hover:bg-neutral-100 flex items-center justify-center transition cursor-pointer"
         >
           <FiX className="text-lg" />
         </button>
 
         {/* 상단 아이콘 & 상태 배지 */}
         <div
-          className={`w-13 h-13 rounded-2xl border flex items-center justify-center mb-3.5 ${iconWrapClass}`}
+          className={`w-13 h-13 rounded-xl border flex items-center justify-center mb-3.5 ${iconWrapClass}`}
           style={{ width: "52px", height: "52px" }}
         >
           <IconComponent className="text-2xl" />
         </div>
 
         <span
-          className={`text-[11px] font-bold px-2.5 py-0.5 rounded-[5px] border mb-3 ${badgeClass}`}
+          className={`text-[11px] font-bold px-2.5 py-0.5 rounded-[4px] border mb-3 ${badgeClass}`}
         >
           {badge}
         </span>
@@ -135,17 +135,17 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
         {/* 본문 메시지 영역 */}
         <div className="flex flex-col gap-y-2 w-full px-1">
           {message?.body && (
-            <h2 className="text-[17px] sm:text-lg font-extrabold tracking-tight text-[#0F172A] leading-snug break-keep">
+            <h2 className="text-[17px] sm:text-lg font-black tracking-tight text-[#111111] leading-snug break-keep">
               {message.body}
             </h2>
           )}
           {message?.body2 && (
-            <p className="text-sm font-medium text-slate-600 leading-relaxed break-keep">
+            <p className="text-sm font-medium text-neutral-500 leading-relaxed break-keep">
               {message.body2}
             </p>
           )}
           {message?.body3 && (
-            <p className="text-xs font-medium text-slate-500 bg-slate-50 rounded-xl px-3.5 py-2.5 mt-1 leading-relaxed break-keep">
+            <p className="text-xs font-medium text-neutral-500 bg-[#FAFAFA] border border-neutral-200/70 rounded-xl px-3.5 py-2.5 mt-1 leading-relaxed break-keep">
               {message.body3}
             </p>
           )}
@@ -157,7 +157,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
             {message?.cancelButtonText && (
               <button
                 type="button"
-                className="flex-1 py-3.5 bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 rounded-xl text-sm font-bold text-slate-700 transition cursor-pointer active:scale-[0.98]"
+                className="flex-1 py-3.5 bg-neutral-100 hover:bg-neutral-200/80 rounded-xl text-sm font-bold text-neutral-700 transition cursor-pointer active:scale-[0.98]"
                 onClick={handleCancelClick}
               >
                 {message.cancelButtonText}
@@ -166,7 +166,7 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message = {} }) => {
             <button
               type="button"
               autoFocus
-              className="flex-1 py-3.5 bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] rounded-xl text-sm font-bold text-white transition active:scale-[0.98] shadow-[0_6px_18px_rgba(99,102,241,0.28)] cursor-pointer"
+              className="flex-1 py-3.5 bg-[#111111] hover:bg-neutral-800 rounded-xl text-sm font-bold text-white transition active:scale-[0.98] cursor-pointer"
               onClick={handleConfirmClick}
             >
               {message?.confirmButtonText || "확인"}

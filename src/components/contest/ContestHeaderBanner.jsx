@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import dayjs from "dayjs";
 import {
   MdCreditCard,
   MdOutlineLocationOn,
   MdFileDownload,
+  MdContentCopy,
+  MdCheck,
 } from "react-icons/md";
 import { RiBankLine, RiPrinterLine, RiTimeLine } from "react-icons/ri";
+import { handleToast } from "../HandleToast";
 import { getContestDDayBadge } from "../../utils/formatUtils";
 
 const ContestHeaderBanner = ({
@@ -19,7 +22,20 @@ const ContestHeaderBanner = ({
   collectionFileLink = "",
   onOpenPrintModal = null,
 }) => {
+  const [copiedAccount, setCopiedAccount] = useState(false);
   const dDayBadge = getContestDDayBadge(contestDate);
+
+  const handleCopyAccount = () => {
+    const accountText = `${bankInfo?.bankName || ""} ${
+      bankInfo?.accountNumber || ""
+    }`.trim();
+    if (!accountText || !navigator?.clipboard) return;
+    navigator.clipboard.writeText(accountText).then(() => {
+      setCopiedAccount(true);
+      handleToast("success", "입금 계좌번호가 클립보드에 복사되었습니다.");
+      setTimeout(() => setCopiedAccount(false), 2000);
+    });
+  };
 
   return (
     <div className="bg-white border border-neutral-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] mb-7 flex flex-col gap-6">
@@ -119,10 +135,29 @@ const ContestHeaderBanner = ({
 
         {bankInfo?.bankName && (
           <div className="bg-[#FAFAFA] border border-neutral-200/70 rounded-xl p-4 flex flex-col justify-between gap-1.5">
-            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-              <RiBankLine className="text-neutral-400 text-sm" />
-              입금 계좌 · ACCOUNT
-            </span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                <RiBankLine className="text-neutral-400 text-sm" />
+                입금 계좌 · ACCOUNT
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyAccount}
+                className="px-2 py-0.5 rounded-[4px] bg-white hover:bg-neutral-100 border border-neutral-200 text-[#111111] text-[10px] font-bold flex items-center gap-1 transition cursor-pointer"
+              >
+                {copiedAccount ? (
+                  <>
+                    <MdCheck className="text-emerald-600 text-xs" />
+                    <span className="text-emerald-700">복사됨</span>
+                  </>
+                ) : (
+                  <>
+                    <MdContentCopy className="text-neutral-500 text-[10px]" />
+                    <span>복사</span>
+                  </>
+                )}
+              </button>
+            </div>
             <span className="font-extrabold text-[#111111] break-keep tabular-nums">
               {bankInfo.bankName} {bankInfo.accountNumber} (
               {bankInfo.accountOwner})

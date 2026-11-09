@@ -398,7 +398,7 @@ const InvoicePrintModal = ({
         <div className="w-full bg-white border-b border-neutral-200 px-5 py-4 flex flex-col gap-3.5 sticky top-0 z-20 shadow-sm">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 text-[#111111]">
-              <div className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#111111] text-white flex items-center justify-center font-bold shrink-0">
                 <RiFileTextLine className="text-lg" />
               </div>
               <div>
@@ -418,7 +418,7 @@ const InvoicePrintModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="w-9 h-9 rounded-full bg-[#F5F5F7] hover:bg-neutral-200 text-neutral-600 hover:text-[#111111] flex items-center justify-center transition cursor-pointer shrink-0"
+              className="w-9 h-9 rounded-lg bg-[#F5F5F7] hover:bg-neutral-200 text-neutral-600 hover:text-[#111111] flex items-center justify-center transition cursor-pointer shrink-0"
             >
               <RiCloseLine className="text-xl" />
             </button>
@@ -431,10 +431,10 @@ const InvoicePrintModal = ({
                 value={submitTarget}
                 onChange={(e) => setSubmitTarget(e.target.value)}
                 placeholder="제출처 입력 (예: OO학교, OO회사 - 선택)"
-                className="px-4 py-2.5 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] rounded-full text-sm text-[#111111] placeholder-neutral-400 focus:outline-none w-full sm:w-64 transition"
+                className="px-4 py-2.5 bg-[#F5F5F7] border border-neutral-200 focus:bg-white focus:border-[#111111] rounded-xl text-sm text-[#111111] placeholder-neutral-400 focus:outline-none w-full sm:w-64 transition"
               />
 
-              <label className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#111111] bg-[#F5F5F7] border border-neutral-200 px-4 py-2.5 rounded-full cursor-pointer select-none hover:bg-neutral-200/70 transition">
+              <label className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#111111] bg-[#F5F5F7] border border-neutral-200 px-4 py-2.5 rounded-xl cursor-pointer select-none hover:bg-neutral-200/70 transition">
                 <input
                   type="checkbox"
                   checked={showPaymentInfo}
@@ -448,7 +448,7 @@ const InvoicePrintModal = ({
             <button
               type="button"
               onClick={handlePrint}
-              className="px-5 py-2.5 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-full shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto"
+              className="px-5 py-2.5 bg-[#111111] hover:bg-neutral-800 text-white font-bold text-sm rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto"
             >
               <RiPrinterLine className="text-base" />
               <span>A4 인쇄 / PDF 저장</span>

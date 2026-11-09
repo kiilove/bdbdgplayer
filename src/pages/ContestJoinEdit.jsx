@@ -5,6 +5,7 @@ import { RiPrinterLine } from "react-icons/ri";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import AppDrawer from "../components/common/AppDrawer";
+import PosterWallBackground from "../components/common/PosterWallBackground";
 import ContestHeaderBanner from "../components/contest/ContestHeaderBanner";
 import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
@@ -102,7 +103,8 @@ const ContestJoinEdit = () => {
     invoiceInfo.contestAccountOwner || noticeInfo.contestAccountOwner || "";
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-[#111111] font-sans antialiased pb-28">
+    <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] font-sans antialiased pb-28">
+      <PosterWallBackground />
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
@@ -116,14 +118,14 @@ const ContestJoinEdit = () => {
       )}
 
       {!isLoading && error && (
-        <div className="min-h-screen bg-[#F5F5F7] text-[#111111] w-full flex flex-col items-center justify-center p-6 text-center gap-4">
+        <div className="relative z-10 min-h-screen bg-[#F6F7F9] text-[#111111] w-full flex flex-col items-center justify-center p-6 text-center gap-4">
           <p className="text-base text-neutral-600 font-bold">
             신청 내역을 불러올 수 없거나 존재하지 않는 문서입니다.
           </p>
           <button
             type="button"
             onClick={() => navigate("/myprofile")}
-            className="px-6 py-3.5 bg-[#111111] text-white font-bold text-sm rounded-full cursor-pointer"
+            className="px-6 py-3.5 bg-[#111111] text-white font-bold text-sm rounded-xl cursor-pointer"
           >
             내 신청내역으로 돌아가기
           </button>
@@ -131,7 +133,7 @@ const ContestJoinEdit = () => {
       )}
 
       {!isLoading && !error && (
-        <>
+        <div className="relative z-10">
           <BottomMenu />
           <Header title="참가신청 내역 및 수정" />
 
@@ -288,7 +290,7 @@ const ContestJoinEdit = () => {
               onClose={() => setPrintDrawerOpen(false)}
             />
           )}
-        </>
+        </div>
       )}
     </div>
   );

@@ -13,7 +13,6 @@ const CategorySelectStep = ({
   handleInvoiceInfo,
   children,
 }) => {
-  // 종목별 체급 목록을 사전 인덱싱 및 정렬하여 매 렌더링 시 O(N*M) 필터/정렬 비용 제거
   const gradesByCategoryId = useMemo(() => {
     const map = {};
     grades.forEach((grade) => {
@@ -32,7 +31,6 @@ const CategorySelectStep = ({
     return map;
   }, [grades]);
 
-  // 현재 선택된 종목 맵을 사전 인덱싱
   const selectedJoinByCategoryId = useMemo(() => {
     const map = {};
     (invoiceInfo?.joins || []).forEach((join) => {
@@ -44,11 +42,11 @@ const CategorySelectStep = ({
   }, [invoiceInfo?.joins]);
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_rgba(15,23,42,0.04)] flex flex-col gap-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-        <h2 className="text-lg sm:text-xl font-extrabold text-[#0F172A] flex items-center gap-x-2.5 tracking-tight">
-          <span className="w-7 h-7 rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white text-xs flex items-center justify-center font-bold shadow-sm">
-            2
+    <div className="bg-white border border-neutral-200/90 rounded-2xl p-6 sm:p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] flex flex-col gap-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100 pb-4">
+        <h2 className="text-lg sm:text-xl font-black text-[#111111] flex items-center gap-x-2.5 tracking-tight">
+          <span className="w-7 h-7 rounded-[6px] bg-[#111111] text-white text-xs flex items-center justify-center font-black tabular-nums">
+            02
           </span>
           {stepTitle}
         </h2>
@@ -56,28 +54,28 @@ const CategorySelectStep = ({
           <button
             type="button"
             onClick={() => setChkAllItem((prev) => !prev)}
-            className={`text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg border transition cursor-pointer ${
+            className={`text-xs sm:text-sm font-bold px-3 py-1.5 rounded-lg border transition cursor-pointer ${
               !chkAllItem
-                ? "bg-indigo-50 text-indigo-600 border-indigo-200 font-bold"
-                : "bg-[#F8FAFC] text-slate-600 border-slate-200 hover:bg-slate-100"
+                ? "bg-[#111111] text-white border-[#111111]"
+                : "bg-[#FAFAFA] text-neutral-600 border-neutral-200 hover:bg-neutral-100"
             }`}
           >
             {!chkAllItem ? "내 성별 종목만 표시 중" : "전체 성별 종목 표시 중"}
           </button>
-          <span className="text-xs sm:text-sm text-amber-800 font-bold bg-amber-50/90 px-3 py-1.5 rounded-lg border border-amber-200/80">
+          <span className="text-xs sm:text-sm text-[#FF3B30] font-bold bg-[#FFF5F5] px-3 py-1.5 rounded-lg border border-[#FF3B30]/20">
             중복 출전 가능
           </span>
         </div>
       </div>
 
       {/* 참가비 유의사항 안내 박스 */}
-      <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex items-start gap-x-3 text-slate-700 text-sm leading-relaxed">
-        <RiErrorWarningLine className="text-indigo-600 text-lg flex-shrink-0 mt-0.5" />
+      <div className="bg-[#FAFAFA] border border-neutral-200/80 rounded-xl p-4 flex items-start gap-x-3 text-neutral-700 text-sm leading-relaxed">
+        <RiErrorWarningLine className="text-[#FF3B30] text-lg flex-shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold text-[#0F172A] block mb-0.5">
+          <span className="font-bold text-[#111111] block mb-0.5">
             참가비용 관련 유의사항
           </span>
-          <span className="text-slate-600 text-xs sm:text-sm">
+          <span className="text-neutral-500 text-xs sm:text-sm">
             학생부, 피트니스 챌린지와 보디빌딩 중복 출전의 경우 정확한 참가비용은 경기도보디빌딩협회를 통해 안내 받으시기 바랍니다.
           </span>
         </div>
@@ -100,23 +98,23 @@ const CategorySelectStep = ({
                 key={cId}
                 className={`p-4 sm:p-5 rounded-xl border transition flex flex-col justify-between gap-y-3.5 ${
                   selectedJoinInThisCat
-                    ? "bg-indigo-50/35 border-2 border-[#4F46E5] shadow-[0_4px_16px_rgba(79,70,229,0.10)]"
-                    : "bg-[#F8FAFC] border-slate-200/80 hover:border-indigo-200"
+                    ? "bg-white border-2 border-[#111111] shadow-[0_6px_20px_rgba(0,0,0,0.06)]"
+                    : "bg-[#FAFAFA] border-neutral-200/80 hover:border-neutral-400"
                 }`}
               >
                 <div className="flex items-start justify-between gap-x-2">
                   <div className="flex items-center gap-x-2">
                     {selectedJoinInThisCat && (
-                      <span className="w-5 h-5 rounded-md bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white flex items-center justify-center shrink-0">
+                      <span className="w-5 h-5 rounded-[4px] bg-[#111111] text-white flex items-center justify-center shrink-0">
                         <RiCheckLine className="text-xs" />
                       </span>
                     )}
-                    <span className="text-base font-bold text-[#0F172A] tracking-tight break-keep">
+                    <span className="text-base font-extrabold text-[#111111] tracking-tight break-keep">
                       {cTitle}
                     </span>
                   </div>
                   {badgeText && (
-                    <span className="shrink-0 text-xs font-semibold text-indigo-600 bg-white px-2 py-0.5 rounded-[5px] border border-indigo-200/80">
+                    <span className="shrink-0 text-[11px] font-bold text-neutral-600 bg-white px-2 py-0.5 rounded-[4px] border border-neutral-200">
                       {badgeText}
                     </span>
                   )}
@@ -131,10 +129,10 @@ const CategorySelectStep = ({
                         ? `${selectedJoinInThisCat.contestGradeId},${selectedJoinInThisCat.contestGradeTitle},${cType || ""}`
                         : ""
                     }
-                    className={`w-full h-12 px-3.5 rounded-xl text-[15px] font-semibold focus:outline-none cursor-pointer transition ${
+                    className={`w-full h-12 px-3.5 rounded-xl text-[15px] font-bold focus:outline-none cursor-pointer transition ${
                       selectedJoinInThisCat
-                        ? "bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white border border-[#4F46E5]"
-                        : "bg-white border border-slate-200 text-slate-700 focus:border-[#4F46E5]"
+                        ? "bg-[#111111] text-white border border-[#111111]"
+                        : "bg-white border border-neutral-200 text-neutral-700 focus:border-[#111111]"
                     }`}
                     onChange={handleInvoiceInfo}
                   >

@@ -4,6 +4,7 @@ import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { handleToast } from "../components/HandleToast";
+import PosterWallBackground from "../components/common/PosterWallBackground";
 import { UserContext } from "../context/UserContext";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import { savePlayerProfile } from "../services/playerService";
@@ -211,14 +212,15 @@ const EditProfile = () => {
     editType === "pBirth" && validateDate(value) ? calculateAge(value) : null;
 
   return (
-    <div className="min-h-screen bg-[#F4F5FA] text-[#0F172A] pb-28 font-sans antialiased">
+    <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] pb-28 font-sans antialiased">
+      <PosterWallBackground />
       <BottomMenu />
       <Header title={config.title} />
 
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines
-            strokeColor="#4F46E5"
+            strokeColor="#111111"
             strokeWidth="4"
             animationDuration="0.75"
             width="52"
@@ -227,19 +229,19 @@ const EditProfile = () => {
         </div>
       )}
 
-      <main className="max-w-md mx-auto px-4 pt-8">
-        <div className="flex w-full flex-col bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 gap-y-5 shadow-[0_2px_16px_rgba(15,23,42,0.04)]">
+      <main className="relative z-10 max-w-md mx-auto px-4 pt-8">
+        <div className="flex w-full flex-col bg-white border border-neutral-200/90 rounded-2xl p-6 sm:p-8 gap-y-5 shadow-[0_2px_16px_rgba(0,0,0,0.03)]">
           {editType === "password" ? (
             <form
               onSubmit={handlePasswordChangeSubmit}
               className="flex flex-col gap-y-4"
             >
               {pInfo?.pEmail && (
-                <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 flex items-center justify-between text-xs sm:text-sm">
-                  <span className="text-slate-500 font-semibold">
+                <div className="bg-[#FAFAFA] border border-neutral-200/80 rounded-xl px-4 py-3 flex items-center justify-between text-xs sm:text-sm">
+                  <span className="text-neutral-500 font-semibold">
                     대상 계정
                   </span>
-                  <span className="font-bold text-[#0F172A] truncate ml-2">
+                  <span className="font-bold text-[#111111] truncate ml-2">
                     {pInfo.pEmail}
                   </span>
                 </div>
@@ -252,8 +254,8 @@ const EditProfile = () => {
               )}
 
               <div>
-                <label className="block text-sm font-bold text-[#0F172A] mb-1.5">
-                  현재 비밀번호
+                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1.5">
+                  CURRENT PASSWORD · 현재 비밀번호
                 </label>
                 <input
                   type="password"
@@ -262,13 +264,13 @@ const EditProfile = () => {
                   value={pwdForm.currentPassword}
                   onChange={handlePwdFieldChange}
                   placeholder="현재 사용 중인 비밀번호 입력"
-                  className="w-full h-12 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none px-4 rounded-xl text-[#0F172A] text-base font-medium placeholder-slate-400 transition"
+                  className="w-full h-12 bg-[#FAFAFA] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-2 focus:ring-black/5 focus:outline-none px-4 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#0F172A] mb-1.5">
-                  새 비밀번호
+                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1.5">
+                  NEW PASSWORD · 새 비밀번호
                 </label>
                 <input
                   type="password"
@@ -277,7 +279,7 @@ const EditProfile = () => {
                   value={pwdForm.newPassword}
                   onChange={handlePwdFieldChange}
                   placeholder="새 비밀번호 (6자리 이상)"
-                  className="w-full h-12 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none px-4 rounded-xl text-[#0F172A] text-base font-medium placeholder-slate-400 transition"
+                  className="w-full h-12 bg-[#FAFAFA] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-2 focus:ring-black/5 focus:outline-none px-4 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
                 />
                 {pwdForm.newPassword.length > 0 &&
                   pwdForm.newPassword.length < 6 && (
@@ -295,8 +297,8 @@ const EditProfile = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#0F172A] mb-1.5">
-                  새 비밀번호 확인
+                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1.5">
+                  CONFIRM PASSWORD · 새 비밀번호 확인
                 </label>
                 <input
                   type="password"
@@ -305,7 +307,7 @@ const EditProfile = () => {
                   value={pwdForm.confirmPassword}
                   onChange={handlePwdFieldChange}
                   placeholder="새 비밀번호 다시 입력"
-                  className="w-full h-12 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none px-4 rounded-xl text-[#0F172A] text-base font-medium placeholder-slate-400 transition"
+                  className="w-full h-12 bg-[#FAFAFA] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-2 focus:ring-black/5 focus:outline-none px-4 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
                 />
                 {pwdForm.confirmPassword.length > 0 &&
                   pwdForm.newPassword !== pwdForm.confirmPassword && (
@@ -315,7 +317,7 @@ const EditProfile = () => {
                   )}
               </div>
 
-              <ul className="text-xs sm:text-sm text-slate-500 space-y-1.5 bg-slate-50 border border-slate-100 p-4 rounded-xl mt-1">
+              <ul className="text-xs sm:text-sm text-neutral-500 space-y-1.5 bg-[#FAFAFA] border border-neutral-200/70 p-4 rounded-xl mt-1">
                 {config.hints.map((hint, idx) => (
                   <li key={idx}>• {hint}</li>
                 ))}
@@ -325,7 +327,7 @@ const EditProfile = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/myprofile")}
-                  className="flex-1 py-3.5 rounded-xl font-bold text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+                  className="flex-1 py-3.5 rounded-xl font-bold text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition cursor-pointer"
                 >
                   취소
                 </button>
@@ -334,8 +336,8 @@ const EditProfile = () => {
                   disabled={!isPasswordModeValid || isLoading}
                   className={`flex-1 py-3.5 rounded-xl font-bold text-sm transition ${
                     isPasswordModeValid
-                      ? "bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white cursor-pointer shadow-[0_6px_16px_rgba(79,70,229,0.28)]"
-                      : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      ? "bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer"
+                      : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
                   }`}
                 >
                   비밀번호 변경
@@ -343,11 +345,11 @@ const EditProfile = () => {
               </div>
 
               {pInfo?.pEmail && (
-                <div className="pt-4 mt-1 border-t border-slate-100 text-center">
+                <div className="pt-4 mt-1 border-t border-neutral-100 text-center">
                   <button
                     type="button"
                     onClick={handleSendResetEmailFallback}
-                    className="text-xs text-slate-500 hover:text-[#4F46E5] underline underline-offset-4 font-semibold cursor-pointer"
+                    className="text-xs text-neutral-500 hover:text-[#111111] underline underline-offset-4 font-semibold cursor-pointer"
                   >
                     현재 비밀번호가 기억나지 않으시나요? 이메일로 재설정 링크 받기
                   </button>
@@ -356,13 +358,13 @@ const EditProfile = () => {
             </form>
           ) : (
             <>
-              <label className="text-sm font-bold text-[#0F172A]">
+              <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
                 {config.label}
               </label>
 
               {editType === "pGender" ? (
                 <select
-                  className="w-full h-13 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none px-4 py-3.5 rounded-xl text-[#0F172A] text-base font-medium cursor-pointer transition"
+                  className="w-full h-13 bg-[#FAFAFA] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-2 focus:ring-black/5 focus:outline-none px-4 py-3.5 rounded-xl text-[#111111] text-base font-medium cursor-pointer transition"
                   value={value}
                   onChange={handleChange}
                 >
@@ -381,20 +383,20 @@ const EditProfile = () => {
                       : "text"
                   }
                   placeholder={config.placeholder}
-                  className="w-full h-13 bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-500/15 focus:outline-none px-4 py-3.5 rounded-xl text-[#0F172A] text-base font-medium placeholder-slate-400 transition"
+                  className="w-full h-13 bg-[#FAFAFA] border border-neutral-200 focus:bg-white focus:border-[#111111] focus:ring-2 focus:ring-black/5 focus:outline-none px-4 py-3.5 rounded-xl text-[#111111] text-base font-medium placeholder-neutral-400 transition"
                 />
               )}
 
               {computedAge !== null && computedAge > 0 && (
                 <div className="flex justify-end items-center">
-                  <span className="text-xs font-bold text-[#4F46E5] bg-indigo-50 border border-indigo-200/80 px-3 py-1.5 rounded-md">
+                  <span className="text-xs font-bold text-[#111111] bg-neutral-100 border border-neutral-200 px-3 py-1.5 rounded-[5px]">
                     계산된 나이: 만 {computedAge}세
                   </span>
                 </div>
               )}
 
               {config.hints.length > 0 && (
-                <ul className="text-xs sm:text-sm text-slate-500 space-y-1.5 bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                <ul className="text-xs sm:text-sm text-neutral-500 space-y-1.5 bg-[#FAFAFA] border border-neutral-200/70 p-4 rounded-xl">
                   {config.hints.map((hint, idx) => (
                     <li key={idx}>• {hint}</li>
                   ))}
@@ -405,7 +407,7 @@ const EditProfile = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/myprofile")}
-                  className="flex-1 py-3.5 rounded-xl font-bold text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+                  className="flex-1 py-3.5 rounded-xl font-bold text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition cursor-pointer"
                 >
                   취소
                 </button>
@@ -415,8 +417,8 @@ const EditProfile = () => {
                   onClick={handleSave}
                   className={`flex-1 py-3.5 rounded-xl font-bold text-sm transition ${
                     isValid()
-                      ? "bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] text-white cursor-pointer shadow-[0_6px_16px_rgba(79,70,229,0.28)]"
-                      : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      ? "bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer"
+                      : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
                   }`}
                 >
                   저장하기
