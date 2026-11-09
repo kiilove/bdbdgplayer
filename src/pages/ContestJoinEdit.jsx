@@ -5,7 +5,6 @@ import { RiPrinterLine } from "react-icons/ri";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import AppDrawer from "../components/common/AppDrawer";
-import PosterWallBackground from "../components/common/PosterWallBackground";
 import ContestHeaderBanner from "../components/contest/ContestHeaderBanner";
 import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
@@ -104,7 +103,6 @@ const ContestJoinEdit = () => {
 
   return (
     <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] font-sans antialiased pb-28">
-      <PosterWallBackground />
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines

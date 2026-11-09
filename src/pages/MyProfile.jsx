@@ -12,7 +12,6 @@ import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import { handleToast } from "../components/HandleToast";
-import PosterWallBackground from "../components/common/PosterWallBackground";
 import InvoicePrintModal from "../modals/InvoicePrintModal";
 import { DEFAULT_AVATAR } from "../consts";
 import { UserContext } from "../context/UserContext";
@@ -98,7 +97,6 @@ const MyProfile = () => {
 
   return (
     <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] w-full pb-32 font-sans antialiased">
-      <PosterWallBackground />
       <BottomMenu />
       <Header
         title="마이페이지"

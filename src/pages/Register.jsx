@@ -1,14 +1,12 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import PosterWallBackground from "../components/common/PosterWallBackground";
 
 const Register = () => {
   const navigate = useNavigate();
 
   return (
     <div className="relative flex w-full min-h-screen justify-center items-center bg-[#F6F7F9] text-[#111111] p-4 font-sans antialiased">
-      <PosterWallBackground />
-      <div className="relative z-10 flex w-full flex-col items-center max-w-md bg-white/95 backdrop-blur-md border border-neutral-200/90 rounded-2xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+      <div className="relative z-10 flex w-full flex-col items-center max-w-md bg-white border border-neutral-200/90 rounded-2xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
         <div className="flex w-full justify-center flex-col items-center gap-y-2 mb-8 text-center">
           <Link to="/" className="inline-block mb-1">
             <span className="text-2xl font-black text-[#111111] tracking-tighter">

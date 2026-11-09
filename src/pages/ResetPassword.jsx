@@ -14,7 +14,6 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
-import PosterWallBackground from "../components/common/PosterWallBackground";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import { findPlayerEmailsByNameAndPhone } from "../services/playerService";
 import { formatPhoneNumber, validateEmail } from "../utils/formatUtils";
@@ -378,7 +377,6 @@ const ResetPassword = () => {
 
   return (
     <div className="relative flex w-full min-h-screen justify-center items-center bg-[#F6F7F9] text-[#111111] p-4 font-sans antialiased">
-      <PosterWallBackground />
       <ConfirmationModal
         isOpen={messageOpen}
         onCancel={handleMessageBox}

@@ -2,7 +2,6 @@ import React from "react";
 import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
-import PosterWallBackground from "../components/common/PosterWallBackground";
 import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
@@ -26,7 +25,6 @@ const CupList = () => {
 
   return (
     <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] w-full pb-32 font-sans antialiased">
-      <PosterWallBackground />
       {isLoading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex justify-center items-center">
           <RotatingLines

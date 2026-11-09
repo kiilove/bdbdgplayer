@@ -1,7 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import PosterWallBackground from "../components/common/PosterWallBackground";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { UserContext } from "../context/UserContext";
@@ -95,7 +94,6 @@ const Login = () => {
 
   return (
     <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] flex flex-col justify-center items-center px-4 py-12 font-sans antialiased">
-      <PosterWallBackground />
       <ConfirmationModal
         isOpen={messageOpen}
         onCancel={handleMessageBox}

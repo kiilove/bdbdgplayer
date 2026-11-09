@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import Policy3 from "../components/Policy3";
 import { handleToast } from "../components/HandleToast";
 import AppDrawer from "../components/common/AppDrawer";
-import PosterWallBackground from "../components/common/PosterWallBackground";
 import { UserContext } from "../context/UserContext";
 import useFirebaseAuth from "../hooks/useFirebaseAuth";
 import {
@@ -211,7 +210,6 @@ const RegisterWithEmail = () => {
 
   return (
     <div className="relative flex w-full min-h-screen justify-center items-center bg-[#F6F7F9] text-[#111111] py-12 px-4 font-sans antialiased">
-      <PosterWallBackground />
       <AppDrawer
         open={policyDrawerOpen}
         onClose={() => setPolicyDrawerOpen(false)}

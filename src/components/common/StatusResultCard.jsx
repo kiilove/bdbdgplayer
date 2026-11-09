@@ -5,7 +5,6 @@ import {
   RiHome4Line,
   RiFileList3Line,
 } from "react-icons/ri";
-import PosterWallBackground from "./PosterWallBackground";
 
 const StatusResultCard = ({
   badgeText,
@@ -21,8 +20,7 @@ const StatusResultCard = ({
 
   return (
     <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] flex items-center justify-center p-4 font-sans antialiased">
-      <PosterWallBackground />
-      <div className="relative z-10 max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-neutral-200/90 text-center flex flex-col items-center gap-y-6">
+      <div className="relative z-10 max-w-md w-full bg-white rounded-2xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-neutral-200/90 text-center flex flex-col items-center gap-y-6">
         <div className="w-16 h-16 p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-600 flex items-center justify-center text-4xl">
           <RiCheckboxCircleFill />
         </div>

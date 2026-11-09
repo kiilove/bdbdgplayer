@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
-import PosterWallBackground from "../components/common/PosterWallBackground";
 import ContestCard from "../components/contest/ContestCard";
 import ConfirmationModal from "../messageBox/ConfirmationModal";
 import { useActiveContests } from "../hooks/useActiveContests";
@@ -30,7 +29,6 @@ const Gbbf = () => {
 
   return (
     <div className="relative min-h-screen bg-[#F6F7F9] text-[#111111] flex flex-col pb-32 font-sans antialiased">
-      <PosterWallBackground />
       <BottomMenu />
       <Header title="경기도보디빌딩협회" />
 
