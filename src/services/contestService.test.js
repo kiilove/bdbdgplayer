@@ -108,5 +108,32 @@ describe("contestService - 핵심 도메인 규칙 테스트", () => {
     expect(result.invoiceEdited).toBe(true);
     expect(result.contestPriceSum).toBe(140000);
   });
+
+  test("submitUpdatedInvoice: 선수가 2개 이상 대회에 출전 중일 때 수정 대상 대회(contestId)의 엔트리만 삭제한다", async () => {
+    firestoreService.queryDocuments.mockResolvedValueOnce([
+      { id: "entry_other_contest", contestId: "contest_A" },
+      { id: "entry_target_contest", contestId: "contest_B" },
+    ]);
+    firestoreService.deleteDocumentById.mockResolvedValue(true);
+    firestoreService.updateDocumentById.mockImplementation(
+      async (_col, id, data) => ({ id, ...data })
+    );
+
+    await submitUpdatedInvoice(
+      {
+        id: "inv_1000",
+        contestId: "contest_B",
+        playerUid: "uid_abc",
+        joins: [{ contestCategoryTitle: "보디빌딩", contestCategoryPriceType: "기본" }],
+      },
+      { contestPriceBasic: 100000 }
+    );
+
+    expect(firestoreService.deleteDocumentById).toHaveBeenCalledTimes(1);
+    expect(firestoreService.deleteDocumentById).toHaveBeenCalledWith(
+      "contest_entrys_list",
+      "entry_target_contest"
+    );
+  });
 });
 

@@ -224,7 +224,7 @@ export const fetchUserActiveInvoiceMap = async (
 export const isGbbfContest = (item) =>
   Boolean(
     item?.contestPromoter?.includes("경기도") ||
-      item?.contestAssociate?.includes("경기도")
+    item?.contestAssociate?.includes("경기도")
   );
 
 /**
@@ -452,9 +452,15 @@ export const submitUpdatedInvoice = async (invoiceInfo, priceInfo) => {
       where("playerUid", "==", invoiceInfo.playerUid),
     ]);
 
-    if (existingEntries?.length > 0) {
+    const targetEntries = (existingEntries || []).filter((entry) =>
+      invoiceInfo.contestId && entry.contestId
+        ? entry.contestId === invoiceInfo.contestId
+        : true
+    );
+
+    if (targetEntries.length > 0) {
       await Promise.all(
-        existingEntries.map(async (entry) => {
+        targetEntries.map(async (entry) => {
           try {
             await deleteDocumentById("contest_entrys_list", entry.id);
           } catch {

@@ -126,7 +126,7 @@ const CategorySelectStep = ({
                     name={cTitle}
                     value={
                       selectedJoinInThisCat
-                        ? `${selectedJoinInThisCat.contestGradeId},${selectedJoinInThisCat.contestGradeTitle},${cType || ""}`
+                        ? selectedJoinInThisCat.contestGradeId
                         : ""
                     }
                     className={`w-full h-12 px-3.5 rounded-xl text-[15px] font-bold focus:outline-none cursor-pointer transition ${
@@ -151,7 +151,7 @@ const CategorySelectStep = ({
                       return (
                         <option
                           key={gId}
-                          value={`${gId},${gTitle},${cType || ""}`}
+                          value={gId}
                           className="bg-white text-[#111111] font-semibold"
                         >
                           {gTitle}

@@ -144,6 +144,12 @@ const InvoicePrintModal = ({
 
     const doc = iframe.contentWindow.document;
     const docTitle = `접수증_${contestTitle}_${invoiceInfo.playerName || "선수"}`;
+    const safeDocTitle = String(docTitle)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
     const originalTitle = document.title;
     document.title = docTitle;
 
@@ -153,7 +159,7 @@ const InvoicePrintModal = ({
       <html lang="ko">
       <head>
         <meta charset="UTF-8" />
-        <title>${docTitle}</title>
+        <title>${safeDocTitle}</title>
         <style>
           @page {
             size: A4 portrait;

@@ -274,8 +274,8 @@ const ResetPassword = () => {
     }, 2000);
   };
 
-  const handleGoToResetWithEmail = (email) => {
-    setEmailInfo({ email });
+  const handleGoToResetWithEmail = () => {
+    setEmailInfo({ email: "" });
     setSentSuccessEmail("");
     setActiveTab("resetPassword");
     setFoundEmails(null);
@@ -666,10 +666,10 @@ const ResetPassword = () => {
 
                               <button
                                 type="button"
-                                onClick={() => handleGoToResetWithEmail(email)}
+                                onClick={() => handleGoToResetWithEmail()}
                                 className="w-full py-2.5 bg-white hover:bg-[#111111] text-[#111111] hover:text-white border border-neutral-300 font-bold text-xs sm:text-sm rounded-lg transition cursor-pointer flex items-center justify-center gap-x-1.5"
                               >
-                                <span>이 계정으로 비밀번호 재설정</span>
+                                <span>비밀번호 재설정 탭으로 이동</span>
                                 <FiArrowRight className="text-xs" />
                               </button>
                             </div>

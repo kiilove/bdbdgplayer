@@ -95,43 +95,66 @@ export const useContestForm = ({ initialIsValidate = false } = {}) => {
     }));
   }, []);
 
-  const handleInvoiceInfo = useCallback((e) => {
-    const { name, id, value } = e.target;
+  const handleInvoiceInfo = useCallback(
+    (e) => {
+      const { name, id, value } = e.target;
 
-    setInvoiceInfo((prev) => {
-      const currentJoins = Array.isArray(prev.joins) ? [...prev.joins] : [];
+      setInvoiceInfo((prev) => {
+        const currentJoins = Array.isArray(prev.joins) ? [...prev.joins] : [];
 
-      if (!value || value === "체급선택") {
-        return {
-          ...prev,
-          joins: currentJoins.filter(
-            (category) => category.contestCategoryId !== id
-          ),
+        if (!value || value === "체급선택") {
+          return {
+            ...prev,
+            joins: currentJoins.filter(
+              (category) => category.contestCategoryId !== id
+            ),
+          };
+        }
+
+        const matchedCategory = categorys.find(
+          (cat) => cat.contestCategoryId === id
+        );
+        const matchedGrade =
+          grades.find(
+            (g) => g.contestGradeId === value && g.refCategoryId === id
+          ) || grades.find((g) => g.contestGradeId === value);
+
+        let gradeId = value;
+        let gradeTitle = matchedGrade?.contestGradeTitle || "";
+        let categoryPriceType =
+          matchedCategory?.contestCategoryPriceType || "";
+
+        if (!matchedGrade && value.includes(",")) {
+          const parts = value.split(",");
+          gradeId = parts[0];
+          gradeTitle = parts[1] || "";
+          categoryPriceType = parts[2] || categoryPriceType;
+        }
+
+        const newEntry = {
+          contestCategoryId: id,
+          contestCategoryTitle:
+            matchedCategory?.contestCategoryTitle || name || "",
+          contestCategoryPriceType: categoryPriceType,
+          contestGradeId: gradeId,
+          contestGradeTitle: gradeTitle,
         };
-      }
 
-      const [gradeId, gradeTitle, categoryPriceType = ""] = value.split(",");
-      const newEntry = {
-        contestCategoryId: id,
-        contestCategoryTitle: name,
-        contestCategoryPriceType: categoryPriceType,
-        contestGradeId: gradeId,
-        contestGradeTitle: gradeTitle,
-      };
+        const existingIdx = currentJoins.findIndex(
+          (category) => category.contestCategoryId === id
+        );
 
-      const existingIdx = currentJoins.findIndex(
-        (category) => category.contestCategoryId === id
-      );
+        if (existingIdx === -1) {
+          currentJoins.push(newEntry);
+        } else {
+          currentJoins.splice(existingIdx, 1, newEntry);
+        }
 
-      if (existingIdx === -1) {
-        currentJoins.push(newEntry);
-      } else {
-        currentJoins.splice(existingIdx, 1, newEntry);
-      }
-
-      return { ...prev, joins: currentJoins };
-    });
-  }, []);
+        return { ...prev, joins: currentJoins };
+      });
+    },
+    [categorys, grades]
+  );
 
   const handlePlayerValidateButtonClick = useCallback(() => {
     setHasAttemptedValidate(true);

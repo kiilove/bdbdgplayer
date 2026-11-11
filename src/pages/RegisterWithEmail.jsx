@@ -159,7 +159,11 @@ const RegisterWithEmail = () => {
   const isGenderValid = form.pGender === "m" || form.pGender === "f";
   const isTermsValid = license.m1Apply.value && license.m2Apply.value;
   const isFormValid =
-    isInputsValid && isPasswordValid && isGenderValid && isTermsValid;
+    isInputsValid &&
+    chkEmail &&
+    isPasswordValid &&
+    isGenderValid &&
+    isTermsValid;
 
   const handleRegister = async () => {
     if (!isFormValid || isLoading) return;
@@ -484,9 +488,15 @@ const RegisterWithEmail = () => {
               disabled
               className="w-full py-4 bg-neutral-100 border border-neutral-200 text-neutral-400 font-semibold text-sm rounded-xl cursor-not-allowed text-center mt-2"
             >
-              {chkEmail
+              {isInputsValid &&
+              isPasswordValid &&
+              isGenderValid &&
+              isTermsValid &&
+              !chkEmail
+                ? "이메일 중복확인을 완료해 주세요"
+                : chkEmail
                 ? "필수 항목을 모두 입력해 주세요"
-                : "필수 항목 입력 및 약관 동의가 필요합니다"}
+                : "필수 항목 입력 · 이메일 중복확인 · 약관 동의가 필요합니다"}
             </button>
           )}
         </div>
