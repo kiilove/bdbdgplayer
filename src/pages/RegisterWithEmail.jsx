@@ -171,7 +171,7 @@ const RegisterWithEmail = () => {
     try {
       const { user, error } = await signUpWithEmail(
         form.pEmail.trim(),
-        form.password.trim()
+        form.password
       );
 
       if (error || !user) {

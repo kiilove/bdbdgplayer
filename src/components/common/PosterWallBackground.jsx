@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useMediaQuery } from "@mui/material";
 import {
   fetchArchiveContestPosters,
   getCachedArchivePosters,
 } from "../../services/contestService";
 
-const COLUMN_COUNT = 7;
 const ITEMS_PER_COLUMN = 7;
 const COLUMN_DURATIONS = [
   "52s",
@@ -21,6 +21,11 @@ const PosterWallBackground = () => {
     () => getCachedArchivePosters() || []
   );
   const [brokenUrls, setBrokenUrls] = useState({});
+
+  const isLg = useMediaQuery("(min-width: 1024px)");
+  const isMd = useMediaQuery("(min-width: 768px)");
+  const isSm = useMediaQuery("(min-width: 640px)");
+  const visibleColumnCount = isLg ? 7 : isMd ? 6 : isSm ? 5 : 3;
 
   useEffect(() => {
     let isMounted = true;
@@ -41,7 +46,7 @@ const PosterWallBackground = () => {
 
   const columns = useMemo(() => {
     if (validPosters.length === 0) return [];
-    return Array.from({ length: COLUMN_COUNT }, (_, colIdx) => {
+    return Array.from({ length: visibleColumnCount }, (_, colIdx) => {
       const baseItems = [];
       for (let rowIdx = 0; rowIdx < ITEMS_PER_COLUMN; rowIdx += 1) {
         const posterIdx =
@@ -55,7 +60,7 @@ const PosterWallBackground = () => {
       }
       return [...baseItems, ...baseItems];
     });
-  }, [validPosters]);
+  }, [validPosters, visibleColumnCount]);
 
   if (columns.length === 0) {
     return null;
@@ -87,19 +92,11 @@ const PosterWallBackground = () => {
         >
           {columns.map((colItems, colIdx) => {
             const isReverse = colIdx % 2 === 1;
-            const visibilityClass =
-              colIdx >= 6
-                ? "hidden lg:flex"
-                : colIdx >= 5
-                ? "hidden md:flex"
-                : colIdx >= 3
-                ? "hidden sm:flex"
-                : "flex";
 
             return (
               <div
                 key={`poster-col-${colIdx}`}
-                className={`${visibilityClass} flex-col gap-4 ${
+                className={`flex flex-col gap-4 ${
                   isReverse ? "poster-marquee-down" : "poster-marquee-up"
                 }`}
                 style={{

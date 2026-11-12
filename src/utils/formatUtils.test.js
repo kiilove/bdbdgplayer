@@ -44,15 +44,21 @@ describe("formatUtils - 입력값 유효성 검증 및 만나이 계산", () => 
     expect(validatePhoneNumber("")).toBe(false);
   });
 
-  test("validateDate: YYYY-MM-DD 형식을 검증한다", () => {
+  test("validateDate: YYYY-MM-DD 형식 및 실제 달력 날짜 유효성을 검증한다", () => {
     expect(validateDate("1995-05-20")).toBe(true);
+    expect(validateDate("2024-02-29")).toBe(true); // 윤년 허용
+    expect(validateDate("2023-02-29")).toBe(false); // 평년 2월 29일 차단
+    expect(validateDate("1995-99-99")).toBe(false); // 존재하지 않는 월/일 차단
+    expect(validateDate("2099-01-01")).toBe(false); // 미래 생년월일 차단
+    expect(validateDate("1850-01-01")).toBe(false); // 비정상 과거 연도 차단
     expect(validateDate("19950520")).toBe(false);
     expect(validateDate("")).toBe(false);
   });
 
-  test("calculateAge: 생년월일 기준 만 나이를 0 이상 정수로 반환한다", () => {
+  test("calculateAge: 생년월일 기준 만 나이를 0 이상 정수로 반환하며 잘못된 날짜는 0을 반환한다", () => {
     expect(calculateAge("")).toBe(0);
     expect(calculateAge("1995")).toBe(0);
+    expect(calculateAge("1995-99-99")).toBe(0);
     const age = calculateAge("1990-01-01");
     expect(age).toBeGreaterThanOrEqual(30);
   });

@@ -111,7 +111,7 @@ export const savePlayerProfile = async (docId, updatedProfile) => {
  */
 export const uploadPlayerAvatar = async (playerInfo, file) => {
   const uid = playerInfo?.playerUid || playerInfo?.pUid || playerInfo?.id;
-  if (!file || !uid || !playerInfo?.id) {
+  if (!file || !uid) {
     throw new Error("업로드에 필요한 선수 정보가 부족합니다.");
   }
 
@@ -120,9 +120,13 @@ export const uploadPlayerAvatar = async (playerInfo, file) => {
   const uploadTask = await uploadBytesResumable(storageRef, file);
   const downloadURL = await getDownloadURL(uploadTask.ref);
 
-  const updatedProfile = { ...playerInfo, pPic: downloadURL };
-  await savePlayerProfile(playerInfo.id, updatedProfile);
-  return updatedProfile;
+  const updatedProfile = {
+    ...playerInfo,
+    playerUid: playerInfo?.playerUid || uid,
+    pPic: downloadURL,
+  };
+  const savedDoc = await savePlayerProfile(playerInfo?.id, updatedProfile);
+  return savedDoc?.id ? { ...updatedProfile, id: savedDoc.id } : updatedProfile;
 };
 
 /**

@@ -20,6 +20,7 @@ import { UserContext } from "../context/UserContext";
 import { useContestForm } from "../hooks/useContestForm";
 import {
   fetchContestEntryBundle,
+  fetchUserActiveInvoiceMap,
   buildInitialInvoicePayload,
 } from "../services/contestService";
 import { calculateContestPrice } from "../utils/formatUtils";
@@ -32,6 +33,9 @@ const ContestJoin = () => {
   const [noticeInfo, setNoticeInfo] = useState({});
   const [contests, setContests] = useState({});
   const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(
+    "대회 정보를 불러올 수 없거나 종료된 공고입니다."
+  );
   const [activeDrawer, setActiveDrawer] = useState(null); // "policy" | "confirm" | null
   const [isApply, setIsApply] = useState({
     title: "m1",
@@ -40,7 +44,8 @@ const ContestJoin = () => {
   });
 
   const hasInitializedInvoiceRef = useRef(false);
-  const { currentUserInfo: pInfo } = useContext(UserContext);
+  const { currentUid, currentUserInfo: pInfo } = useContext(UserContext);
+  const activeUid = currentUid || pInfo?.playerUid || pInfo?.pUid || "";
   const params = useParams();
   const navigate = useNavigate();
 
@@ -71,7 +76,9 @@ const ContestJoin = () => {
     setIsApply({
       title: "m1",
       value: e.target.checked,
-      date: dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+      applyDate: e.target.checked
+        ? dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss")
+        : "",
     });
   };
 
@@ -83,14 +90,43 @@ const ContestJoin = () => {
       setIsLoading(true);
       setError(false);
       try {
-        const { notice, contest, categories, grades: gradeList } =
-          await fetchContestEntryBundle(params.contestId);
+        const [{ notice, contest, categories, grades: gradeList }, activeMap] =
+          await Promise.all([
+            fetchContestEntryBundle(params.contestId),
+            activeUid
+              ? fetchUserActiveInvoiceMap(activeUid).catch(() => ({}))
+              : Promise.resolve({}),
+          ]);
         if (!isMounted) return;
+
+        const existingInvoiceId =
+          activeMap?.[params.contestId] ||
+          (notice?.id ? activeMap?.[notice.id] : null) ||
+          (contest?.id ? activeMap?.[contest.id] : null);
+
+        if (existingInvoiceId) {
+          handleToast(
+            "info",
+            "이미 참가신청한 대회입니다. 신청 내역 화면으로 이동합니다."
+          );
+          navigate(`/contestjoinedit/${existingInvoiceId}`, { replace: true });
+          return;
+        }
+
+        if (notice?.contestStatus && notice.contestStatus !== "접수중") {
+          setErrorMessage(
+            "현재 참가접수 중인 대회가 아닙니다. (접수 마감 또는 종료)"
+          );
+          setError(true);
+          return;
+        }
+
         setNoticeInfo(notice);
         setContests(contest);
         setCategoriesAndGrades(categories, gradeList);
       } catch {
         if (isMounted) {
+          setErrorMessage("대회 정보를 불러올 수 없거나 종료된 공고입니다.");
           setError(true);
         }
       } finally {
@@ -104,7 +140,7 @@ const ContestJoin = () => {
     return () => {
       isMounted = false;
     };
-  }, [params.contestId, setCategoriesAndGrades]);
+  }, [params.contestId, activeUid, navigate, setCategoriesAndGrades]);
 
   useEffect(() => {
     if (
@@ -143,9 +179,7 @@ const ContestJoin = () => {
 
       {!isLoading && error && (
         <div className="relative z-10 min-h-screen bg-[#F6F7F9] text-[#111111] w-full flex flex-col items-center justify-center p-6 text-center gap-4">
-          <p className="text-base text-neutral-600 font-bold">
-            대회 정보를 불러올 수 없거나 종료된 공고입니다.
-          </p>
+          <p className="text-base text-neutral-600 font-bold">{errorMessage}</p>
           <button
             type="button"
             onClick={() => navigate("/")}

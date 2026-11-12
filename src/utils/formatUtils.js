@@ -52,7 +52,14 @@ export const calculateAge = (birthDateStr) => {
   const day = parseInt(cleaned.slice(6, 8), 10);
 
   const birthDate = new Date(year, month, day);
-  if (isNaN(birthDate.getTime())) return 0;
+  if (
+    isNaN(birthDate.getTime()) ||
+    birthDate.getFullYear() !== year ||
+    birthDate.getMonth() !== month ||
+    birthDate.getDate() !== day
+  ) {
+    return 0;
+  }
 
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
@@ -86,7 +93,27 @@ export const validatePhoneNumber = (phoneNumber) => {
  * 생년월일(YYYY-MM-DD) 유효성 검사
  */
 export const validateDate = (date) => {
-  return Boolean(date && /^\d{4}-\d{2}-\d{2}$/.test(date));
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const [yearStr, monthStr, dayStr] = date.split("-");
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthStr, 10);
+  const day = parseInt(dayStr, 10);
+
+  const today = new Date();
+  if (year < 1900 || year > today.getFullYear()) return false;
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+
+  const parsed = new Date(year, month - 1, day);
+  if (
+    parsed.getFullYear() !== year ||
+    parsed.getMonth() !== month - 1 ||
+    parsed.getDate() !== day
+  ) {
+    return false;
+  }
+
+  today.setHours(23, 59, 59, 999);
+  return parsed.getTime() <= today.getTime();
 };
 
 /**

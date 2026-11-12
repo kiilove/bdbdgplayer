@@ -386,14 +386,23 @@ const InvoicePrintModal = ({
     doc.close();
 
     setTimeout(() => {
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-      document.title = originalTitle;
-      setTimeout(() => {
+      const printWin = iframe.contentWindow;
+      let restored = false;
+      const cleanupPrint = () => {
+        if (restored) return;
+        restored = true;
+        document.title = originalTitle;
         if (document.body.contains(iframe)) {
           document.body.removeChild(iframe);
         }
-      }, 1000);
+      };
+
+      if (printWin) {
+        printWin.onafterprint = cleanupPrint;
+        printWin.focus();
+        printWin.print();
+      }
+      setTimeout(cleanupPrint, 1500);
     }, 250);
   };
 

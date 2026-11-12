@@ -5,21 +5,21 @@ import { handleToast } from "../components/HandleToast";
 import { submitUpdatedInvoice } from "../services/contestService";
 import { calculateContestPrice } from "../utils/formatUtils";
 
-const JoinCupEditConfirm = ({ propInvoiceInfo, prevSetModal }) => {
+const JoinCupEditConfirm = ({ propInvoiceInfo, priceSource, prevSetModal }) => {
   const [invoiceInfo] = useState(() => ({ ...propInvoiceInfo }));
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const priceInfo = useMemo(
-    () => ({
-      contestPriceBasic: invoiceInfo.contestPriceBasic,
-      contestPriceExtra: invoiceInfo.contestPriceExtra,
-      contestPriceExtraType: invoiceInfo.contestPriceExtraType,
-      contestPriceType1: invoiceInfo.contestPriceType1,
-      contestPriceType2: invoiceInfo.contestPriceType2,
-    }),
-    [invoiceInfo]
-  );
+  const priceInfo = useMemo(() => {
+    const source = priceSource?.contestPriceBasic ? priceSource : invoiceInfo;
+    return {
+      contestPriceBasic: source.contestPriceBasic,
+      contestPriceExtra: source.contestPriceExtra,
+      contestPriceExtraType: source.contestPriceExtraType,
+      contestPriceType1: source.contestPriceType1,
+      contestPriceType2: source.contestPriceType2,
+    };
+  }, [invoiceInfo, priceSource]);
 
   const invoicePrice = useMemo(
     () => calculateContestPrice(invoiceInfo.joins, priceInfo),

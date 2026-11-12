@@ -68,7 +68,9 @@ const maskEmail = (email) => {
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const oobCode = searchParams.get("oobCode") || "";
-  const isPreviewMode = searchParams.get("preview") === "custom";
+  const isPreviewMode =
+    process.env.NODE_ENV === "development" &&
+    searchParams.get("preview") === "custom";
 
   const [activeTab, setActiveTab] = useState("findEmail");
   const [isLoading, setIsLoading] = useState(false);

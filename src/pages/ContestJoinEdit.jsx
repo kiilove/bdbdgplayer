@@ -1,13 +1,14 @@
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { useState, useEffect, useContext, Suspense, lazy } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
-import { RiPrinterLine } from "react-icons/ri";
+import { RiPrinterLine, RiErrorWarningLine } from "react-icons/ri";
 import BottomMenu from "../components/BottomMenu";
 import Header from "../components/Header";
 import AppDrawer from "../components/common/AppDrawer";
 import ContestHeaderBanner from "../components/contest/ContestHeaderBanner";
 import PlayerInfoStep from "../components/contest/PlayerInfoStep";
 import CategorySelectStep from "../components/contest/CategorySelectStep";
+import { UserContext } from "../context/UserContext";
 import { useContestForm } from "../hooks/useContestForm";
 import { fetchInvoiceEditBundle } from "../services/contestService";
 import { calculateContestPrice } from "../utils/formatUtils";
@@ -20,8 +21,15 @@ const ContestJoinEdit = () => {
   const [contests, setContests] = useState({});
   const [noticeInfo, setNoticeInfo] = useState({});
   const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(
+    "신청 내역을 불러올 수 없거나 존재하지 않는 문서입니다."
+  );
   const [confirmDrawerOpen, setConfirmDrawerOpen] = useState(false);
   const [printDrawerOpen, setPrintDrawerOpen] = useState(false);
+
+  const { currentUid, currentUserInfo: pInfo } = useContext(UserContext);
+  const activeUid = currentUid || pInfo?.playerUid || pInfo?.pUid || "";
+  const activeEmail = (pInfo?.pEmail || "").trim().toLowerCase();
 
   const params = useParams();
   const navigate = useNavigate();
@@ -60,12 +68,37 @@ const ContestJoinEdit = () => {
           grades: gradeList,
         } = await fetchInvoiceEditBundle(params.invoiceId);
         if (!isMounted) return;
+
+        const invoiceUid = invoice.playerUid || invoice.pUid || "";
+        const invoiceEmail = (invoice.playerEmail || "").trim().toLowerCase();
+        const isOwnerByUid = Boolean(
+          activeUid && invoiceUid && activeUid === invoiceUid
+        );
+        const isOwnerByEmail = Boolean(
+          activeEmail && invoiceEmail && activeEmail === invoiceEmail
+        );
+
+        if ((invoiceUid || invoiceEmail) && !isOwnerByUid && !isOwnerByEmail) {
+          setErrorMessage("본인의 참가신청 내역만 열람 및 수정할 수 있습니다.");
+          setError(true);
+          return;
+        }
+
+        if (invoice.isCanceled) {
+          setErrorMessage("접수 취소된 신청 내역은 수정할 수 없습니다.");
+          setError(true);
+          return;
+        }
+
         setInvoiceInfo(invoice);
         setContests(contest);
         setNoticeInfo(notice);
         setCategoriesAndGrades(categories, gradeList);
       } catch {
         if (isMounted) {
+          setErrorMessage(
+            "신청 내역을 불러올 수 없거나 존재하지 않는 문서입니다."
+          );
           setError(true);
         }
       } finally {
@@ -79,7 +112,17 @@ const ContestJoinEdit = () => {
     return () => {
       isMounted = false;
     };
-  }, [params.invoiceId, setInvoiceInfo, setCategoriesAndGrades]);
+  }, [
+    params.invoiceId,
+    activeUid,
+    activeEmail,
+    setInvoiceInfo,
+    setCategoriesAndGrades,
+  ]);
+
+  const isRegistrationClosed = Boolean(
+    noticeInfo?.contestStatus && noticeInfo.contestStatus !== "접수중"
+  );
 
   const priceSource = noticeInfo?.contestPriceBasic ? noticeInfo : invoiceInfo;
   const associateName =
@@ -118,9 +161,7 @@ const ContestJoinEdit = () => {
 
       {!isLoading && error && (
         <div className="relative z-10 min-h-screen bg-[#F6F7F9] text-[#111111] w-full flex flex-col items-center justify-center p-6 text-center gap-4">
-          <p className="text-base text-neutral-600 font-bold">
-            신청 내역을 불러올 수 없거나 존재하지 않는 문서입니다.
-          </p>
+          <p className="text-base text-neutral-600 font-bold">{errorMessage}</p>
           <button
             type="button"
             onClick={() => navigate("/myprofile")}
@@ -137,7 +178,7 @@ const ContestJoinEdit = () => {
           <Header title="참가신청 내역 및 수정" />
 
           <AppDrawer
-            open={confirmDrawerOpen}
+            open={!isRegistrationClosed && confirmDrawerOpen}
             onClose={() => setConfirmDrawerOpen(false)}
             size="md"
           >
@@ -155,6 +196,7 @@ const ContestJoinEdit = () => {
             >
               <JoinCupEditConfirm
                 propInvoiceInfo={invoiceInfo}
+                priceSource={priceSource}
                 prevSetModal={setConfirmDrawerOpen}
               />
             </Suspense>
@@ -267,19 +309,35 @@ const ContestJoinEdit = () => {
                   )}
 
                   <div className="pt-3 border-t border-neutral-100 flex flex-col gap-y-2.5">
+                    {isRegistrationClosed && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs font-semibold text-amber-800 flex items-start gap-2 leading-relaxed">
+                        <RiErrorWarningLine className="text-sm shrink-0 mt-0.5 text-amber-600" />
+                        <span>
+                          접수가 마감된 대회는 신청 정보 수정이 불가하며, 접수증 출력만 가능합니다.
+                        </span>
+                      </div>
+                    )}
                     <button
                       type="button"
-                      onClick={() => setConfirmDrawerOpen(true)}
+                      onClick={() => {
+                        if (!isRegistrationClosed) {
+                          setConfirmDrawerOpen(true);
+                        }
+                      }}
                       disabled={
-                        !invoiceInfo.joins || invoiceInfo.joins.length === 0
+                        isRegistrationClosed ||
+                        !invoiceInfo.joins ||
+                        invoiceInfo.joins.length === 0
                       }
-                      className={`w-full py-4 rounded-xl font-bold text-[15px] transition cursor-pointer ${
-                        invoiceInfo.joins?.length > 0
-                          ? "bg-[#111111] hover:bg-neutral-800 text-white"
+                      className={`w-full py-4 rounded-xl font-bold text-[15px] transition ${
+                        !isRegistrationClosed && invoiceInfo.joins?.length > 0
+                          ? "bg-[#111111] hover:bg-neutral-800 text-white cursor-pointer"
                           : "bg-neutral-100 border border-neutral-200 text-neutral-400 cursor-not-allowed"
                       }`}
                     >
-                      신청 정보 수정 완료
+                      {isRegistrationClosed
+                        ? "접수 마감 (수정 불가)"
+                        : "신청 정보 수정 완료"}
                     </button>
                     <button
                       type="button"
